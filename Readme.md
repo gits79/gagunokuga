@@ -90,8 +90,8 @@
 
 |FullStack|FullStack|FullStack|FullStack|FullStack|FullStack|
 |:---:|:---:|:---:|:---:|:---:|:---:|
-| ![김예훈](https://github.com/user-attachments/assets/fe80a4ce-f9f2-478f-bcdb-bb9f5a64d64c) | ![김민섭](https://github.com/user-attachments/assets/79eb479e-218a-431a-83d8-bacdf637b086)| ![김윤지](https://github.com/user-attachments/assets/d71f573b-dd2b-4c96-ae3d-b6ffa9f674b7)| ![김지환](https://github.com/user-attachments/assets/bf94648c-a9c0-451a-91ef-749d5e72447f)| ![송정호](https://github.com/user-attachments/assets/df4aefe3-e86c-4f19-a8b3-127bdaa7b214)| ![장다은](https://github.com/user-attachments/assets/21692154-d943-4e75-bdf3-c320a57dded4) |
-|[김예훈](https://github.com/yewon-Noh)|[김민섭](https://github.com/SeongHo-C)|[김윤지](https://github.com/SeongHo-C)|[김지환](https://github.com/SeongHo-C)|[송정호](https://github.com/SeongHo-C)|[장다은](https://github.com/SeongHo-C)|
+| ![김예훈](https://github.com/user-attachments/assets/634e7e7a-1ca5-458f-8e55-5c5a7e64c672)| ![김민섭](https://github.com/user-attachments/assets/d364058f-2a41-4d82-89b8-99f40eda74ee)| ![김윤지](https://github.com/user-attachments/assets/d71f573b-dd2b-4c96-ae3d-b6ffa9f674b7)| ![김지환](https://github.com/user-attachments/assets/bf94648c-a9c0-451a-91ef-749d5e72447f)| ![송정호](https://github.com/user-attachments/assets/df4aefe3-e86c-4f19-a8b3-127bdaa7b214)| ![장다은](https://github.com/user-attachments/assets/21692154-d943-4e75-bdf3-c320a57dded4) |
+|[김예훈](https://github.com/yhkimox)|[김민섭](https://github.com/TrexVsTank)|[김윤지](https://github.com/ximvamom)|[김지환](https://github.com/gits79)|[송정호](https://github.com/yhkimox)|[장다은](https://github.com/boriaegi)|
 |**팀장**|팀원|팀원|팀원|팀원|팀원|
 
 </div><br/>
