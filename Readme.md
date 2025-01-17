@@ -84,7 +84,9 @@
 
 <br/>
 
-# :scroll: <a name="erd">ERD</a>
+# :scroll: <a name="erd">ERD(Entity-Relation Diagram)</a>
+
+<img src="https://github.com/user-attachments/assets/ddaf5cdd-f73f-4578-9c2e-0d7892d3fa2e" width=400/>
 
 <br/>
 
@@ -96,7 +98,7 @@
 
 |FullStack|FullStack|FullStack|FullStack|FullStack|FullStack|
 |:---:|:---:|:---:|:---:|:---:|:---:|
-| ![김예훈](https://postfiles.pstatic.net/MjAyNTAxMTZfMjY5/MDAxNzM3MDE2OTA0ODUx.Zhs4mXav2H4jQc7OREqk1XFAwfcspxPIAiR8CqjgMM4g.2V3kh5GmL7vTJ6Xj-s-soxpCeUO5nTtiqm489Y7OCQQg.JPEG/%EA%B9%80%EC%98%88%ED%9B%88.jpg?type=w773)| ![김민섭](https://postfiles.pstatic.net/MjAyNTAxMTZfMjY5/MDAxNzM3MDE2OTA0ODUx.Zhs4mXav2H4jQc7OREqk1XFAwfcspxPIAiR8CqjgMM4g.2V3kh5GmL7vTJ6Xj-s-soxpCeUO5nTtiqm489Y7OCQQg.JPEG/%EA%B9%80%EC%98%88%ED%9B%88.jpg?type=w773)| ![김윤지](https://github.com/user-attachments/assets/d71f573b-dd2b-4c96-ae3d-b6ffa9f674b7)| ![김지환](https://github.com/user-attachments/assets/bf94648c-a9c0-451a-91ef-749d5e72447f)| ![송정호](https://github.com/user-attachments/assets/df4aefe3-e86c-4f19-a8b3-127bdaa7b214)| ![장다은](https://github.com/user-attachments/assets/21692154-d943-4e75-bdf3-c320a57dded4) |
+| ![김예훈](https://github.com/user-attachments/assets/a3735474-3043-4f18-98b9-f97e77589522)| ![김민섭](https://github.com/user-attachments/assets/912a808c-b6e2-4f22-b0bd-124722e4b4d6)| ![김윤지](https://github.com/user-attachments/assets/583ab5ef-07a9-4ed6-88cc-e2fd716b4a08)| ![김지환](https://github.com/user-attachments/assets/0a4f1ed8-13fc-4769-9660-5a6bac571fb1)| ![송정호](https://github.com/user-attachments/assets/3bc00b58-28f6-427d-b3a1-e349d1a0a631)| ![장다은](https://github.com/user-attachments/assets/038d3b84-0757-48ba-935e-85bbec9573f6) |
 |[김예훈](https://github.com/yhkimox)|[김민섭](https://github.com/TrexVsTank)|[김윤지](https://github.com/ximvamom)|[김지환](https://github.com/gits79)|[송정호](https://github.com/yhkimox)|[장다은](https://github.com/boriaegi)|
 |**팀장**|팀원|팀원|팀원|팀원|팀원|
 
