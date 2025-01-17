@@ -12,7 +12,7 @@
 
 # :books: <a name="outline">개요</a>
 <br/>
-<img src="https://github.com/user-attachments/assets/09a0d908-bce8-4b56-9e88-b798a466525d" width=200/>
+<img src="https://github.com/user-attachments/assets/09a0d908-bce8-4b56-9e88-b798a466525d" width=400/>
 
 > - **프로젝트** : 가구 배치 실시간 협업 서비스
 >
