@@ -86,7 +86,7 @@
 
 # :scroll: <a name="erd">ERD(Entity-Relation Diagram)</a>
 
-<img src="https://github.com/user-attachments/assets/ddaf5cdd-f73f-4578-9c2e-0d7892d3fa2e"/>
+<img src="https://github.com/user-attachments/assets/3192d7b3-1c81-475b-87d4-ac8d39bdfc35"/>
 
 <br/>
 
