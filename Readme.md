@@ -5,8 +5,8 @@
 - 📌 <a href="#function">주요 기능</a>
 - :wrench: <a href="#tech">기술 스택</a>
 - 📝 <a href="#specification">요구사항 명세서</a>
-- :scroll: <a href="#erd">ERD(Entity-Relation Diagram)</a>
-- :bookmark_tabs: <a href="#frame">와이어프레임</a>
+- 💭 <a href="#erd">ERD(Entity-Relation Diagram)</a>
+- 🎨 <a href="#frame">와이어프레임</a>
 - 💁‍♂️ <a href="#team">프로젝트 팀원</a>
   
 
@@ -83,11 +83,11 @@
 <img src="https://github.com/user-attachments/assets/138ba78b-1382-4de0-8070-bd6296438460"/>
 <br/>
 
-# :scroll: <a name="erd">ERD(Entity-Relation Diagram)</a>
+# 💭 <a name="erd">ERD(Entity-Relation Diagram)</a>
 <img src="https://github.com/user-attachments/assets/03b8d907-856f-4ecb-8ed4-66d718c11969"/>
 <br/>
 
-# :bookmark_tabs: <a name="frame">와이어프레임</a>
+# 🎨 <a name="frame">와이어프레임</a>
 <img src="https://github.com/user-attachments/assets/004adcef-ff3e-4ba3-a2c7-cfa7055f8d8b"/>
 
 <br/>
