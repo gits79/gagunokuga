@@ -81,12 +81,13 @@
 </div><br/>
 
 # 📝 <a name="specification">요구사항 명세서</a>
-
+<img src="https://github.com/user-attachments/assets/d4ee0a9c-df67-4d82-a8aa-bc84570cbff7"/>
+<img src="https://github.com/user-attachments/assets/138ba78b-1382-4de0-8070-bd6296438460"/>
 <br/>
 
 # :scroll: <a name="erd">ERD(Entity-Relation Diagram)</a>
 
-<img src="https://github.com/user-attachments/assets/3192d7b3-1c81-475b-87d4-ac8d39bdfc35"/>
+<img src="https://github.com/user-attachments/assets/03b8d907-856f-4ecb-8ed4-66d718c11969"/>
 
 <br/>
 
