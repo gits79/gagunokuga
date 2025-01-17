@@ -88,6 +88,9 @@
 <br/>
 
 # :bookmark_tabs: <a name="frame">와이어프레임</a>
+## 전체
+<img src="https://github.com/user-attachments/assets/004adcef-ff3e-4ba3-a2c7-cfa7055f8d8b"/>
+
 <br/>
 
 # 💁‍♂️ <a name="team"> 프로젝트 팀원</a>
