@@ -12,7 +12,7 @@
 
 # :books: <a name="outline">개요</a>
 <br/>
-<img src="https://github.com/user-attachments/assets/09a0d908-bce8-4b56-9e88-b798a466525d" width=400/>
+<img src="https://github.com/user-attachments/assets/09a0d908-bce8-4b56-9e88-b798a466525d" width=200/>
 
 > - **프로젝트** : 가구 배치 실시간 협업 서비스
 >
@@ -86,7 +86,7 @@
 
 # :scroll: <a name="erd">ERD(Entity-Relation Diagram)</a>
 
-<img src="https://github.com/user-attachments/assets/ddaf5cdd-f73f-4578-9c2e-0d7892d3fa2e" width=400/>
+<img src="https://github.com/user-attachments/assets/ddaf5cdd-f73f-4578-9c2e-0d7892d3fa2e"/>
 
 <br/>
 
