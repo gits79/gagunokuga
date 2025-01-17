@@ -2,8 +2,9 @@
 # :clipboard: 목차
 
 - :books: <a href="#outline">개요</a>
-- 📌<a href="#function">주요 기능</a>
+- 📌 <a href="#function">주요 기능</a>
 - :wrench: <a href="#tech">기술 스택</a>
+- 📝 <a href="#specification">요구사항 명세서</a>
 - :scroll: <a href="#erd">ERD(Entity-Relation Diagram)</a>
 - :bookmark_tabs: <a href="#frame">와이어프레임</a>
 - 💁‍♂️ <a href="#team">프로젝트 팀원</a>
@@ -79,9 +80,11 @@
 
 </div><br/>
 
-# :scroll: <a name="erd">ERD</a>
+# 📝 <a name="specification">요구사항 명세서</a>
 
-## 전체 ERD
+<br/>
+
+# :scroll: <a name="erd">ERD</a>
 
 <br/>
 
