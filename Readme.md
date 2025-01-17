@@ -5,8 +5,8 @@
 - 📌<a href="#function">주요 기능</a>
 - :wrench: <a href="#tech">기술 스택</a>
 - :scroll: <a href="#erd">ERD(Entity-Relation Diagram)</a>
-- 💁‍♂️ <a href="#team">프로젝트 팀원</a>
 - :bookmark_tabs: <a href="#frame">와이어프레임</a>
+- 💁‍♂️ <a href="#team">프로젝트 팀원</a>
   
 
 # :books: <a name="outline">개요</a>
@@ -85,6 +85,9 @@
 
 <br/>
 
+# :bookmark_tabs: <a name="frame">와이어프레임</a>
+<br/>
+
 # 💁‍♂️ <a name="team"> 프로젝트 팀원</a>
 <div><br/>
 
@@ -95,7 +98,3 @@
 |**팀장**|팀원|팀원|팀원|팀원|팀원|
 
 </div><br/>
-
-# :bookmark_tabs: <a name="frame">와이어프레임</a>
-<br/>
-
