@@ -1,0 +1,25 @@
+
+
+services:
+  app:
+    build: .
+    container_name: my-spring-app
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src                 # 소스 코드 마운트
+      - ./build.gradle:/app/build.gradle # Gradle 빌드 파일 마운트
+      - ./settings.gradle:/app/settings.gradle # Gradle 설정 파일 마운트
+      - ./gradle:/app/gradle           # Gradle 디렉토리 마운트
+      - ~/.m2:/root/.m2                # Maven 로컬 저장소 (Gradle Wrapper) 마운트
+    command: ./gradlew bootRun --no-daemon # 실행 명령어 변경
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    container_name: my-redis
+    ports:
+      - "6379:6379"
