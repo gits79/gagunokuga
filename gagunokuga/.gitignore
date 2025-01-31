@@ -90,3 +90,6 @@ desktop.ini
 
 # Linux
 *~
+
+# Gradle Wrapper의 gradle-wrapper.jar는 제외하지 않고 Git에 포함
+!gradle/wrapper/gradle-wrapper.jar
