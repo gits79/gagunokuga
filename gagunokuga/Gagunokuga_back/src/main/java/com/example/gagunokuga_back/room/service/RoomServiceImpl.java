@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -25,12 +27,20 @@ public class RoomServiceImpl implements RoomService{
     }
 
     @Override
-    public void updateRoomName(String roomId, String roomName) {
-
+    public void updateRoomName(Long roomId, String roomName) {
+        Room room = roomRepository.findById(roomId).orElse(null);
+        if(room != null) {
+            room.updateRoomName(roomName);
+            roomRepository.save(room);
+        }
     }
 
     @Override
-    public void deleteRoom(String roomId) {
-
+    public void deleteRoom(Long roomId) {
+        Room room = roomRepository.findById(roomId).orElse(null);
+        if(room != null) {
+            room.delete();
+            roomRepository.save(room);
+        }
     }
 }

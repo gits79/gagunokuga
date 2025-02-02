@@ -28,4 +28,9 @@ public class Room extends BaseTimeEntity {
     public void delete() {
         this.deletedAt = LocalDateTime.now();
     }
+
+    public void updateRoomName(String roomName) {
+        this.roomName = roomName;
+    }
+
 }
