@@ -19,14 +19,14 @@ public class RoomController {
     }
 
     @PutMapping("/{roomId}")
-    public ResponseEntity<Void> updateRoomName(@RequestParam Long roomId, UpdateRoomNameRequest updateRoomNameRequest) {
+    public ResponseEntity<Void> updateRoomName(@PathVariable Long roomId, UpdateRoomNameRequest updateRoomNameRequest) {
         String roomName = updateRoomNameRequest.getRoomName();
         roomService.updateRoomName(roomId,roomName);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/roomId")
-    public ResponseEntity<Void> deleteRoom(@RequestParam Long roomId) {
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<Void> deleteRoom(@PathVariable Long roomId) {
         roomService.deleteRoom(roomId);
         return ResponseEntity.noContent().build();
     }
