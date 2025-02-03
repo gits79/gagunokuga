@@ -8,5 +8,4 @@ import java.util.List;
 
 @Repository
 public interface FurnitureRepository extends JpaRepository<Furniture, Integer> {
-    List<Furniture> findAllByRoomId(Long roomId);
 }

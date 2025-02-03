@@ -1,6 +1,6 @@
 package com.example.gagunokuga_back.furniture.domain;
 
-//import com.example.gagunokuga_back.category.domain.Category;
+import com.example.gagunokuga_back.category.domain.Category;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +28,7 @@ public class Furniture {
     @Column(nullable = false)
     private Integer height;
 
-/*    @ManyToOne
+    @ManyToOne
     @JoinColumn(name = "category_id")
-    private Category category;*/
+    private Category category;
 }

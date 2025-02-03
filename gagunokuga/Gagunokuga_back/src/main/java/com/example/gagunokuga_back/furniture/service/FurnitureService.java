@@ -1,9 +1,10 @@
 package com.example.gagunokuga_back.furniture.service;
 
 import com.example.gagunokuga_back.furniture.domain.Furniture;
+import com.example.gagunokuga_back.furniture.dto.FurnitureListResponse;
 
 import java.util.List;
 
 public interface FurnitureService {
-    public List<Furniture> getAllFurnitures(Long roomId);
+    public FurnitureListResponse getFurnitureList();
 }
