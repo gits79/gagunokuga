@@ -18,9 +18,9 @@ public class FurnitureController {
 
     // 가구 목록 불러오기
     @GetMapping
-    public ResponseEntity<FurnitureListResponse> getFurnitureList() {
-        // 가구 페이지 받아와야됨
-        return ResponseEntity.ok(furnitureService.getFurnitureList());
+    public ResponseEntity<FurnitureListResponse> getFurnitureList(@RequestParam(defaultValue = "0") int page) {
+
+        return ResponseEntity.ok(furnitureService.getFurnitureList(page));
     }
 
     // 가구 목록 저장하기

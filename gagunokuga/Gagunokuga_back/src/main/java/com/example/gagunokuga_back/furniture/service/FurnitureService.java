@@ -6,5 +6,5 @@ import com.example.gagunokuga_back.furniture.dto.FurnitureListResponse;
 import java.util.List;
 
 public interface FurnitureService {
-    public FurnitureListResponse getFurnitureList();
+    public FurnitureListResponse getFurnitureList(int page);
 }

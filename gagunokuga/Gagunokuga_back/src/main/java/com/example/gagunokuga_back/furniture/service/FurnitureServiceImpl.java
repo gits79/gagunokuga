@@ -5,6 +5,9 @@ import com.example.gagunokuga_back.furniture.dto.FurnitureListResponse;
 import com.example.gagunokuga_back.furniture.dto.FurnitureResponse;
 import com.example.gagunokuga_back.furniture.repository.FurnitureRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +21,18 @@ public class FurnitureServiceImpl implements FurnitureService {
     private final FurnitureRepository furnitureRepository;
 
     @Override
-    public FurnitureListResponse getFurnitureList() {
-        List<Furniture> furnitureList = furnitureRepository.findAll();
-        Long totalPages = (long) furnitureList.size();
+    public FurnitureListResponse getFurnitureList(int page) {
+        int size = 6; // 한페이지에 6개씩
+        Pageable pageable = PageRequest.of(page, size); // 페이지네이션 설정
+
+        Page<Furniture> furniturePage = furnitureRepository.findAll(pageable);
+
+//        List<Furniture> furnitureList = furnitureRepository.findAll();
+//        Long totalPages = (long) furnitureList.size();
         List<FurnitureResponse> furnitures = new ArrayList<>();
-        for(Furniture furniture : furnitureList){
+
+        // 현재 페이지의 데이터만 가져옴
+        for(Furniture furniture : furniturePage.getContent()){
             furnitures.add(FurnitureResponse.builder()
                             .id(furniture.getId())
                             .furnitureName(furniture.getFurnitureName())
@@ -34,7 +44,7 @@ public class FurnitureServiceImpl implements FurnitureService {
                             .build());
         }
         return FurnitureListResponse.builder()
-                .totalPages(totalPages)
+                .totalPages((long) furniturePage.getTotalPages())
                 .furnitures(furnitures)
                 .build();
     }
