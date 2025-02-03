@@ -22,9 +22,8 @@ public class RoomController {
 
     @GetMapping
     public ResponseEntity<RoomListResponse> getRoomList(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "24") int size) {
-        return ResponseEntity.ok().body(roomService.getRoomList(page, size));
+            @RequestParam(defaultValue = "1") int page) {
+        return ResponseEntity.ok().body(roomService.getRoomList(page));
     }
 
     @PutMapping("/{roomId}")
@@ -32,7 +31,7 @@ public class RoomController {
             @PathVariable Long roomId,
             @RequestBody UpdateRoomNameRequest updateRoomNameRequest) {
         String roomName = updateRoomNameRequest.getRoomName();
-        roomService.updateRoomName(roomId,roomName);
+        roomService.updateRoomName(roomId, updateRoomNameRequest);
         return ResponseEntity.noContent().build();
     }
 
