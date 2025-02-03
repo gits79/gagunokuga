@@ -24,7 +24,7 @@ public class RoomController {
     public ResponseEntity<RoomListResponse> getRoomList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "24") int size) {
-        return ResponseEntity.ok(roomService.getRoomList(page, size));
+        return ResponseEntity.ok().body(roomService.getRoomList(page, size));
     }
 
     @PutMapping("/{roomId}")

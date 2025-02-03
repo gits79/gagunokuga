@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -32,11 +31,11 @@ public class RoomServiceImpl implements RoomService{
 
     @Override
     public RoomListResponse getRoomList(int page, int size) {
-        List<Room> roomList = roomRepository.findAll();
-        Long totalPages = (long) roomList.size();
-        List<RoomResponse> rooms = new ArrayList<>();
-        for (Room room : roomList) {
-            rooms.add(RoomResponse.builder()
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Room> rooms = roomRepository.findAll(pageable);
+        List<RoomResponse> roomList = new ArrayList<>();
+        for (Room room : rooms.getContent()) {
+            roomList.add(RoomResponse.builder()
                     .roomId(room.getId())
                     .roomName(room.getRoomName())
                     .thumbnailUrl(room.getThumbnailUrl())
@@ -45,9 +44,8 @@ public class RoomServiceImpl implements RoomService{
                     .build());
         }
         return RoomListResponse.builder()
-                .totalPages(totalPages)
-                .rooms(rooms)
-                .build();
+                .rooms(roomList)
+                .totalPages(rooms.getTotalPages()).build();
     }
 
     @Override
