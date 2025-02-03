@@ -27,8 +27,6 @@ public class FurnitureServiceImpl implements FurnitureService {
 
         Page<Furniture> furniturePage = furnitureRepository.findAll(pageable);
 
-//        List<Furniture> furnitureList = furnitureRepository.findAll();
-//        Long totalPages = (long) furnitureList.size();
         List<FurnitureResponse> furnitures = new ArrayList<>();
 
         // 현재 페이지의 데이터만 가져옴

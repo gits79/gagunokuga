@@ -1,6 +1,5 @@
 package com.example.gagunokuga_back.furniture.dto;
 
-import com.example.gagunokuga_back.furniture.domain.Furniture;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;

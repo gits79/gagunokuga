@@ -16,14 +16,10 @@ import java.util.List;
 public class FurnitureController {
     private final FurnitureService furnitureService;
 
-    // 가구 목록 불러오기
+    // 가구 에디터 목록 불러오기
     @GetMapping
     public ResponseEntity<FurnitureListResponse> getFurnitureList(@RequestParam(defaultValue = "0") int page) {
 
         return ResponseEntity.ok(furnitureService.getFurnitureList(page));
     }
-
-    // 가구 목록 저장하기
-//    @PostMapping
-//    public ResponseEntity
 }

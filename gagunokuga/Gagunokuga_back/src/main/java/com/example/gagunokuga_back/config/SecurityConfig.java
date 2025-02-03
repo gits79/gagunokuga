@@ -48,7 +48,6 @@ public class SecurityConfig {
                                 .requestMatchers("/users/email").permitAll()
                                 .requestMatchers("/users/email/verify").permitAll()
                                 .requestMatchers("/users/nickname").permitAll()
-                                .requestMatchers("/furnitures").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .build();
