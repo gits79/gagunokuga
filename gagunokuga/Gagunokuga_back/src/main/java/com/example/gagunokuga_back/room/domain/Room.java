@@ -4,8 +4,6 @@ import com.example.gagunokuga_back.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @ToString
