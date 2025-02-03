@@ -1,6 +1,6 @@
 package com.example.gagunokuga_back.user.security;
 
-import com.example.gagunokuga_back.user.dto.TokenDto;
+import com.example.gagunokuga_back.user.dto.TokenResponseDto;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -37,9 +37,9 @@ public class JwtTokenProvider {
    }
 
     //생성된거 tokenDto로 반환
-    public TokenDto createToken(Long id) {
+    public TokenResponseDto createToken(Long id) {
 
-        return new TokenDto(
+        return new TokenResponseDto(
                 generateToken(id, accessTokenValidity), generateToken(id,refreshTokenValidity)
         );
     }

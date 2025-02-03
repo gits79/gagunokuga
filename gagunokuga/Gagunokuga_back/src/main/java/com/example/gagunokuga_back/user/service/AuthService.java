@@ -1,7 +1,7 @@
 package com.example.gagunokuga_back.user.service;
 
 import com.example.gagunokuga_back.user.dto.LoginRequestDto;
-import com.example.gagunokuga_back.user.dto.TokenDto;
+import com.example.gagunokuga_back.user.dto.TokenResponseDto;
 import com.example.gagunokuga_back.user.domain.User;
 import com.example.gagunokuga_back.user.repository.UserRepository;
 import com.example.gagunokuga_back.user.security.JwtTokenProvider;
@@ -20,7 +20,7 @@ public class AuthService {
     private final UserRepository userRepository;
 
 
-    public TokenDto login(LoginRequestDto loginDto) {
+    public TokenResponseDto login(LoginRequestDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                 loginDto.getEmail(), loginDto.getPassword()));
