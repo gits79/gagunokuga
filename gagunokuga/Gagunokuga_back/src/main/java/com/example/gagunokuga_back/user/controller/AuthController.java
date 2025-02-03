@@ -1,6 +1,6 @@
 package com.example.gagunokuga_back.user.controller;
 
-import com.example.gagunokuga_back.user.dto.LoginDto;
+import com.example.gagunokuga_back.user.dto.LoginRequestDto;
 import com.example.gagunokuga_back.user.dto.TokenDto;
 import com.example.gagunokuga_back.user.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class AuthController {
 
     //login
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<TokenDto> login(@RequestBody LoginRequestDto loginDto) {
         TokenDto token = authService.login(loginDto);
 
         return ResponseEntity.ok(token);

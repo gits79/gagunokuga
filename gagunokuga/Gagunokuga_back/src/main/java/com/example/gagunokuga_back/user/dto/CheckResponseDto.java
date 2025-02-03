@@ -1,8 +1,8 @@
 package com.example.gagunokuga_back.user.dto;
 
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class CheckResponseDto {
     boolean isExisting;
 

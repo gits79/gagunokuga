@@ -1,8 +1,9 @@
 package com.example.gagunokuga_back.user.service;
 
-import com.example.gagunokuga_back.user.dto.LoginDto;
+import com.example.gagunokuga_back.user.dto.LoginRequestDto;
 import com.example.gagunokuga_back.user.dto.TokenDto;
 import com.example.gagunokuga_back.user.domain.User;
+import com.example.gagunokuga_back.user.repository.UserRepository;
 import com.example.gagunokuga_back.user.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,10 +17,10 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
-    private final com.example.gagunokuga_back.user.repository.UserRepository userRepository;
+    private final UserRepository userRepository;
 
 
-    public TokenDto login(LoginDto loginDto) {
+    public TokenDto login(LoginRequestDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                 loginDto.getEmail(), loginDto.getPassword()));

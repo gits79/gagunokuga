@@ -17,3 +17,19 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  mail:
+    host: smtp.gmail.com          # 구글 SMTP 서버 주소
+    port: 587                     # 구글 SMTP 포트 번호
+    username: boriaegi2023@gmail.com  # 사용자 이메일
+    password: tfhh ckvf slcw xypz # 사용자 앱 비밀번호
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+
+jwt:
+  secret: 9ydCU5imsmMBRzU3yBKm5jZxwfwmKHYK
