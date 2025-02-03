@@ -4,11 +4,13 @@ import com.example.gagunokuga_back.furniture.domain.Furniture;
 import com.example.gagunokuga_back.room.domain.Room;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.redis.core.RedisHash;
 
 @Entity
 @Getter
 @ToString
 @Builder
+@RedisHash("room-furniture")
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "room_furnitures")
@@ -45,4 +47,14 @@ public class RoomFurniture {
     @ManyToOne
     @JoinColumn(name = "furniture_id")
     private Furniture furniture;
+
+    @Transient
+    private String holderName;
+
+    @Transient
+    private Boolean isDeleted;
+
+    @Transient
+    private Integer index;
+
 }
