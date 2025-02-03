@@ -30,7 +30,6 @@ public class RoomController {
     public ResponseEntity<Void> updateRoomName(
             @PathVariable Long roomId,
             @RequestBody UpdateRoomNameRequest updateRoomNameRequest) {
-        String roomName = updateRoomNameRequest.getRoomName();
         roomService.updateRoomName(roomId, updateRoomNameRequest);
         return ResponseEntity.noContent().build();
     }
