@@ -1,5 +1,7 @@
 package com.example.gagunokuga_back.roomfurniture.domain;
 
+import com.example.gagunokuga_back.furniture.domain.Furniture;
+import com.example.gagunokuga_back.room.domain.Room;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,4 +37,12 @@ public class RoomFurniture {
 
     @Column(nullable = false)
     private Boolean collapse;
+
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    private Room room;
+
+    @ManyToOne
+    @JoinColumn(name = "furniture_id")
+    private Furniture furniture;
 }
