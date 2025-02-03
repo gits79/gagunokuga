@@ -23,7 +23,10 @@ public class RoomServiceImpl implements RoomService{
 
     @Override
     public void createRoom(String roomName, String thumbnailUrl) {
-        Room room = Room.builder().roomName(roomName).thumbnailUrl(thumbnailUrl).build();
+        Room room = Room.builder()
+                .roomName(roomName)
+                .thumbnailUrl(thumbnailUrl)
+                .build();
         roomRepository.save(room);
     }
 
