@@ -1,6 +1,7 @@
 package com.example.gagunokuga_back.room.controller;
 
 import com.example.gagunokuga_back.room.dto.CreateRoomRequest;
+import com.example.gagunokuga_back.room.dto.RoomListResponse;
 import com.example.gagunokuga_back.room.dto.UpdateRoomNameRequest;
 import com.example.gagunokuga_back.room.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,13 @@ public class RoomController {
     public ResponseEntity<Void> createRoom(@RequestBody CreateRoomRequest createRoomRequest) {
         roomService.createRoom(createRoomRequest.getRoomName(),createRoomRequest.getThumbnailUrl());
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<RoomListResponse> getRoomList(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "24") int size) {
+        return ResponseEntity.ok(roomService.getRoomList(page, size));
     }
 
     @PutMapping("/{roomId}")

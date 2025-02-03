@@ -11,6 +11,6 @@ import java.util.List;
 @Builder
 @ToString
 public class RoomListResponse {
-    private String lastId;
-    private List<Room> rooms;
+    private Long totalPages;
+    private List<RoomResponse> rooms;
 }
