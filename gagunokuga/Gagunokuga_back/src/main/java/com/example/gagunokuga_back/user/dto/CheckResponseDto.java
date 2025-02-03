@@ -6,4 +6,7 @@ import lombok.Getter;
 public class CheckResponseDto {
     boolean isExisting;
 
+    public CheckResponseDto(boolean isExisting) {
+        this.isExisting = isExisting;
+    }
 }

@@ -21,8 +21,8 @@ spring:
   mail:
     host: smtp.gmail.com          # 구글 SMTP 서버 주소
     port: 587                     # 구글 SMTP 포트 번호
-    username: boriaegi2023@gmail.com  # 사용자 이메일
-    password: tfhh ckvf slcw xypz # 사용자 앱 비밀번호
+    username: ${MAIL_USERNAME}  # 사용자 이메일
+    password: ${MAIL_PASSWORD} # 사용자 앱 비밀번호
     properties:
       mail:
         smtp:
@@ -32,4 +32,4 @@ spring:
             enable: true
 
 jwt:
-  secret: 9ydCU5imsmMBRzU3yBKm5jZxwfwmKHYK
+  secret: ${JWT_SECRET}

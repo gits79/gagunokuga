@@ -19,17 +19,13 @@ public class UserService {
 
     //이메일 중복 체크
     public CheckResponseDto checkEmail(String email) {
-        CheckResponseDto checkResponseDto = new CheckResponseDto();
-        checkResponseDto.setExisting(userRepository.existsByEmail(email));
-        return checkResponseDto;
+        return new CheckResponseDto(userRepository.existsByEmail(email));
 
     }
 
     //닉네임 중복 체크
     public CheckResponseDto checkNickname(String nickname) {
-        CheckResponseDto checkResponseDto = new CheckResponseDto();
-        checkResponseDto.setExisting(userRepository.existsByNickname(nickname));
-        return checkResponseDto;
+        return new CheckResponseDto(userRepository.existsByNickname(nickname));
 
     }
 
