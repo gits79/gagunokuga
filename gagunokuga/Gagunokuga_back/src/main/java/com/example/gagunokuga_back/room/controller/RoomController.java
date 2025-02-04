@@ -19,9 +19,10 @@ public class RoomController {
     }
 
     @PutMapping("/{roomId}")
-    public ResponseEntity<Void> updateRoomName(@RequestParam Long roomId, UpdateRoomNameRequest updateRoomNameRequest) {
-        String roomName = updateRoomNameRequest.getRoomName();
-        roomService.updateRoomName(roomId,roomName);
+    public ResponseEntity<Void> updateRoomName(
+            @PathVariable Long roomId,
+            @RequestBody UpdateRoomNameRequest updateRoomNameRequest) {
+        roomService.updateRoomName(roomId, updateRoomNameRequest);
         return ResponseEntity.noContent().build();
     }
 
