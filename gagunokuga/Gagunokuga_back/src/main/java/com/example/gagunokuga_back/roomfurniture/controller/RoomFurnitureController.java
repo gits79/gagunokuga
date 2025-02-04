@@ -1,6 +1,7 @@
 package com.example.gagunokuga_back.roomfurniture.controller;
 
 import com.example.gagunokuga_back.roomfurniture.domain.RoomFurniture;
+import com.example.gagunokuga_back.roomfurniture.dto.RoomFurnitureListResponse;
 import com.example.gagunokuga_back.roomfurniture.service.RoomFurnitureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +20,18 @@ public class RoomFurnitureController {
     private final SimpMessageSendingOperations template;
 
     @GetMapping("/fetch")
-    public ResponseEntity<List<RoomFurniture>> fetchAllRoomFurniture(@PathVariable("roomId") Long roomId) {
-        return ResponseEntity.ok().body(roomFurnitureService.fetchAll(roomId));
+    public ResponseEntity<RoomFurnitureListResponse> fetchAllRoomFurniture(@PathVariable("roomId") Long roomId) {
+        List<RoomFurniture> roomFurnitureList = roomFurnitureService.fetchAll(roomId);
+        RoomFurnitureListResponse roomFurnitureListResponse = RoomFurnitureListResponse.builder()
+                .totalCount(roomFurnitureList.size())
+                .furnitureList(roomFurnitureList).build();
+        return ResponseEntity.ok().body(roomFurnitureListResponse);
     }
 
     @GetMapping("/{furnitureId}")
     public ResponseEntity<Void> getRoomFurniture(
             @PathVariable("roomId") Long roomId,
             @PathVariable Long furnitureId) {
-        System.out.println(furnitureId);
         template.convertAndSend("/sub/rooms/" + roomId, roomFurnitureService.getRoomFurniture(roomId, furnitureId));
         return ResponseEntity.ok().build();
     }

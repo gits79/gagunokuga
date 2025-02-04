@@ -50,6 +50,7 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
                 .index(index.getAndIncrement())
                 .build();
         roomFurniture.hideRoom();
+        System.out.println("index: " + index.get());
         this.store(roomId, roomFurniture);
         return roomFurniture;
     }
@@ -57,6 +58,7 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
     @Override
     public void saveAll(Long roomId) { // Redis -> DB
         roomFurnitureIndex.remove(roomId);
+        System.out.println("테스트");
         for (RoomFurniture roomFurniture : this.fetchAll(roomId)) {
             roomFurniture.revealRoom(roomRepository.getReferenceById(roomFurniture.getTempRoomId()));
             if (roomFurniture.getIsDeleted()) {
@@ -72,8 +74,9 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
         AtomicInteger index = roomFurnitureIndex.computeIfAbsent(roomId, k -> new AtomicInteger(0));
         for (RoomFurniture roomFurniture : roomFurnitureRepository.findAllById(Collections.singleton(roomId))) {
             roomFurniture.hideRoom();
-            redisTemplate.opsForHash().put("room:furniture:" + roomId, index.getAndIncrement(), roomFurniture);
+            redisTemplate.opsForHash().put("room:furniture:" + roomId, index.getAndIncrement() + "", roomFurniture);
         }
+        System.out.println("생성 된 index: " + index.get());
     }
 
     @Override
