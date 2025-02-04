@@ -4,8 +4,6 @@ import com.example.gagunokuga_back.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @ToString
@@ -21,13 +19,7 @@ public class Room extends BaseTimeEntity {
     @Column(nullable = false)
     private String roomName;
 
-    private LocalDateTime deletedAt;
-
     private String thumbnailUrl;
-
-    public void delete() {
-        this.deletedAt = LocalDateTime.now();
-    }
 
     public void updateRoomName(String roomName) {
         this.roomName = roomName;
