@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/furnitures")
+@RequestMapping("/api/furnitures")
 @RequiredArgsConstructor
 public class FurnitureController {
     private final FurnitureService furnitureService;
