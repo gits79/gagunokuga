@@ -36,8 +36,7 @@ public class StompSubscriptionTracker {
         Long roomId = Long.parseLong(destination.split("/")[3]);
 
         String sessionId = headerAccessor.getSessionId();
-        System.out.println("Session ID: " + sessionId);
-        if (this.getSubscriberCount(subscriptionId) == 1) {
+        if (topicSubscribers.get(destination).get() == 1) {
             roomFurnitureService.loadAll(roomId);
 //            for (RoomFurniture roomFurniture : roomFurnitureService.fetchAll(roomId)) {
 //                template.convertAndSend(destination, roomFurniture);
@@ -58,12 +57,10 @@ public class StompSubscriptionTracker {
                 topicSubscribers.remove(destination);
             }
             System.out.println("Unsubscribed from: " + destination + " (Remaining: " + (subscriberCount != null ? subscriberCount.get() : 0) + ")");
-        }
-        System.out.println(destination);
-        Long roomId = Long.parseLong(destination.split("/")[3]);
-
-        if (this.getSubscriberCount(subscriptionId) == 0) {
-            roomFurnitureService.saveAll(roomId);
+            Long roomId = Long.parseLong(destination.split("/")[3]);
+            if (topicSubscribers.get(destination).get() == 0) {
+                roomFurnitureService.saveAll(roomId);
+            }
         }
     }
 
