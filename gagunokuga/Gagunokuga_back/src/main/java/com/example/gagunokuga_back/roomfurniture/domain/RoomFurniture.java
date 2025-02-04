@@ -20,10 +20,10 @@ public class RoomFurniture {
     private Long id;
 
     @Column(nullable = false)
-    private Integer xPos;
+    private Integer xpos;
 
     @Column(nullable = false)
-    private Integer yPos;
+    private Integer ypos;
 
     @Column(nullable = false)
     private Integer width;
@@ -57,4 +57,15 @@ public class RoomFurniture {
     @Transient
     private Integer index;
 
+    @Transient
+    private Long tempRoomId;
+
+    public void hideRoom() {
+        this.tempRoomId = this.room.getId();
+        this.room = null;
+    }
+
+    public void revealRoom(Room room) {
+        this.room = room;
+    }
 }
