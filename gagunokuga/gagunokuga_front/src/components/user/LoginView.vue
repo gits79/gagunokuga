@@ -10,8 +10,24 @@
         <label for="password">비밀번호</label>
         <input type="password" id="password" v-model="password" placeholder="비밀번호를 입력하세요" required />
       </div>
-      <button type="submit">로그인</button>
+      <button class="basic-button" type="submit">로그인</button>
     </form>
+
+    <!-- 이미지 버튼들 -->
+    <div class="social-buttons">
+      <img
+          src="../../assets/login/kakaoLogin.png"
+          alt="Kakao Login"
+          @click="handleClick('카카오')"
+          class="social-button"
+      />
+      <img
+          src="../../assets/login/naverLogin.png"
+          alt="Naver Login"
+          @click="handleClick('네이버')"
+          class="social-button"
+      />
+    </div>
   </div>
 </template>
 
@@ -33,11 +49,15 @@ export default {
         alert('이메일과 비밀번호를 입력해주세요.');
       }
     },
+
+    handleClick(platform) {
+      alert(`${platform} 로그인 버튼이 클릭되었습니다!`);
+    },
   },
 };
 </script>
 
-<style>
+<style scoped>
 .login-container {
   max-width: 400px;
   margin: 50px auto;
@@ -71,18 +91,17 @@ input {
   font-size: 16px;
 }
 
-button {
-  width: 100%;
-  padding: 10px;
+/* 기본 로그인 버튼 */
+.basic-button {
+  padding: 8px 16px;
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
-  font-size: 16px;
   cursor: pointer;
 }
 
-button:hover {
+.basic-button:hover {
   background-color: #0056b3;
 }
 </style>
