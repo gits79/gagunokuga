@@ -36,15 +36,14 @@ public class SignUpController {
     //이메일 발송
     @PostMapping("/email")
     public ResponseEntity<String> sendEmail(@RequestBody UserRequestDto userRequestDto) {
-        String email = userRequestDto.getEmail();
-        authCodeService.sendAuthCode(email);
+        authCodeService.sendAuthCode(userRequestDto);
         return ResponseEntity.ok("Email sent");
     }
 
     //이메일 인증
     @PostMapping("/email/verify")
     public ResponseEntity<String> verifyEmail(@RequestBody UserRequestDto userRequestDto) {
-        boolean isVerified = authCodeService.verifyAuthCode(userRequestDto.getEmail(), userRequestDto.getAuthcode());
+        boolean isVerified = authCodeService.verifyAuthCode(userRequestDto);
 
         if(isVerified) {
             return ResponseEntity.ok("Email verified");
