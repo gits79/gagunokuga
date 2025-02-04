@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -31,11 +32,16 @@ public class StompSubscriptionTracker {
             subscriptionDestinations.put(subscriptionId, destination);
             System.out.println("Subscribed to: " + destination + " (Total: " + topicSubscribers.get(destination) + ")");
         }
+
+        Long roomId = Long.parseLong(destination.split("/")[3]);
+
+        String sessionId = headerAccessor.getSessionId();
+        System.out.println("Session ID: " + sessionId);
         if (this.getSubscriberCount(subscriptionId) == 1) {
-            roomFurnitureService.loadAll(Long.parseLong(destination.split("/")[2]));
-        }
-        for (RoomFurniture roomFurniture : roomFurnitureService.fetchAll()) {
-            template.convertAndSend(destination, roomFurniture);
+            roomFurnitureService.loadAll(roomId);
+//            for (RoomFurniture roomFurniture : roomFurnitureService.fetchAll(roomId)) {
+//                template.convertAndSend(destination, roomFurniture);
+//            }
         }
     }
 
@@ -44,6 +50,7 @@ public class StompSubscriptionTracker {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String subscriptionId = headerAccessor.getSubscriptionId();
         String destination = subscriptionDestinations.remove(subscriptionId);
+        System.out.println(headerAccessor.toString());
 
         if (destination != null) {
             AtomicInteger subscriberCount = topicSubscribers.get(destination);
@@ -52,8 +59,11 @@ public class StompSubscriptionTracker {
             }
             System.out.println("Unsubscribed from: " + destination + " (Remaining: " + (subscriberCount != null ? subscriberCount.get() : 0) + ")");
         }
+        System.out.println(destination);
+        Long roomId = Long.parseLong(destination.split("/")[3]);
+
         if (this.getSubscriberCount(subscriptionId) == 0) {
-            roomFurnitureService.saveAll(Long.parseLong(destination.split("/")[2]));
+            roomFurnitureService.saveAll(roomId);
         }
     }
 

@@ -1,4 +1,4 @@
-package com.example.gagunokuga_back.roomfurniture.repository.jpa;
+package com.example.gagunokuga_back.roomfurniture.repository;
 
 import com.example.gagunokuga_back.roomfurniture.domain.RoomFurniture;
 import org.springframework.data.jpa.repository.JpaRepository;

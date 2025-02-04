@@ -2,16 +2,12 @@ package com.example.gagunokuga_back.roomfurniture.dto;
 
 import com.example.gagunokuga_back.roomfurniture.domain.RoomFurniture;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
 
 @Getter
 @Setter
 @Builder
 @ToString
-@RedisHash("room-furniture")
 public class RoomFurniturePayload {
-    @Id
     private Long id;
     private String name;
     private int xPos;
@@ -28,8 +24,8 @@ public class RoomFurniturePayload {
 
     public RoomFurniturePayload entityToPayload(RoomFurniture roomFurniture) {
         this.name = roomFurniture.getFurniture().getFurnitureName();
-        this.xPos = roomFurniture.getXPos();
-        this.yPos = roomFurniture.getYPos();
+        this.xPos = roomFurniture.getXpos();
+        this.yPos = roomFurniture.getYpos();
         this.width = roomFurniture.getWidth();
         this.height = roomFurniture.getHeight();
         this.direction = roomFurniture.getDirection();

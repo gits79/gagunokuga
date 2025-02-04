@@ -8,6 +8,6 @@ public interface RoomFurnitureService {
     public RoomFurniture getRoomFurniture(Long roomId, Long furnitureId);
     public void saveAll(Long roomId);
     public void loadAll(Long roomId);
-    public List<RoomFurniture> fetchAll();
-    public void store(RoomFurniture roomFurniture);
+    public List<RoomFurniture> fetchAll(Long roomId);
+    public void store(Long roomId, RoomFurniture roomFurniture);
 }
