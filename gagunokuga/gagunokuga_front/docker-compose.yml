@@ -1,0 +1,13 @@
+
+services:
+  vue-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173" # Vite 개발 서버 포트
+    volumes:
+      - .:/app # 로컬 디렉토리를 컨테이너와 동기화
+      - /app/node_modules # node_modules는 컨테이너에서 관리
+    stdin_open: true
+    tty: true
