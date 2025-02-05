@@ -7,6 +7,7 @@ import com.example.gagunokuga_back.user.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -43,11 +44,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/users").permitAll()
-                                .requestMatchers("/users/login").permitAll()
-                                .requestMatchers("/users/email").permitAll()
-                                .requestMatchers("/users/email/verify").permitAll()
-                                .requestMatchers("/users/nickname").permitAll()
+                        auth.requestMatchers(HttpMethod.GET,"/api/users").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/api/users").permitAll()
+                                .requestMatchers("/api/users/login").permitAll()
+                                .requestMatchers("/api/users/email").permitAll()
+                                .requestMatchers("/api/users/email/verify").permitAll()
+                                .requestMatchers("/api/users/nickname").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .build();

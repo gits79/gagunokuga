@@ -9,7 +9,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,7 +26,6 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false, unique = true)
@@ -36,19 +34,11 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private int isAdmin =0; //0 : 일반 사용자 1: 관리자권한
 
-//    private String socialId;
-    /*소셜로 가입했을때의 이메일은 그냥 이메일로 받아버리기 */
 
-    private String socialType;
+    private String provider;/*socialtype*/
 
-//    @Column(updatable = false)
-//    @CreatedDate
-//    private LocalDateTime createdAt;
-//
-//    @LastModifiedDate
-//    private LocalDateTime updatedAt;
+    private String providerId; /*socialid*/
 
-    private LocalDateTime deletedAt;
 
     private String profileImageUrl;
 
@@ -58,6 +48,27 @@ public class User extends BaseTimeEntity {
         this.password = password;
         this.nickname = nickname;
         this.isAdmin = 0; //기본 값
+    }
+
+    public User(String email, String nickname, String provider, String providerId, String profileImageUrl, int isAdmin) {
+        this.email = email;
+        this.nickname = nickname;
+        this.provider = provider;
+        this.providerId = providerId;
+        this.profileImageUrl = profileImageUrl;
+        this.isAdmin = isAdmin;
+    }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
+    public void changeProfileImgUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
     public List<GrantedAuthority> getAuthorities() {
