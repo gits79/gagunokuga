@@ -67,6 +67,7 @@ tmp/
 # Environment files
 .env
 .env.*
+!example.env  # 예제 환경 변수 파일은 Git에 포함
 
 # Test output
 /test-output/
@@ -75,6 +76,13 @@ surefire-reports/
 # Maven (if used alongside Gradle)
 .mvn/
 target/
+
+# --------------------------------------
+# Docker 관련 추가
+# --------------------------------------
+docker-compose.override.yml
+docker-volumes/
+
 
 # --------------------------------------
 # OS Specific

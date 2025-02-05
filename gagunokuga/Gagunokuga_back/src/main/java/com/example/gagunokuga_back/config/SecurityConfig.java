@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/users").permitAll()
+                        auth.requestMatchers("/users,/health").permitAll()
                                 .requestMatchers("/users/login").permitAll()
                                 .requestMatchers("/users/email").permitAll()
                                 .requestMatchers("/users/email/verify").permitAll()

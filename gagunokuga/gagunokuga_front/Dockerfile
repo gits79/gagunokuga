@@ -1,20 +1,21 @@
-# Node.js 이미지 사용
-FROM node:22.13.0
-
-# 작업 디렉토리 설정
+FROM node:22-alpine as build-stage
 WORKDIR /app
 
-# package.json과 package-lock.json 복사
+# package.json만 먼저 복사하여 의존성 캐싱 최적화
 COPY package*.json ./
+RUN npm ci --only=production  
 
-# 의존성 설치
-RUN npm install
-
-# 소스 코드 복사
 COPY . .
 
-# 개발 서버 노출
-EXPOSE 5173
+RUN npm run build
 
-# Vite 개발 서버 실행
-CMD ["npm", "run", "dev"]
+
+FROM nginx:alpine
+
+WORKDIR /usr/share/nginx/html
+
+COPY --from=build-stage /app/dist .
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
