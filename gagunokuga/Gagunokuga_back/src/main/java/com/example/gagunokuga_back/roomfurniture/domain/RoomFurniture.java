@@ -61,7 +61,9 @@ public class RoomFurniture {
     private Long tempRoomId;
 
     public void hideRoom() {
-        this.tempRoomId = this.room.getId();
+        if (this.room != null) {
+            this.tempRoomId = this.room.getId();
+        }
         this.room = null;
     }
 
