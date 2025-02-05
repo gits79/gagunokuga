@@ -2,9 +2,10 @@ services:
 
   backend:
     build:
-      context: ./Gagunokuga_back  
+      context: ./gagunokuga_back  
       dockerfile: Dockerfile  
-    container_name: backend  
+    image: g1767g/gagu-backend:1.0.0
+    container_name: backend
     restart: always  
     ports:
       - "8080:8080"  
@@ -18,15 +19,16 @@ services:
     networks:
       - app-network 
     healthcheck:
-      test: ["CMD", "sh", "-c", "curl -f http://backend:8080/health || exit 1"]
+      test: ["CMD", "sh", "-c", "curl -f http://backend:8080/api/health || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   frontend:
     build:
-      context: ./Gagunokuga_front  
-      dockerfile: Dockerfile 
+      context: ./gagunokuga_front  
+      dockerfile: Dockerfile
+    image: g1767g/gagu-frontend:1.0.0
     container_name: frontend  
     restart: always  
     env_file:

@@ -1,9 +1,9 @@
 FROM node:22-alpine as build-stage
 WORKDIR /app
 
-# package.json만 먼저 복사하여 의존성 캐싱 최적화
-COPY package*.json ./
-RUN npm ci --only=production  
+
+COPY package.json package-lock.json ./
+RUN npm ci 
 
 COPY . .
 
