@@ -24,7 +24,7 @@ public class UserController {
 
     //내 정보 보기
     @GetMapping
-    public ResponseEntity<UserResponseDto> getUsers() {
+    public ResponseEntity<UserResponseDto> getUser() {
         UserResponseDto userInfo = userService.getUserInfo();
         return ResponseEntity.ok().body(userInfo);
     }

@@ -95,6 +95,7 @@ public class UserService {
 
 
     //삭제
+    @Transactional
     public void delete() {
         User user = getCurrentUser();
         userRepository.delete(user);
