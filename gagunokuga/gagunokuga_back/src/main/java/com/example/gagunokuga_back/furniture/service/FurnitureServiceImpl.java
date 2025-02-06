@@ -42,7 +42,7 @@ public class FurnitureServiceImpl implements FurnitureService {
                             .build());
         }
         return FurnitureListResponse.builder()
-                .totalPages((long) furniturePage.getTotalPages())
+                .totalPages(furniturePage.getTotalPages())
                 .furnitures(furnitures)
                 .build();
     }

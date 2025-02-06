@@ -52,13 +52,13 @@ public class StompSubscriptionTracker {
         System.out.println(headerAccessor.toString());
 
         if (destination != null) {
-            AtomicInteger subscriberCount = topicSubscribers.get(destination);
-            if (subscriberCount != null && subscriberCount.decrementAndGet() <= 0) {
+            AtomicInteger remainingSubscriber = topicSubscribers.get(destination);
+            if (remainingSubscriber != null && remainingSubscriber.decrementAndGet() <= 0) {
                 Long roomId = Long.parseLong(destination.split("/")[3]);
                 roomFurnitureService.saveAll(roomId);
                 topicSubscribers.remove(destination);
             }
-            System.out.println("Unsubscribed from: " + destination + " (Remaining: " + (subscriberCount != null ? subscriberCount.get() : 0) + ")");
+            System.out.println("Unsubscribed from: " + destination + " (Remaining: " + (remainingSubscriber != null ? remainingSubscriber.get() : 0) + ")");
         }
     }
 
