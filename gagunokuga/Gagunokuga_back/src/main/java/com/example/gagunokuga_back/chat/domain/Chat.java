@@ -1,5 +1,6 @@
 package com.example.gagunokuga_back.chat.domain;
 
+import com.example.gagunokuga_back.room.domain.Room;
 import com.example.gagunokuga_back.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +11,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Messages")
+@Table(name = "messages")
 public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,8 +20,9 @@ public class Chat {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
-    private Long roomId;
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    private Room room;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

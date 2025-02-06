@@ -10,5 +10,6 @@ import java.util.List;
 @Builder
 @ToString
 public class ChatListResponse {
+    private int totalCount; // 구현안되어있습니다
     private List<ChatResponse> chats;
 }
