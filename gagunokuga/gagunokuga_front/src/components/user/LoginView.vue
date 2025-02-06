@@ -32,8 +32,6 @@
 </template>
 
 <script>
-import axiosAddress from "../../axios/axiosAddress.js"; // axios import
-
 export default {
   data() {
     return {
@@ -42,37 +40,16 @@ export default {
     };
   },
   methods: {
-    // 로그인 처리
     onSubmit() {
-      if (!this.email || !this.password) {
+      // 로그인 처리 로직 (예: API 요청)
+      if (this.email && this.password) {
+        alert(`로그인 시도: ${this.email}`);
+        // 이후 로직 추가 (예: Vuex, API 연동)
+      } else {
         alert('이메일과 비밀번호를 입력해주세요.');
-        return;
       }
-
-      // 로그인 요청
-      const loginRequestDto = {
-        email: this.email,
-        password: this.password,
-      };
-
-      axiosAddress.post('/users/login', loginRequestDto)
-          .then((response) => {
-            // 로그인 성공 시 토큰을 로컬 스토리지에 저장
-            const { token } = response.data;
-            localStorage.setItem('authToken', token); // 토큰 저장
-
-            alert('로그인 성공!');
-
-            // 메인 페이지로 이동
-            this.$router.push('/'); // 메인페이지 주소로 변경
-          })
-          .catch((error) => {
-            console.error('로그인 실패:', error);
-            alert('로그인에 실패했습니다. 다시 시도해주세요.');
-          });
     },
 
-    // 소셜 로그인 버튼 클릭
     handleClick(platform) {
       alert(`${platform} 로그인 버튼이 클릭되었습니다!`);
     },
