@@ -4,7 +4,11 @@ services:  # 각 컨테이너에 대한 설정 정의
     build:
       context: ./gagunokuga_back  # context 위치에 있는 Dockerfile을 가지고 도커 빌드를 진행하겠다
       dockerfile: Dockerfile  # Dockerfile에 있는 내용을 바탕으로 도커 이미지를 만듬
+<<<<<<< HEAD
     image: g1767g/gagu-backend:3.0.2  # 빌드하려는 도커 이미지의 이름 또는 도커허브(깃허브처럼 도커이미지를 저장한다는 레퍼지토리라고 생각)에서 가져오기 위한 이미지 이름 지정 
+=======
+    image: g1767g/gagu-backend:3.0.0  # 빌드하려는 도커 이미지의 이름 또는 도커허브(깃허브처럼 도커이미지를 저장한다는 레퍼지토리라고 생각)에서 가져오기 위한 이미지 이름 지정 
+>>>>>>> c539158ac10a853fa47ec0a2c1f3c23d6f485b01
     container_name: backend  # 컨테이너 이름 지정
     restart: always  # 컨테이너가 종료될 경우 자동 재시작 
     ports:
@@ -28,7 +32,11 @@ services:  # 각 컨테이너에 대한 설정 정의
     build:
       context: ./gagunokuga_front 
       dockerfile: Dockerfile  
+<<<<<<< HEAD
     image: g1767g/gagu-frontend:3.0.2  
+=======
+    image: g1767g/gagu-frontend:3.0.0  
+>>>>>>> c539158ac10a853fa47ec0a2c1f3c23d6f485b01
     container_name: frontend  
     restart: always  
     env_file:
@@ -87,12 +95,14 @@ services:  # 각 컨테이너에 대한 설정 정의
     ports:
       - "80:80"  # HTTP 트래픽을 수신
       - "443:443"  # HTTPS 트래픽을 위한 포트 추가
+
     # 로컬 도커 실행하기위해 주석처리
     # volumes:  
     #   - ./nginx.conf:/etc/nginx/nginx.conf:ro  # 프로젝트 루트에 있는 nginx.conf 파일을 컨테이너 내 /etc/nginx/nginx.conf에 적용
     #   - /etc/letsencrypt/live/ssafy-gagu.site:/etc/letsencrypt/live/ssafy-gagu.site  # SSL 인증서 마운트
     #   - /etc/letsencrypt/archive/ssafy-gagu.site:/etc/letsencrypt/archive/ssafy-gagu.site  # SSL 인증서 아카이브 마운트
     #   - /etc/letsencrypt/options-ssl-nginx.conf:/etc/letsencrypt/options-ssl-nginx.conf  # 추가적인 SSL 설정 적용
+
     depends_on:
       backend:
         condition: service_healthy  
