@@ -19,7 +19,7 @@ public class EmailService {
                 <div>
                     <h2>Gagunokuga 이메일 인증</h2>
                     <br>
-                    <p>안녕하세요.요청하신 인증번호를 안내해드립니다.</p>
+                    <p>안녕하세요. 요청하신 인증번호를 안내해드립니다.</p>
                     <p></p>
                     <br>
                     <p><strong style="font-size: 24px; color: #000;">인증번호: %s</strong></p>
