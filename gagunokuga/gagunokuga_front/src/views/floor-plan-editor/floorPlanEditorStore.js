@@ -1,4 +1,3 @@
-// store/floorPlanStore.js
 import { defineStore } from "pinia";
 import { off, SVG } from "@svgdotjs/svg.js";
 import { reactive, computed, watch } from "vue";

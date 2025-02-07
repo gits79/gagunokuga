@@ -1,15 +1,17 @@
+<script setup>
+  import TheHeader from "@/components/the-header/TheHeader.vue";
+  import TheFooter from "@/components/the-footer/TheFooter.vue";
+  import "@/styles/global.css";
+</script>
+
 <template>
-  <div id="app">
+  <div >
     <TheHeader />
     <router-view />
     <TheFooter />
   </div>
 </template>
 
-<script setup>
-import TheHeader from "@/components/the-header/TheHeader.vue";
-import TheFooter from "@/components/the-footer/TheFooter.vue";
-</script>
 
 <style scoped>
 </style>
