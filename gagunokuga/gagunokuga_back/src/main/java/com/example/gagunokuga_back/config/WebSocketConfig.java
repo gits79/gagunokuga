@@ -14,7 +14,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws")
 //                .setAllowedOrigins("http://127.0.0.1:5173") // 배포 시 도메인으로 변경
                 .setAllowedOriginPatterns("*") // 배포 시 삭제
-                .withSockJS();
+                .withSockJS()
+                .setHeartbeatTime(5000);
     }
 
     @Override
