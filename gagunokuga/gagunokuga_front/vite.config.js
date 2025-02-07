@@ -1,10 +1,20 @@
-import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import path from "path";
 
 export default defineConfig({
   plugins: [vue()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  logLevel: "info",
+  build: {
+    outDir: "dist",
+  },
   server: {
-    host: '0.0.0.0', // 외부 접속 허용
-    port: 5173,      // 기본 포트 설정
+    host: '0.0.0.0',
+    port: 5173,
   },
 });
