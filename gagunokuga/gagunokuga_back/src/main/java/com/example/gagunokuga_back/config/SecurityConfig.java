@@ -58,6 +58,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/users/email/verify").permitAll()
                                 .requestMatchers("/api/users/nickname").permitAll()
                                 .requestMatchers("/api/image/**").permitAll()
+                                .requestMatchers("/api/articles/**").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .build();
