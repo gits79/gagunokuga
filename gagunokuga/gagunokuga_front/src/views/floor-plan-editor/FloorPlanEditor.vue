@@ -1,9 +1,7 @@
 <!-- src/views/FloorPlanEditor.vue -->
 <script setup>
 import { ref, onMounted } from "vue";
-import "@/styles/global.css";
-import "./FloorPlanEditor.css";
-import { useFloorPlanStore } from "./floorPlanStore";
+import { useFloorPlanStore } from "./floorPlanEditorStore";
 
 const store = useFloorPlanStore();
 const canvas = ref(null);
@@ -42,20 +40,6 @@ onMounted(() => {
           <button @click="store.setWallThickness(store.toolState.wallThickness + 10)">+</button>
         </div>
       </div>
-      <!-- <div>
-        <label>스냅 거리 (mm)</label>
-        <input 
-          type="number" 
-          :value="store.toolState.snapDistance"
-          @input="store.setSnapDistance($event.target.value)"
-          min="1"
-          step="10"
-        >
-        <div>
-          <button @click="store.setSnapDistance(store.toolState.snapDistance - 10)">-</button>
-          <button @click="store.setSnapDistance(store.toolState.snapDistance + 10)">+</button>
-        </div>
-      </div> -->
       <div>
         <button @click="store.undo" :disabled="!store.canUndo">뒤로 [Ctrl + Z]</button>
       </div>
@@ -139,4 +123,5 @@ onMounted(() => {
 
 <!-- 스타일 -->
 <style scoped>
+  @import "./floorPlanEditor.css";
 </style>
