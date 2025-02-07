@@ -1,0 +1,27 @@
+package com.example.gagunokuga_back.wall.dto;
+
+import com.example.gagunokuga_back.wall.domain.Wall;
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class WallRequest {
+    private Integer startX;
+    private Integer startY;
+    private Integer endX;
+    private Integer endY;
+    private Integer thickness;
+
+    public Wall toEntity() {
+        return Wall.builder()
+                .startX(this.startX)
+                .startY(this.startY)
+                .endX(this.endX)
+                .endY(this.endY)
+                .thickness(this.thickness)
+                .build();
+    }
+}
