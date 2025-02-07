@@ -1,6 +1,5 @@
 package com.example.gagunokuga_back.wall.domain;
 
-import com.example.gagunokuga_back.common.BaseTimeEntity;
 import com.example.gagunokuga_back.room.domain.Room;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,16 +18,16 @@ public class Wall {
     private Long id;
 
     @Column(nullable = false)
-    private Integer startX;
+    private Integer startx;
 
     @Column(nullable = false)
-    private Integer startY;
+    private Integer starty;
 
     @Column(nullable = false)
-    private Integer endX;
+    private Integer endx;
 
     @Column(nullable = false)
-    private Integer endY;
+    private Integer endy;
 
     @Column(nullable = false)
     private Integer thickness;
@@ -36,4 +35,10 @@ public class Wall {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
+
+    @Transient
+    private Boolean isDeleted;
+
+    @Transient
+    private Integer index;
 }

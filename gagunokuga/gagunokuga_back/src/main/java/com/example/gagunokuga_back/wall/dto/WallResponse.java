@@ -10,20 +10,22 @@ import lombok.*;
 @Builder
 public class WallResponse {
     private Long id;
-    private Integer startX;
-    private Integer startY;
-    private Integer endX;
-    private Integer endY;
+    private Integer startx;
+    private Integer starty;
+    private Integer endx;
+    private Integer endy;
     private Integer thickness;
+    private Long roomId;
 
     public static WallResponse fromEntity(Wall wall) {
         return WallResponse.builder()
                 .id(wall.getId())
-                .startX(wall.getStartX())
-                .startY(wall.getStartY())
-                .endX(wall.getEndX())
-                .endY(wall.getEndY())
+                .startx(wall.getStartx())
+                .starty(wall.getStarty())
+                .endx(wall.getEndx())
+                .endy(wall.getEndy())
                 .thickness(wall.getThickness())
+                .roomId(wall.getRoom().getId())
                 .build();
     }
 }

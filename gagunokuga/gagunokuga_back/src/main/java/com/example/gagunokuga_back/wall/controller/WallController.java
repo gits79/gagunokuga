@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/rooms/{roomId}/walls")
 @RequiredArgsConstructor
+@RequestMapping("/api/rooms/{roomId}/walls")
 public class WallController {
     private final WallService wallService;
 
@@ -19,8 +19,8 @@ public class WallController {
     }
 
     @PutMapping
-    public ResponseEntity<Void> updateWalls(@PathVariable Long roomId, @RequestBody WallListRequest wallListRequest) {
-        wallService.updateWalls(roomId, wallListRequest);
+    public ResponseEntity<Void> updateWalls(@PathVariable Long roomId, @RequestBody WallListRequest request) {
+        wallService.updateWalls(roomId, request);
         return ResponseEntity.ok().build();
     }
 }
