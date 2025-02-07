@@ -1,5 +1,4 @@
 <script setup>
-  import "./TheFooter.css";
 </script>
 
 <template>
@@ -9,5 +8,6 @@
 </template>
 
 <style scoped>
+  @import "./TheFooter.css";
 </style>
   

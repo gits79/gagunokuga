@@ -5,11 +5,11 @@ header {
   align-items: center;
 }
 
-nav ul {
+header nav ul {
   display: flex;
 }
 
-nav ul li a {
+header nav ul li a {
   color: black;
   margin-left: 10px;
 }

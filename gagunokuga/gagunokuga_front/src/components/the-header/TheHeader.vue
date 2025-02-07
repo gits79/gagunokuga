@@ -1,5 +1,4 @@
 <script setup>
-  import "./TheHeader.css";
 </script>
 
 <template>
@@ -17,5 +16,6 @@
 </template>
 
 <style scoped>
+  @import "./TheHeader.css";
 </style>
   
