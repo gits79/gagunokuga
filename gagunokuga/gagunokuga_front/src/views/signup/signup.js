@@ -14,6 +14,7 @@ export const useSignupStore = defineStore("signupStore", () => {
     verificationCode: "",
     nicknameMessage: "",
     emailMessage: "",
+    emailPattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,  // state 내부에 포함
     isCheckingNickname: false,
     showVerificationInput: false,
     isEmailVerified: false,
@@ -25,20 +26,27 @@ export const useSignupStore = defineStore("signupStore", () => {
   });
 
   // 이메일 형식 확인
-  const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  // const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   // 닉네임 중복 확인
   const checkNickname = async () => {
+    if (!state.nickname) {
+      state.nicknameMessage = "닉네임을 입력해주세요.";
+      state.isNicknameValid = false;
+      return;
+    }
+  
+    // state.isCheckingNickname = true;  // 중복 확인 중 상태 활성화
     try {
-      const response = await axios.get('/api/users/nickname', {
+      const response = await axios.get(`${baseURL}/api/users/nickname`, {
         params: { nickname: state.nickname },
       });
       
       // 디버깅을 위한 콘솔 출력
       console.log("응답 데이터:", response.data);  // 서버에서 받은 데이터 확인
-      console.log("닉네임 사용 가능 여부:", response.data.isAvailable);  // isAvailable 값 확인
+      console.log("닉네임 존재 여부:", response.data.existing);  //  값 확인
       
-      if (!response.data.isExisting) {
+      if (!response.data.existing) {
         state.nicknameMessage = "사용 가능한 닉네임입니다.";
         state.isNicknameValid = true;
       } else {
@@ -53,26 +61,39 @@ export const useSignupStore = defineStore("signupStore", () => {
   
   // 이메일 중복 확인
   const checkEmail = async () => {
+
+    if (!state.email) {
+      state.emailMessage = "이메일을 입력해주세요.";
+      state.isEmailValid = false;
+      return;
+    }
     if (!state.emailPattern.test(state.email)) {
       state.emailMessage = "올바른 이메일 형식을 입력해주세요.";
       state.isEmailValid = false;
       return;
     }
+
     try {
-      const response = await axios.get('/api/users/email', {
+      const response = await axios.get(`${baseURL}/api/users/email`, {
         params: { email: state.email },
       });
-      if (response.data.isAvailable) {
-        state.emailMessage = "사용 가능한 이메일입니다.";
-        state.isEmailValid = true;
-      } else {
-        state.emailMessage = "이미 사용 중인 이메일입니다.";
-        state.isEmailValid = false;
-      }
-    } catch (error) {
-      state.emailMessage = "서버 오류, 다시 시도해주세요.";
+
+      console.log("이메일 검사 응답:", response.data);
+
+    if (!response.data.existing) {
+      state.emailMessage = "사용 가능한 이메일입니다.";
+      state.isEmailValid = true;
+    } else {
+      state.emailMessage = "이미 사용 중인 이메일입니다.";
       state.isEmailValid = false;
     }
+  } catch (error) {
+    console.error("이메일 중복 확인 오류:", error);
+    state.emailMessage = "서버 오류, 다시 시도해주세요.";
+    state.isEmailValid = false;
+  } finally {
+    state.isCheckingEmail = false;
+  }
   };
 
   // 이메일 인증번호 발송
@@ -100,13 +121,14 @@ export const useSignupStore = defineStore("signupStore", () => {
   // 이메일 인증 확인
   const verifyEmail = async () => {
     try {
-      const response = await axios.post('/api/users/email/verify', {
+      const response = await axios.post(`${baseURL}/api/users/email/verify`, {
         email: state.email,
         authcode: state.verificationCode,
       });
       if (response.status === 200 && response.data === "Email verified") {
         state.isEmailVerified = true;
         state.emailMessage = "이메일 인증 성공!";
+        // 버튼비활성화
       } else {
         state.emailMessage = "인증 코드가 잘못되었습니다.";
         state.isEmailVerified = false;
@@ -121,7 +143,7 @@ export const useSignupStore = defineStore("signupStore", () => {
   const signup = async () => {
     state.isSubmitting = true;
     try {
-      const response = await axios.post('/api/users', {
+      const response = await axios.post(`${baseURL}/api/users`, {
         email: state.email,
         nickname: state.nickname,
         password: state.password,
@@ -158,6 +180,7 @@ export const useSignupStore = defineStore("signupStore", () => {
   return {
     state,
     checkNickname,
+    checkEmail,
     sendVerificationCode,
     verifyEmail,
     signup,
