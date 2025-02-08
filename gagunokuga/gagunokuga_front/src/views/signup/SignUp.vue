@@ -8,46 +8,58 @@
   <div>
     <h1>회원가입</h1>
     <form @submit.prevent="store.signup">
-      <div class="form-group">
-        <label for="nickname">닉네임</label>
-        <input
-          type="text"
-          id="nickname"
-          v-model="store.state.nickname"
-          placeholder="닉네임을 입력하세요"
-          required
-        />
-        <button type="button" @click="store.checkNickname" :disabled="store.state.isCheckingNickname">중복 확인</button>
-        <span v-if="store.state.nicknameMessage" :class="store.state.isNicknameValid ? 'valid' : 'invalid'">
-          {{ store.state.nicknameMessage }}
-        </span>
-      </div>
+      <<div class="form-group">
+  <label for="nickname">닉네임</label>
+  <input
+    type="text"
+    id="nickname"
+    v-model="store.state.nickname"
+    placeholder="닉네임을 입력하세요"
+    required
+  />
+  <button type="button" @click="store.checkNickname" :disabled="store.state.isCheckingNickname">
+    중복 확인
+  </button>
+  <span v-if="store.state.nicknameMessage" :class="store.state.isNicknameValid ? 'valid' : 'invalid'">
+    {{ store.state.nicknameMessage }}
+  </span>
+</div>
 
-      <div class="form-group">
-        <label for="email">이메일</label>
-        <input
-          type="email"
-          id="email"
-          v-model="store.state.email"
-          placeholder="이메일을 입력하세요"
-          required
-        />
-        <button type="button" @click="store.sendVerificationCode">인증번호 발송</button>
-        <div v-if="store.state.showVerificationInput">
-          <label for="verificationCode">인증번호</label>
-          <input
-            type="text"
-            id="verificationCode"
-            v-model="store.state.verificationCode"
-            placeholder="인증번호를 입력하세요"
-            required
-          />
-          <button type="button" @click="store.verifyEmail">인증 확인</button>
-        </div>
-        <span v-if="store.state.emailMessage" :class="store.state.isEmailVerified ? 'valid' : 'invalid'">
-          {{ store.state.emailMessage }}
-        </span>
-      </div>
+<!-- 이메일 -->
+<div class="form-group">
+  <label for="email">이메일</label>
+  <input
+    type="email"
+    id="email"
+    v-model="store.state.email"
+    placeholder="이메일을 입력하세요"
+    required
+  />
+  <button type="button" @click="store.checkEmail" :disabled="store.state.isCheckingEmail">
+    중복 확인
+  </button>
+  <span v-if="store.state.emailMessage" :class="store.state.isEmailValid ? 'valid' : 'invalid'">
+    {{ store.state.emailMessage }}
+  </span>
+
+  <!-- 이메일 중복 확인 후 인증번호 발송 버튼 활성화 -->
+  <button type="button" @click="store.sendVerificationCode" :disabled="!store.state.isEmailValid">
+    인증번호 발송
+  </button>
+
+  <div v-if="store.state.showVerificationInput">
+    <label for="verificationCode">인증번호</label>
+    <input
+      type="text"
+      id="verificationCode"
+      v-model="store.state.verificationCode"
+      placeholder="인증번호를 입력하세요"
+      required
+    />
+    <button type="button" @click="store.verifyEmail">인증 확인</button>
+  </div>
+</div>
+
 
       <div class="form-group">
         <label for="password">비밀번호</label>
