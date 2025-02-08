@@ -17,7 +17,7 @@ WORKDIR /usr/share/nginx/html
 COPY --from=build-stage /app/dist .
 
 # Nginx 설정 복사
-COPY nginx.conf /etc/nginx/nginx.conf
+#COPY nginx.conf /etc/nginx/nginx.conf 볼륨 마운트로 대체
 
 EXPOSE 80
 
