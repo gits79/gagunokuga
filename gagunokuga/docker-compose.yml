@@ -27,8 +27,8 @@ services:
     build:
       context: ./gagunokuga_front  # Vue.js 빌드도 nginx 컨테이너에서 수행
       dockerfile: Dockerfile
-      args:
-        - VITE_API_URL=http://backend:8080  # Vue 빌드 시 백엔드 컨테이너로 연결되도록 환경 변수 설정
+    env_file:
+      - ./gagunokuga_front/.env
     container_name: nginx
     restart: always  
     ports:

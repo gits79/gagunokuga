@@ -1,3 +1,9 @@
+# gradle을 사용한 프로젝트 빌드
+FROM gradle:7.6.2-jdk17 AS builder
+WORKDIR /app
+COPY . .
+RUN chmod +x gradlew  # gradlew 실행 권한 추가
+RUN ./gradlew clean bootJar  # 최신 코드로 빌드 (테스트 제외) jar 파일 생성
 # openjdk 17을 사용한 이미지 빌드
 FROM openjdk:17
 # 컨테이너 안에서 /app 경로 안에서 작업을 하겠다
@@ -9,3 +15,6 @@ COPY build/libs/*.jar app.jar
 EXPOSE 8080
 # java -jar /app/app.jar 라는 명령어 실행 ENTRYPOINT는 CMD와 같은 명령어 입력이라 생각
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+
+
+
