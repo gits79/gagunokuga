@@ -4,6 +4,7 @@ import Login from "@/views/login/Login.vue";
 import SignUp from "@/views/signup/SignUp.vue";
 import RoomList from "@/views/room-list/RoomList.vue";
 import FloorPlanEditor from "@/views/floor-plan-editor/FloorPlanEditor.vue";
+import OAuthCallback from "../views/login/OAuthCallback.vue";
 
 const routes = [
   { path: "/", name: "Home", component: Home },
@@ -11,6 +12,7 @@ const routes = [
   { path: "/login", name: "Login", component: Login },
   { path: "/room-list", name: "RoomList", component: RoomList },
   { path: "/signup", name: "SignUp", component: SignUp },
+  { path: '/oauth/callback', name: "OAuthCallback", component: OAuthCallback }
 ];
 
 const router = createRouter({

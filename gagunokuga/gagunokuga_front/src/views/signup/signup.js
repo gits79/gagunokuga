@@ -4,7 +4,7 @@ import axios from "axios";  // axios는 API 호출을 위해 추가됨
 
 export const useSignupStore = defineStore("signupStore", () => {
   // 회원가입 관련 상태
-  const baseURL = import.meta.env.VITE_APP_API_BASE_URL
+  const baseURL = import.meta.env.VITE_API_URL
 
   const state = reactive({
     nickname: "",
