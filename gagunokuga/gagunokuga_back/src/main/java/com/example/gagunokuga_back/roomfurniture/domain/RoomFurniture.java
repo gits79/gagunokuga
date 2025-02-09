@@ -4,13 +4,11 @@ import com.example.gagunokuga_back.furniture.domain.Furniture;
 import com.example.gagunokuga_back.room.domain.Room;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.redis.core.RedisHash;
 
 @Entity
 @Getter
 @ToString
 @Builder
-@RedisHash("room-furniture")
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "room_furnitures")
@@ -32,7 +30,7 @@ public class RoomFurniture {
     private Integer height;
 
     @Column(nullable = false)
-    private Integer direction;
+    private Integer rotation;
 
     @Column(nullable = false)
     private Integer layer;
@@ -48,26 +46,15 @@ public class RoomFurniture {
     @JoinColumn(name = "furniture_id")
     private Furniture furniture;
 
-    @Transient
-    private String holderName;
-
-    @Transient
-    private Boolean isDeleted;
-
-    @Transient
-    private Integer index;
-
-    @Transient
-    private Long tempRoomId;
-
-    public void hideRoom() {
-        if (this.room != null) {
-            this.tempRoomId = this.room.getId();
-        }
-        this.room = null;
-    }
-
-    public void revealRoom(Room room) {
+    public RoomFurniture(Room room, Furniture furniture, Integer xpos, Integer ypos) {
+        this.xpos = xpos;
+        this.ypos = ypos;
+        this.width = furniture.getWidth();
+        this.height = furniture.getHeight();
+        this.rotation = 0;
+        this.layer = 0;
+        this.collapse = false;
         this.room = room;
+        this.furniture = furniture;
     }
 }
