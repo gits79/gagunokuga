@@ -3,6 +3,7 @@ package com.example.gagunokuga_back.user.service;
 import com.example.gagunokuga_back.user.dto.LoginRequestDto;
 import com.example.gagunokuga_back.user.dto.TokenResponseDto;
 import com.example.gagunokuga_back.user.domain.User;
+import com.example.gagunokuga_back.user.exception.UserNotFoundException;
 import com.example.gagunokuga_back.user.repository.UserRepository;
 import com.example.gagunokuga_back.user.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,10 @@ public class AuthService {
                 loginDto.getEmail(), loginDto.getPassword()));
 
         User user = userRepository.findByEmail(loginDto.getEmail());
+
+        if(user == null) {
+            throw new UserNotFoundException("가입되지 않은 회원입니다.");
+        }
 
 
         return jwtTokenProvider.createToken(user.getId());
