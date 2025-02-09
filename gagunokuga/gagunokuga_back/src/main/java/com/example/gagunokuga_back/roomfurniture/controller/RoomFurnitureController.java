@@ -31,8 +31,10 @@ public class RoomFurnitureController {
     @GetMapping("/{furnitureId}")
     public ResponseEntity<Void> getRoomFurniture(
             @PathVariable("roomId") Long roomId,
-            @PathVariable Long furnitureId) {
-        template.convertAndSend("/sub/rooms/" + roomId, roomFurnitureService.getRoomFurniture(roomId, furnitureId));
+            @PathVariable Long furnitureId,
+            @RequestParam(defaultValue = "0") Integer xpos,
+            @RequestParam(defaultValue = "0") Integer ypos) {
+        template.convertAndSend("/sub/rooms/" + roomId, roomFurnitureService.createRoomFurniture(roomId, furnitureId, xpos, ypos));
         return ResponseEntity.ok().build();
     }
 
