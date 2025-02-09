@@ -78,7 +78,7 @@ export const useSignupStore = defineStore("signupStore", () => {
         params: { email: state.email },
       });
 
-      console.log("이메일 검사 응답:", response.data);
+      console.log("이메일 존재 여부:", response.data);
 
     if (!response.data.existing) {
       state.emailMessage = "사용 가능한 이메일입니다.";
