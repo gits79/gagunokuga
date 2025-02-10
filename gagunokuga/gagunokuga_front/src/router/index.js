@@ -7,10 +7,10 @@ import FloorPlanEditor from "@/views/floor-plan-editor/FloorPlanEditor.vue";
 
 const routes = [
   { path: "/", name: "Home", component: Home },
-  { path: "/floor-plan-editor", name: "FloorPlanEditor", component: FloorPlanEditor },
   { path: "/login", name: "Login", component: Login },
-  { path: "/room-list", name: "RoomList", component: RoomList },
   { path: "/signup", name: "SignUp", component: SignUp },
+  { path: "/room-list", name: "RoomList", component: RoomList },
+  { path: '/editor/:roomId', name: 'FloorPlanEditor', component: FloorPlanEditor },
 ];
 
 const router = createRouter({
