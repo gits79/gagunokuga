@@ -1,21 +1,40 @@
 <script setup>
+import { useLoginStore } from "@/views/login/login";  // 로그인 상태를 가져옵니다
+import { computed } from "vue";
+
+const loginStore = useLoginStore();  // 로그인 상태 초기화
+
+// 로그인 상태에 따라 메뉴 항목을 동적으로 처리
+const isLoggedIn = computed(() => !!loginStore.state.token);  // 로그인 상태 판단
+
+// 로그아웃 처리
+const logout = () => {
+  loginStore.state.token = "";  // 토큰 초기화
+  localStorage.removeItem("accessToken");  // 로컬 스토리지에서 토큰 제거
+  localStorage.removeItem("refreshToken");
+};
 </script>
 
 <template>
-  <header class="flex justify-between items-center px-24 py-12 bg-white">
-    <router-link to="/" class="logo-link">
-      <img class="logo w-[150px] h-auto" src="@/assets/gagunokuga_logo_text.svg" alt="가구놓구가" />
-    </router-link>
-    <nav class="flex gap-5 items-center justify-end">
-      <li><router-link to="/login" class="text-black text-base no-underline">로그인</router-link></li>
-      <li><router-link to="/room-list" class="text-black text-base no-underline">MY홈</router-link></li>
-      <li class="highlight">
-        <router-link to="/floor-plan-editor" class="text-[#EF5C4E] font-bold no-underline">도면에디터</router-link>
-      </li>
+  <header>
+    <nav>
+      <ul>
+        <li><router-link to="/">홈</router-link></li>
+
+        <!-- 로그인 상태일 때 로그인/회원가입 숨기고, 로그아웃 보여주기 -->
+        <li v-if="!isLoggedIn"><router-link to="/login">로그인</router-link></li>
+        <li v-if="!isLoggedIn"><router-link to="/signup">회원가입</router-link></li>
+
+        <!-- 로그인 상태일 때 로그아웃 버튼 표시 -->
+        <li v-if="isLoggedIn" @click="logout"><router-link to="/login">로그아웃</router-link></li>
+
+        <li><router-link to="/room-list">룸목록</router-link></li>
+        <li><router-link to="/editor/-1">도면에디터(임시)</router-link></li>
+      </ul>
     </nav>
   </header>
 </template>
 
-<style>
-/* 기존의 CSS 코드나 scoped 스타일을 제거한 상태 */
+<style scoped>
+@import "./TheHeader.css";
 </style>
