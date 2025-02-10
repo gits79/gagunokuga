@@ -1,12 +1,10 @@
 <script setup>
 import { ref } from "vue";
 import { useSignupStore } from "./signup";
-import TheHeader from "@/components/the-header/TheHeader.vue";  // Pinia Store 임포트
 const store = useSignupStore();
 </script>
 
 <template>
-  <TheHeader />
   <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg">
     <h1 class="text-2xl font-bold text-center mb-6">회원가입</h1>
     <form @submit.prevent="store.signup">

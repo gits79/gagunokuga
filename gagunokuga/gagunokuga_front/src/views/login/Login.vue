@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
-import TheHeader from "@/components/the-header/TheHeader.vue";
 
 // 로그인 상태 관리
 const email = ref('');
@@ -68,7 +67,6 @@ const loginWithNaver = () => {
 </script>
 
 <template>
-  <TheHeader />
   <div class="max-w-sm mx-auto p-6 bg-white rounded-lg shadow-lg border-2 border-red-500">
     <form @submit.prevent="handleLogin" class="space-y-4">
       <!-- 이메일 입력 -->

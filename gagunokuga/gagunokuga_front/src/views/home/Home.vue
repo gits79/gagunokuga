@@ -1,5 +1,4 @@
 <template>
-  <TheHeader />
   <main class="content flex flex-col items-center p-5 overflow-auto min-h-0">
     <!-- 첫 번째 줄 (2개 정사각형 박스) -->
     <div class="row flex justify-center gap-5 max-w-screen-lg w-full">
@@ -20,7 +19,6 @@
 </template>
 
 <script setup>
-import TheHeader from "@/components/the-header/TheHeader.vue";
 </script>
 
 <style scoped>

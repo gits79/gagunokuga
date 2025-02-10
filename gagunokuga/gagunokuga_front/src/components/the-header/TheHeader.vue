@@ -8,10 +8,10 @@
     </router-link>
     <nav class="flex gap-5 items-center justify-end">
       <li><router-link to="/login" class="text-black text-base no-underline">로그인</router-link></li>
-      <li><router-link to="/room-list" class="text-black text-base no-underline">MY홈</router-link></li>
+      <li><router-link to="/room" class="text-black text-base no-underline">MY홈</router-link></li>
       <li class="highlight">
-        <router-link to="/floor-plan-editor" class="text-[#EF5C4E] font-bold no-underline">도면에디터</router-link>
-      </li>
+        <router-link to="/editor/35" class="text-[#EF5C4E] font-bold no-underline">도면에디터</router-link>
+      </li> <!-- 화면 확인을 위해 임의로 숫자 생성함. 차후 수정 필요 -->
     </nav>
   </header>
 </template>

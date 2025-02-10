@@ -1,7 +1,9 @@
 <script setup>
   import "@/styles/tailwindcss.css";
-  import { useRoute } from 'vue-router';
   import TheHeader from "@/components/the-header/TheHeader.vue";
+  import { useRoute } from 'vue-router';
+
+  const route = useRoute();
 </script>
 
 <template>
