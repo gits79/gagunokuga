@@ -75,16 +75,41 @@ export const useLoginStore = defineStore("loginStore", () => {
   };
 
   const kakaoLogin = () => {
-    // axios 요청 없이 직접 카카오 로그인 페이지로 이동
     window.location.href = `${baseURL}/api/oauth/login/kakao`;
-  };
-  // JWT 토큰을 저장하고 홈으로 리다이렉트하는 함수
-  const handleLoginSuccess = (token) => {
-    state.token = token;
-    localStorage.setItem("accessToken", token);
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    router.push("/");
-  };
+};
+  
+const handleLoginSuccess = async (tokenData) => {
+  console.log('Handling login success with tokens:', tokenData);
+  
+  if (tokenData?.accessToken && tokenData?.refreshToken) {
+    try {
+      // 상태 업데이트
+      state.token = tokenData.accessToken;
+      
+      // localStorage에 저장
+      localStorage.setItem("accessToken", tokenData.accessToken);
+      localStorage.setItem("refreshToken", tokenData.refreshToken);
+      
+      // axios 기본 헤더 설정
+      axios.defaults.headers.common["Authorization"] = `Bearer ${tokenData.accessToken}`;
+      
+      console.log('Tokens stored successfully:', {
+        access: localStorage.getItem('accessToken'),
+        refresh: localStorage.getItem('refreshToken')
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Error storing tokens:', error);
+      return false;
+    }
+  } else {
+    console.error('Invalid token data received:', tokenData);
+    return false;
+  }
+};
+
+
   return {
     login,
     state,
