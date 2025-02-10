@@ -2,7 +2,6 @@ package com.example.gagunokuga_back.article.service;
 
 import com.example.gagunokuga_back.article.domain.Article;
 import com.example.gagunokuga_back.article.domain.ArticleImage;
-import com.example.gagunokuga_back.article.dto.ArticleImageResponse;
 import com.example.gagunokuga_back.article.dto.ArticleListResponse;
 import com.example.gagunokuga_back.article.dto.ArticleResponse;
 import com.example.gagunokuga_back.article.dto.CreateArticleRequest;
