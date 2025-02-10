@@ -6,11 +6,11 @@ import RoomList from "@/views/room-list/RoomList.vue";
 import FloorPlanEditor from "@/views/floor-plan-editor/FloorPlanEditor.vue";
 
 const routes = [
-  { path: "/", name: "Home", component: Home },
-  { path: "/login", name: "Login", component: Login },
-  { path: "/signup", name: "SignUp", component: SignUp },
-  { path: "/room-list", name: "RoomList", component: RoomList },
-  { path: '/editor/:roomId', name: 'FloorPlanEditor', component: FloorPlanEditor },
+  { path: "/", name: "Home", component: Home, meta: { showHeader: true }, },
+  { path: "/login", name: "Login", component: Login, meta: { showHeader: true }, },
+  { path: "/signup", name: "SignUp", component: SignUp, meta: { showHeader: true }, },
+  { path: "/room-list", name: "RoomList", component: RoomList, meta: { showHeader: true }, },
+  { path: '/editor/:roomId', name: 'FloorPlanEditor', component: FloorPlanEditor, meta: { showHeader: false }, },
 ];
 
 const router = createRouter({
