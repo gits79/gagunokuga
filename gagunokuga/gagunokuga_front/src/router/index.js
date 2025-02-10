@@ -2,8 +2,8 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import Home from "@/views/home/Home.vue";
 import Login from "@/views/login/Login.vue";
 import SignUp from "@/views/signup/SignUp.vue";
-import RoomList from "@/views/room-list/RoomList.vue";
-import FloorPlanEditor from "@/views/floor-plan-editor/FloorPlanEditor.vue";
+import RoomList from "@/views/room/Room.vue";
+import FloorPlanEditor from "@/views/editor/Editor.vue";
 import OAuthCallback from "@/views/login/OAuthCallback.vue";
 import OAuthSuccess from "../views/login/OAuthSuccess.vue";
 
