@@ -160,6 +160,12 @@ public class ArticleServiceImpl implements ArticleService {
     // 게시물 삭제
     @Override
     public void deleteArticle(Long articleId) {
+        // s3에서도 이미지 삭제
+        List<ArticleImage> images = articleImageRepository.findAllByArticleId(articleId);
+        for(ArticleImage image : images) {
+            imageService.deleteImage(image.getImageUrl());
+        }
+
         articleRepository.deleteById(articleId);
     }
 
