@@ -81,34 +81,27 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
   const saveWalls = async () => {
     if (!roomId.value) return;
     try {
-      // 남아있는 벽들
+      // 남아있는 벽들을 WallRequest 형식으로 변환
       const remainingWalls = walls
         .filter(wall => !deletedWalls.includes(wall.id))
         .map(wall => ({
           id: typeof wall.id === 'number' ? wall.id : null,
-          roomId: roomId.value,
+          roomid: roomId.value,
           startx: wall.x1,
           starty: wall.y1,
           endx: wall.x2,
           endy: wall.y2,
-          thickness: wall.thickness,
-          isDeleted: false
+          thickness: wall.thickness
         }));
   
-      // 삭제된 벽들
-      const deletedWallRequests = deletedWalls.map(id => ({
-        id: id,
-        roomId: roomId.value,
-        isDeleted: true
-      }));
+      // WallListRequest 형식으로 데이터 구성
+      const requestData = {
+        roomid: roomId.value,
+        walls: remainingWalls,
+        deletedWalls: deletedWalls  // 삭제된 벽 ID 목록
+      };
   
-      // 전체 벽 목록
-      const allWalls = [...remainingWalls, ...deletedWallRequests];
-  
-      await axios.put(`${baseURL}/api/rooms/${roomId.value}/walls`, {
-        roomId: roomId.value,
-        walls: allWalls
-      });
+      await axios.put(`${baseURL}/api/rooms/${roomId.value}/walls`, requestData);
   
       // 삭제된 벽 목록 초기화
       deletedWalls.splice(0, deletedWalls.length);
