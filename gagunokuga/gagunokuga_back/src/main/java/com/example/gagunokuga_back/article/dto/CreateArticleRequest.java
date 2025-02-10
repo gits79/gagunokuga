@@ -11,6 +11,6 @@ import java.util.List;
 public class CreateArticleRequest {
     private String title;
     private String content;
-    private String nickName;
+    private String nickname;
     private List<String> articleImages;
 }

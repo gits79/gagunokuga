@@ -37,7 +37,7 @@ public class ChatServiceImpl implements ChatService {
                             .id(chat.getId())
                             .content(chat.getContent())
                             .roomId(chat.getRoom().getId())
-                            .nickName(chat.getUser().getNickname())
+                            .nickname(chat.getUser().getNickname())
                             .profileImageUrl(chat.getUser().getProfileImageUrl())
                             .build());
         }
@@ -49,8 +49,8 @@ public class ChatServiceImpl implements ChatService {
     }
 
     public ChatResponse sendMessage(CreateChatRequest chatMessage) {
-        // User 객체를 nickName으로 조회
-        User user = userRepository.findByNickname(chatMessage.getNickName())
+        // User 객체를 nickname으로 조회
+        User user = userRepository.findByNickname(chatMessage.getNickname())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         Room room = roomRepository.findById(chatMessage.getRoomId())
                 .orElseThrow(() -> new EntityNotFoundException("Room not found"));
@@ -69,7 +69,7 @@ public class ChatServiceImpl implements ChatService {
                 .id(chat.getId())
                 .content(chat.getContent())
                 .roomId(chat.getRoom().getId())
-                .nickName(chat.getUser().getNickname())
+                .nickname(chat.getUser().getNickname())
                 .profileImageUrl(chat.getUser().getProfileImageUrl())
                 .build();
 

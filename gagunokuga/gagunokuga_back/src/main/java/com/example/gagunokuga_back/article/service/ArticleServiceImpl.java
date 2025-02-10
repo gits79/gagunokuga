@@ -38,7 +38,7 @@ public class ArticleServiceImpl implements ArticleService {
     // 게시물 등록
     @Override
     public ArticleResponse createArticle(CreateArticleRequest request, List<MultipartFile> images) throws IOException {
-        User user = userRepository.findByNickname(request.getNickName())
+        User user = userRepository.findByNickname(request.getNickname())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         // 게시물 db 등록
@@ -105,7 +105,7 @@ public class ArticleServiceImpl implements ArticleService {
                 .orElseThrow(() -> new EntityNotFoundException("Article Not Found"));
 
         // 권한 체크
-        if(!article.getUser().getNickname().equals(request.getNickName())) {
+        if(!article.getUser().getNickname().equals(request.getNickname())) {
             throw new AccessDeniedException("Not owner of this article");
         }
 
