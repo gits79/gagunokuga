@@ -9,6 +9,7 @@ import OAuthSuccess from "../views/login/OAuthSuccess.vue";
 
 
 
+
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
