@@ -50,8 +50,6 @@ public class ArticleServiceImpl implements ArticleService {
                         .build()
         );
 
-        List<ArticleImage> articleImages = new ArrayList<>();
-
         // S3 이미지 업로드
         for(MultipartFile image : images) {
                 String url = imageService.uploadImage(image);
@@ -62,11 +60,8 @@ public class ArticleServiceImpl implements ArticleService {
                             .article(savedArticle)
                             .build()
                 );
-
-                articleImages.add(articleImage);
+            savedArticle.addImage(articleImage);
         }
-
-        savedArticle.setArticleImages(articleImages);
 
         return ArticleResponse.fromEntity(savedArticle);
 

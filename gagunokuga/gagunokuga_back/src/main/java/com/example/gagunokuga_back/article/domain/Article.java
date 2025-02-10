@@ -11,7 +11,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @ToString
 @Builder
 @NoArgsConstructor
@@ -39,5 +38,13 @@ public class Article extends BaseTimeEntity {
     public void update(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    // 연관관계 편의 메서드 추가
+    public void addImage(ArticleImage image) {
+        if(this.articleImages == null){
+            this.articleImages = new ArrayList<>();
+        }
+        this.articleImages.add(image);
     }
 }
