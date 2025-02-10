@@ -1,13 +1,3 @@
-FROM node:22-alpine AS build-stage
-
-WORKDIR /app
-
-COPY package.json package-lock.json ./
-RUN npm ci
-
-COPY . .
-RUN npm run build
-
 # Nginx를 위한 최종 이미지
 FROM nginx:alpine
 
@@ -22,3 +12,5 @@ COPY --from=build-stage /app/dist .
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
+
+
