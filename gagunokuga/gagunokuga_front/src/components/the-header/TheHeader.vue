@@ -16,7 +16,7 @@ const logout = () => {
 </script>
 
 <template>
-  <header >
+  <header>
     <nav>
       <ul>
         <li><router-link to="/">홈</router-link></li>
@@ -29,7 +29,7 @@ const logout = () => {
         <li v-if="isLoggedIn" @click="logout"><router-link to="/login">로그아웃</router-link></li>
 
         <li><router-link to="/room-list">룸목록</router-link></li>
-        <li><router-link to="/floor-plan-editor">도면에디터(임시)</router-link></li>
+        <li><router-link to="/editor/-1">도면에디터(임시)</router-link></li>
       </ul>
     </nav>
   </header>
@@ -38,4 +38,3 @@ const logout = () => {
 <style scoped>
 @import "./TheHeader.css";
 </style>
-  

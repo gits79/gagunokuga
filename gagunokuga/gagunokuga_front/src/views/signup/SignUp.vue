@@ -90,11 +90,12 @@
   </div>
 </template>
 
+
 <style scoped>
-  .valid {
-    color: green;
-  }
-  .invalid {
-    color: red;
-  }
+.valid {
+  color: green;
+}
+.invalid {
+  color: red;
+}
 </style>
