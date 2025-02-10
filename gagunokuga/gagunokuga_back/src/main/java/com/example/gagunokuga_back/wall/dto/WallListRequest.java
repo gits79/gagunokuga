@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class WallListRequest {
-    private Long roomid;
+    private Long roomId;
     private List<WallRequest> walls;
     private List<Long> deletedWalls;
 }

@@ -24,7 +24,7 @@ public class WallController {
     // ✅ 벽 추가/수정/삭제 (PUT 요청)
     @PutMapping
     public ResponseEntity<Void> saveWalls(@PathVariable Long roomId, @RequestBody WallListRequest request) {
-        request.setRoomid(roomId);
+        request.setRoomId(roomId);
         wallService.saveWalls(request);
         return ResponseEntity.ok().build();
     }
