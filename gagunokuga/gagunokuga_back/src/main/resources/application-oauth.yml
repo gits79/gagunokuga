@@ -12,10 +12,10 @@ spring:
            user-name-attribute: id
        registration:
          kakao:
-           client-id: 78c7ea01f099384b7f6c00bfa4e3fa86
-           client-secret: 7W2OuJ7c3Jbzd7ZEPSh3Mo1ev5oiWeOt
+           client-id: ${KAKAO_CLIENT_ID}
+           client-secret: ${KAKAO_CLIENT_SECRET}
            client-authentication-method: client_secret_post
-           redirect-uri: http://localhost:8080/api/oauth/login/kakao/callback
+           redirect-uri: ${KAKAO_REDIRECT_URI}
            authorization-grant-type: authorization_code
            client-name: kakao
            scope:
@@ -25,4 +25,4 @@ spring:
 # 프론트엔드 리다이렉트 URI 추가
 app:
   oauth2:
-    authorized-redirect-uri: http://localhost:5173/#/oauth/callback  # 프론트엔드 주소로 변경
+    authorized-redirect-uri: ${OAUTH2_REDIRECT_URI} # 프론트엔드 주소로 변경
