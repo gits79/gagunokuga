@@ -43,13 +43,12 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    // S3 이미지 삭제
     public void deleteImage(String imageUrl) {
 
         String baseUrl = String.format("https://%s.s3.%s.amazonaws.com/", bucketName, amazonS3.getRegionName());
 
         String key = imageUrl.replace(baseUrl, "");
         amazonS3.deleteObject(bucketName, key);
-
-        System.out.println("Deleted " + imageUrl);
     }
 }
