@@ -1,15 +1,23 @@
 <!-- src/views/FloorPlanEditor.vue -->
 <script setup>
 import { ref, onMounted } from "vue";
-import { useFloorPlanStore } from "./floorPlanEditorStore";
+import { useFloorPlanStore } from "./editorStore";
+import { useRoute } from "vue-router";
 
 const store = useFloorPlanStore();
 const canvas = ref(null);
+const route = useRoute();
 
 onMounted(() => {
+  store.fetchWalls(route.params.roomId);
   store.initializeCanvas(canvas.value);
   window.addEventListener('keydown', store.handleKeyDown);
 });
+
+// ✅ 저장 버튼 클릭 시 벽 데이터를 서버에 반영
+const handleSave = () => {
+  store.saveWalls();
+};
 </script>
 
 <!-- 템플릿 -->
@@ -20,8 +28,9 @@ onMounted(() => {
 
     <!-- 왼쪽 사이드바 -->
     <aside class="sidebar left">
-      <router-link to="/"><button>홈으로</button></router-link>
+      <router-link to="/room"><button>룸목록</button></router-link>
       <p>툴 모음</p>
+      <button @click="handleSave">저장</button>
       <p>현재 툴 : {{ store.toolState.currentTool }}</p>
       <button @click="store.toolState.currentTool = 'select'">선택 툴 [1]</button>
       <button @click="store.toolState.currentTool = 'wall'">벽 툴 [2]</button>
@@ -110,8 +119,6 @@ onMounted(() => {
 
       </div>
 
-      
-
   <div v-else>
     <p>선택된 개체가 없습니다.</p>
   </div>
@@ -123,5 +130,5 @@ onMounted(() => {
 
 <!-- 스타일 -->
 <style scoped>
-  @import "./FloorPlanEditor.css";
+  @import "./editor.css";
 </style>

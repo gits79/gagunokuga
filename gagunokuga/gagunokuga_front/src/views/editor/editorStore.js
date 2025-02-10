@@ -1,12 +1,15 @@
 import { defineStore } from "pinia";
 import { off, SVG } from "@svgdotjs/svg.js";
-import { reactive, computed, watch } from "vue";
+import { reactive, computed, watch, ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 export const useFloorPlanStore = defineStore("floorPlanStore", () => {
   
   // 객체 선언
   let draw = null; // SVG 객체
+
+  const baseURL = import.meta.env.VITE_APP_API_BASE_URL
 
   let isPanning = false;
   let panStart = { x: 0, y: 0 };
@@ -16,6 +19,8 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
   let wallPreviewGroup = null;
 
   const walls = reactive([]);
+  const roomId = ref(null);
+  const deletedWalls = reactive([]);
 
   const toolState = reactive({
     currentTool: "select",
@@ -37,6 +42,77 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
   
   const canUndo = computed(() => history.undoStack.length > 0);
   const canRedo = computed(() => history.redoStack.length > 0);
+
+  // 서버에서 벽 데이터 불러오기
+  const fetchWalls = async (id) => {
+    try {
+      roomId.value = id;
+      const response = await axios.get(`${baseURL}/api/rooms/${id}/walls`);
+      
+      if (response.data && response.data.walls) {
+        // 삭제되지 않은 벽만 필터링하여 저장
+        walls.splice(0, walls.length, ...response.data.walls
+          .filter(wall => wall.isDeleted !== true)
+          .map(wall => ({
+            id: wall.id,
+            x1: wall.startx,    
+            y1: wall.starty,    
+            x2: wall.endx,      
+            y2: wall.endy,      
+            thickness: wall.thickness || 100  
+          }))
+        );
+  
+        // 벽 데이터 로드 후 시각적 요소 업데이트
+        if (wallLayer) {
+          wallLayer.children().forEach(wall => wall.remove()); // 기존 벽 제거
+          walls.forEach(wall => {
+            wallCreationMethods.renderWall(wall); // 새로운 벽 렌더링
+          });
+          updateVisualElements();
+        }
+      }
+    } catch (error) {
+      console.error("벽 데이터를 불러오는 중 오류 발생:", error);
+    }
+  };
+
+  // 서버로 벽 데이터 저장
+  const saveWalls = async () => {
+    if (!roomId.value) return;
+    try {
+      // 남아있는 벽들을 WallRequest 형식으로 변환
+      const remainingWalls = walls
+        .filter(wall => !deletedWalls.includes(wall.id))
+        .map(wall => ({
+          id: typeof wall.id === 'number' ? wall.id : null,
+          roomid: roomId.value,
+          startx: wall.x1,
+          starty: wall.y1,
+          endx: wall.x2,
+          endy: wall.y2,
+          thickness: wall.thickness
+        }));
+  
+      // WallListRequest 형식으로 데이터 구성
+      const requestData = {
+        roomid: roomId.value,
+        walls: remainingWalls,
+        deletedWalls: deletedWalls  // 삭제된 벽 ID 목록
+      };
+  
+      await axios.put(`${baseURL}/api/rooms/${roomId.value}/walls`, requestData);
+  
+      // 삭제된 벽 목록 초기화
+      deletedWalls.splice(0, deletedWalls.length);
+      
+      // 최신 데이터로 갱신
+      await fetchWalls(roomId.value);
+      
+    } catch (error) {
+      console.error("벽 데이터를 저장하는 중 오류 발생:", error);
+    }
+  };
 
   // 팬 컨트롤
   const panControls = {
@@ -84,29 +160,24 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
         x: snapToMillimeter(snappedStart.x),
         y: snapToMillimeter(snappedStart.y),
       };
-      wallPreviewGroup = draw.group();
+      wallPreviewGroup = draw.group().addClass('wall-preview-group');
       wallPreview = wallPreviewGroup
         .line(wallStart.x, wallStart.y, wallStart.x, wallStart.y)
         .stroke({ width: toolState.wallThickness, color: "#999", dasharray: "5,5" });
+        updatePreviewMarkers(wallStart, wallStart);
     },
     preview: (coords) => {
       if (!wallStart || !isInBoundary(coords)) return;
       const snappedEnd = getSnapPoint(coords, wallLayer.children());
       const end = getOrthogonalPoint(wallStart, snappedEnd);
       wallPreview?.plot(wallStart.x, wallStart.y, end.x, end.y);
-
-      // 기존 미리보기 길이 표시 제거
+      updatePreviewMarkers(wallStart, end);
       wallPreviewGroup.find('.preview-length').forEach(el => el.remove());
-      
-      // 길이 계산
       const length = Math.round(Math.hypot(end.x - wallStart.x, end.y - wallStart.y));
-      
       if (length > 1) {
         const midX = (wallStart.x + end.x) / 2;
         const midY = (wallStart.y + end.y) / 2;
         const fontSize = viewbox.width * 0.025;
-        
-        // 길이 텍스트 표시
         wallPreviewGroup
           .text(`${length}mm`)
           .font({ size: fontSize, anchor: 'middle' })
@@ -121,8 +192,6 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
       } else {
         const snappedEnd = getSnapPoint(coords, wallLayer.children());
         const end = getOrthogonalPoint(wallStart, snappedEnd);
-        
-        // 최소 길이 체크
         if (Math.hypot(end.x - wallStart.x, end.y - wallStart.y) > 1) {
           const changes = wallCreationMethods.createWallWithIntersections(
             wallStart,
@@ -130,23 +199,22 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
             toolState.wallThickness
           );
           wallCreationMethods.applyWallChanges(changes);
-          
-          // 마지막 점을 새로운 시작점으로
           wallStart = { x: end.x, y: end.y };
           wallPreview?.plot(wallStart.x, wallStart.y, wallStart.x, wallStart.y);
+          updatePreviewMarkers(wallStart, wallStart);
           wallPreviewGroup.find('.preview-length').forEach(el => el.remove());
           updateVisualElements();
         }
       }
     },
     cancel: () => {
-      wallPreviewGroup.find('.preview-length').forEach(el => el.remove());
-      if (wallStart) {
-        wallPreview?.remove();
-        wallPreviewGroup = null;
-        wallPreview = null;
-        wallStart = null;
+      if (wallPreviewGroup) {
+        wallPreviewGroup.find('.preview-length, .preview-key').forEach(el => el.remove());
+        wallPreviewGroup.remove();
       }
+      wallPreviewGroup = null;
+      wallPreview = null;
+      wallStart = null;
     },
   };
 
@@ -154,6 +222,7 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
   const moveWallControls = {
     start: (event) => {
       if (!selection.selectedWallId) return;
+      saveState();
       isMovingWall = true;
       moveStartCoords = getSVGCoordinates(event);
     },
@@ -1012,6 +1081,11 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
               point: intersection,
               wall: existingWall
             });
+
+            if (!wallsToRemove.includes(existingWall.id)) {
+              wallsToRemove.push(existingWall.id);
+            }
+
             wallsToRemove.push(existingWall.id);
           }
         }
@@ -1111,14 +1185,20 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
   const deleteSelectedWall = () => {
     if (!selection.selectedWallId) return;
     saveState();
-
+  
+    // 삭제된 벽을 deletedWalls 배열에 추가
+    const wall = walls.find(w => w.id === selection.selectedWallId);
+    if (wall && typeof wall.id === 'number') {  // 서버에서 가져온 벽만 추적
+      deletedWalls.push(wall.id);
+    }
+  
     // DOM에서 벽 요소 제거
     const wallElement = wallLayer.find(`[data-id='${selection.selectedWallId}']`)[0];
     if (wallElement) {
       wallElement.remove();
     }
     
-    // walls 배열에서 벽 제거
+    // walls 배열에서 제거
     const wallIndex = walls.findIndex(w => w.id === selection.selectedWallId);
     if (wallIndex !== -1) {
       walls.splice(wallIndex, 1);
@@ -1186,6 +1266,21 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     const BOUNDARY = { min: -50000, max: 50000 };
     return coords.x >= BOUNDARY.min && coords.x <= BOUNDARY.max && 
            coords.y >= BOUNDARY.min && coords.y <= BOUNDARY.max;
+  };
+
+  // 미리보기 키 업데이트 함수
+  const updatePreviewMarkers = (start, end) => {
+    wallPreviewGroup.find('.preview-key').forEach(el => el.remove());
+
+    const keySize = viewbox.width * 0.02;
+    [start, end].forEach(({ x, y }) => {
+      wallPreviewGroup
+        .circle(keySize)
+        .fill("#DDDDDD")
+        .stroke({ color: "#000", width: keySize * 0.1 })
+        .center(x, y)
+        .addClass('preview-key');
+    });
   };
 
   // == 유틸리티 함수들 == //
@@ -1326,6 +1421,11 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
   
   // 리턴
   return {
+    walls,
+    roomId,
+    fetchWalls,
+    saveWalls,
+
     toolState,
     executeToolEvent,
     initializeCanvas,

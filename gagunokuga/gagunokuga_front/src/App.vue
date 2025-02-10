@@ -1,14 +1,10 @@
 <script setup>
-  import TheHeader from "@/components/the-header/TheHeader.vue";
-  import TheFooter from "@/components/the-footer/TheFooter.vue";
-  import "@/styles/global.css";
+  import "@/styles/tailwindcss.css";
 </script>
 
 <template>
   <div >
-    <TheHeader />
     <router-view />
-    <TheFooter />
   </div>
 </template>
 

@@ -1,67 +1,78 @@
 package com.example.gagunokuga_back.roomfurniture.service;
 
-import com.example.gagunokuga_back.furniture.dto.FurnitureResponse;
 import com.example.gagunokuga_back.furniture.repository.FurnitureRepository;
-import com.example.gagunokuga_back.furniture.service.FurnitureService;
 import com.example.gagunokuga_back.room.repository.RoomRepository;
 import com.example.gagunokuga_back.roomfurniture.domain.RoomFurniture;
+import com.example.gagunokuga_back.roomfurniture.mapper.RoomFurnitureMapper;
 import com.example.gagunokuga_back.roomfurniture.repository.RoomFurnitureJpaRepository;
+import com.example.gagunokuga_back.roomfurniture.dto.RoomFurnitureDto;
+import com.example.gagunokuga_back.websocket.dto.FurnitureEventDto;
+import com.example.gagunokuga_back.websocket.dto.FurnitureListDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.factory.Mappers;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class RoomFurnitureServiceImpl implements RoomFurnitureService {
     private final RoomFurnitureJpaRepository roomFurnitureRepository;
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final FurnitureService furnitureService;
-
     private final RoomRepository roomRepository;
     private final FurnitureRepository furnitureRepository;
-    private final ConcurrentHashMap<Long, AtomicInteger> roomFurnitureIndex = new ConcurrentHashMap<>();
+
+    private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
+    private final RoomFurnitureMapper roomFurnitureMapper = Mappers.getMapper(RoomFurnitureMapper.class);
 
     @Override
-    public RoomFurniture getRoomFurniture(Long roomId, Long furnitureId) {
-        FurnitureResponse furnitureResponse = furnitureService.getFurniture(furnitureId);
-        AtomicInteger index = roomFurnitureIndex.computeIfAbsent(roomId, k -> new AtomicInteger(0));
-        RoomFurniture roomFurniture = RoomFurniture.builder()
-                .xpos(0)
-                .ypos(0)
-                .width(furnitureResponse.getWidth())
-                .height(furnitureResponse.getHeight())
-                .direction(0)
-                .layer(0)
-                .collapse(false)
-                .room(roomRepository.getReferenceById(roomId))
-                .furniture(furnitureRepository.getReferenceById(furnitureId))
-                .holderName(null)
-                .isDeleted(false)
-                .index(index.getAndIncrement())
-                .build();
-        roomFurniture.hideRoom();
-        System.out.println("index: " + index.get());
-        this.store(roomId, roomFurniture);
-        return roomFurniture;
+    public FurnitureEventDto createRoomFurniture(Long roomId, Long furnitureId, Integer xpos, Integer ypos) {  // 방에 배치된 가구 하나 생성
+        Long index = redisTemplate.opsForValue().increment("room:" + roomId + ":furniture:index", 1);
+        RoomFurniture roomFurniture = new RoomFurniture(
+                roomRepository.getReferenceById(roomId),
+                furnitureRepository.getReferenceById(furnitureId),
+                xpos, ypos);
+
+        RoomFurnitureDto roomFurnitureDto = roomFurnitureMapper.toRoomFurnitureDto(roomFurniture, index);
+        FurnitureEventDto furnitureEventDto = FurnitureEventDto.builder()
+                .event(FurnitureEventDto.Event.CREATE)
+                .furniture(roomFurnitureDto).build();
+
+        System.out.println("index: " + index);
+
+        this.store(roomId, roomFurnitureDto);
+        return furnitureEventDto;
+    }
+
+    public FurnitureListDto getAllRoomFurniture(Long roomId) {  // 룸 입장 시 모든 가구 데이터(+Event) 불러오기
+        List<RoomFurnitureDto> roomFurnitureDtoList = this.fetchAll(roomId);
+        List<FurnitureEventDto> furnitureEventDtoList = new ArrayList<>();
+        for (RoomFurnitureDto roomFurnitureDto : roomFurnitureDtoList) {
+            FurnitureEventDto furnitureEventDto = FurnitureEventDto.builder()
+                    .event(FurnitureEventDto.Event.CREATE)
+                    .furniture(roomFurnitureDto).build();
+            furnitureEventDtoList.add(furnitureEventDto);
+        }
+        return FurnitureListDto.builder()
+                .furnitureList(furnitureEventDtoList).build();
     }
 
     @Override
     public void saveAll(Long roomId) { // Redis -> DB
-        roomFurnitureIndex.remove(roomId);
-        System.out.println("테스트");
-        for (RoomFurniture roomFurniture : this.fetchAll(roomId)) {
-            roomFurniture.revealRoom(roomRepository.getReferenceById(roomFurniture.getTempRoomId()));
-            if (roomFurniture.getIsDeleted()) {
+        redisTemplate.delete("room:" + roomId + ":furniture:index");
+        for (RoomFurnitureDto roomFurnitureDto : this.fetchAll(roomId)) {
+            Long furnitureId = roomFurnitureDto.getFurnitureId();
+            RoomFurniture roomFurniture = roomFurnitureMapper.toRoomFurniture(
+                    roomFurnitureDto,
+                    roomRepository.getReferenceById(roomId),
+                    furnitureRepository.getReferenceById(furnitureId)
+            );
+            if (roomFurnitureDto.getIsDeleted() != null && roomFurnitureDto.getIsDeleted()) {
                 roomFurnitureRepository.delete(roomFurniture);
             } else {
                 roomFurnitureRepository.save(roomFurniture);
@@ -71,26 +82,28 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
 
     @Override
     public void loadAll(Long roomId) { // DB -> Redis
-        AtomicInteger index = roomFurnitureIndex.computeIfAbsent(roomId, k -> new AtomicInteger(0));
-        for (RoomFurniture roomFurniture : roomFurnitureRepository.findAllById(Collections.singleton(roomId))) {
-            roomFurniture.hideRoom();
-            redisTemplate.opsForHash().put("room:furniture:" + roomId, index.getAndIncrement() + "", roomFurniture);
+        redisTemplate.opsForValue().set("room:" + roomId + ":furniture:index", 0L);
+        Long index = 0L;
+        for (RoomFurniture roomFurniture : roomFurnitureRepository.findAllByRoom_Id(roomId)) {
+            RoomFurnitureDto roomFurnitureDto = roomFurnitureMapper.toRoomFurnitureDto(roomFurniture, index);
+            this.store(roomId, roomFurnitureDto);
+            index = redisTemplate.opsForValue().increment("room:" + roomId + ":furniture:index", 1);
         }
-        System.out.println("생성 된 index: " + index.get());
+        System.out.println("생성 된 index: " + index);
     }
 
     @Override
-    public List<RoomFurniture> fetchAll(Long roomId) {
-        List<RoomFurniture> roomFurnitureList = new ArrayList<>();
-        for (Object roomFurniture : redisTemplate.opsForHash().entries("room:furniture:" + roomId).values()){
-            roomFurnitureList.add(objectMapper.convertValue(roomFurniture, RoomFurniture.class));
+    public List<RoomFurnitureDto> fetchAll(Long roomId) { // Redis -> ?
+        List<RoomFurnitureDto> roomFurnitureDtoList = new ArrayList<>();
+        for (Object furnitureDto : redisTemplate.opsForHash().entries("room:" + roomId + ":furniture").values()){
+            roomFurnitureDtoList.add(objectMapper.convertValue(furnitureDto, RoomFurnitureDto.class));
         }
-        return roomFurnitureList;
+        return roomFurnitureDtoList;
     }
 
     @Override
-    public void store(Long roomId, RoomFurniture roomFurniture) {
-        redisTemplate.opsForHash().put("room:furniture:" + roomId, roomFurniture.getIndex().toString(), roomFurniture);
+    public void store(Long roomId, RoomFurnitureDto roomFurnitureDto) { // ? -> Redis
+        redisTemplate.opsForHash().put("room:" + roomId + ":furniture", roomFurnitureDto.getIndex().toString(), roomFurnitureDto);
     }
 
 }
