@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useRoomListStore } from './roomListStore'
+import { useRoomListStore } from './roomStore'
 import defaultThumbnail from '@/assets/gagunokugaLogo.png'
 
 const store = useRoomListStore()
@@ -37,7 +37,7 @@ const handleUpdateRoomName = async (roomId, currentName) => {
 
 // ✅ 에디터로 이동
 const goToEditor = (roomId) => {
-  router.push({ name: 'FloorPlanEditor', params: { roomId } })
+  router.push({ name: 'Editor', params: { roomId } })
 }
 </script>
 
@@ -63,5 +63,5 @@ const goToEditor = (roomId) => {
 </template>
 
 <style scoped>
-  @import "./roomList.css";
+  @import "./room.css";
 </style>
