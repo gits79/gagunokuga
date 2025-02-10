@@ -16,6 +16,6 @@
 </template>
 
 <style scoped>
-  @import "./TheHeader.css";
+  @import "./theHeader.css";
 </style>
   
