@@ -16,7 +16,7 @@ const logout = () => {
 </script>
 
 <template>
-  <header>
+  <header >
     <nav>
       <ul>
         <li><router-link to="/">홈</router-link></li>
