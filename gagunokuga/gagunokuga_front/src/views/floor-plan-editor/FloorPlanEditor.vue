@@ -123,5 +123,5 @@ onMounted(() => {
 
 <!-- 스타일 -->
 <style scoped>
-  @import "./floorPlanEditor.css";
+  @import "./FloorPlanEditor.css";
 </style>

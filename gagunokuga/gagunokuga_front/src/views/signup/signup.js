@@ -4,7 +4,7 @@ import axios from "axios";  // axios는 API 호출을 위해 추가됨
 
 export const useSignupStore = defineStore("signupStore", () => {
   // 회원가입 관련 상태
-  const baseURL = import.meta.env.VITE_APP_API_BASE_URL
+  const baseURL = import.meta.env.VITE_API_URL
 
   const state = reactive({
     nickname: "",
@@ -81,15 +81,17 @@ export const useSignupStore = defineStore("signupStore", () => {
       state.emailMessage = "이메일을 인증해주세요.";
       return;
     }
-  
+    // 여기 잠깐 EC2 확인용으로 수정함 url이랑 log부분
     try {
-      const response = await axios.post('/api/users/email', {
+      const response = await axios.post(`${baseURL}/api/users/email`, {
         email: state.email,
       });
       if (response.status === 200) {
+        console.log(" EC2에서 확인용(나중에 삭제제) :발송 성공")
         state.showVerificationInput = true; // 인증 번호 입력창을 표시
       }
     } catch (error) {
+      console.log(baseURL)
       state.emailMessage = "인증 코드 발송에 실패했습니다. 다시 시도해주세요.";
     }
   };
