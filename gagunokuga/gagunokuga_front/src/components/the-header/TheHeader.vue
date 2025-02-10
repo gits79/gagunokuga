@@ -2,20 +2,20 @@
 </script>
 
 <template>
-  <header>
-    <nav>
-      <ul>
-        <li><router-link to="/">홈</router-link></li>
-        <li><router-link to="/login">로그인</router-link></li>
-        <li><router-link to="/signup">회원가입</router-link></li>
-        <li><router-link to="/room-list">룸목록</router-link></li>
-        <li><router-link to="/editor/-1">도면에디터(임시)</router-link></li>
-      </ul>
+  <header class="flex justify-between items-center px-24 py-12 bg-white">
+    <router-link to="/" class="logo-link">
+      <img class="logo w-[150px] h-auto" src="@/assets/gagunokuga_logo_text.svg" alt="가구놓구가" />
+    </router-link>
+    <nav class="flex gap-5 items-center justify-end">
+      <li><router-link to="/login" class="text-black text-base no-underline">로그인</router-link></li>
+      <li><router-link to="/room-list" class="text-black text-base no-underline">MY홈</router-link></li>
+      <li class="highlight">
+        <router-link to="/floor-plan-editor" class="text-[#EF5C4E] font-bold no-underline">도면에디터</router-link>
+      </li>
     </nav>
   </header>
 </template>
 
-<style scoped>
-  @import "./theHeader.css";
+<style>
+/* 기존의 CSS 코드나 scoped 스타일을 제거한 상태 */
 </style>
-  
