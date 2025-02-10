@@ -14,9 +14,9 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     { path: "/", name: "Home", component: Home },
-    { path: "/floor-plan-editor", name: "FloorPlanEditor", component: FloorPlanEditor },
     { path: "/login", name: "Login", component: Login },
-    { path: "/room-list", name: "RoomList", component: RoomList },
+    { path: "/room", name: "Room", component: RoomList },
+    { path: '/editor/:roomId', name: 'Editor', component: FloorPlanEditor },
     { path: "/signup", name: "SignUp", component: SignUp },
     { path: "/oauth/success", name: "OAuthSuccess", component: OAuthSuccess}
     // {
