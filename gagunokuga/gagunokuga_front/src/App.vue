@@ -28,9 +28,7 @@ onMounted(() => {
 
 <template>
   <div >
-    <TheHeader />
     <router-view />
-    <TheFooter />
   </div>
 </template>
 

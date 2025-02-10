@@ -81,34 +81,27 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
   const saveWalls = async () => {
     if (!roomId.value) return;
     try {
-      // 남아있는 벽들
+      // 남아있는 벽들을 WallRequest 형식으로 변환
       const remainingWalls = walls
         .filter(wall => !deletedWalls.includes(wall.id))
         .map(wall => ({
           id: typeof wall.id === 'number' ? wall.id : null,
-          roomId: roomId.value,
+          roomid: roomId.value,
           startx: wall.x1,
           starty: wall.y1,
           endx: wall.x2,
           endy: wall.y2,
-          thickness: wall.thickness,
-          isDeleted: false
+          thickness: wall.thickness
         }));
   
-      // 삭제된 벽들
-      const deletedWallRequests = deletedWalls.map(id => ({
-        id: id,
-        roomId: roomId.value,
-        isDeleted: true
-      }));
+      // WallListRequest 형식으로 데이터 구성
+      const requestData = {
+        roomid: roomId.value,
+        walls: remainingWalls,
+        deletedWalls: deletedWalls  // 삭제된 벽 ID 목록
+      };
   
-      // 전체 벽 목록
-      const allWalls = [...remainingWalls, ...deletedWallRequests];
-  
-      await axios.put(`${baseURL}/api/rooms/${roomId.value}/walls`, {
-        roomId: roomId.value,
-        walls: allWalls
-      });
+      await axios.put(`${baseURL}/api/rooms/${roomId.value}/walls`, requestData);
   
       // 삭제된 벽 목록 초기화
       deletedWalls.splice(0, deletedWalls.length);
@@ -167,29 +160,24 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
         x: snapToMillimeter(snappedStart.x),
         y: snapToMillimeter(snappedStart.y),
       };
-      wallPreviewGroup = draw.group();
+      wallPreviewGroup = draw.group().addClass('wall-preview-group');
       wallPreview = wallPreviewGroup
         .line(wallStart.x, wallStart.y, wallStart.x, wallStart.y)
         .stroke({ width: toolState.wallThickness, color: "#999", dasharray: "5,5" });
+        updatePreviewMarkers(wallStart, wallStart);
     },
     preview: (coords) => {
       if (!wallStart || !isInBoundary(coords)) return;
       const snappedEnd = getSnapPoint(coords, wallLayer.children());
       const end = getOrthogonalPoint(wallStart, snappedEnd);
       wallPreview?.plot(wallStart.x, wallStart.y, end.x, end.y);
-
-      // 기존 미리보기 길이 표시 제거
+      updatePreviewMarkers(wallStart, end);
       wallPreviewGroup.find('.preview-length').forEach(el => el.remove());
-      
-      // 길이 계산
       const length = Math.round(Math.hypot(end.x - wallStart.x, end.y - wallStart.y));
-      
       if (length > 1) {
         const midX = (wallStart.x + end.x) / 2;
         const midY = (wallStart.y + end.y) / 2;
         const fontSize = viewbox.width * 0.025;
-        
-        // 길이 텍스트 표시
         wallPreviewGroup
           .text(`${length}mm`)
           .font({ size: fontSize, anchor: 'middle' })
@@ -204,8 +192,6 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
       } else {
         const snappedEnd = getSnapPoint(coords, wallLayer.children());
         const end = getOrthogonalPoint(wallStart, snappedEnd);
-        
-        // 최소 길이 체크
         if (Math.hypot(end.x - wallStart.x, end.y - wallStart.y) > 1) {
           const changes = wallCreationMethods.createWallWithIntersections(
             wallStart,
@@ -213,23 +199,22 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
             toolState.wallThickness
           );
           wallCreationMethods.applyWallChanges(changes);
-          
-          // 마지막 점을 새로운 시작점으로
           wallStart = { x: end.x, y: end.y };
           wallPreview?.plot(wallStart.x, wallStart.y, wallStart.x, wallStart.y);
+          updatePreviewMarkers(wallStart, wallStart);
           wallPreviewGroup.find('.preview-length').forEach(el => el.remove());
           updateVisualElements();
         }
       }
     },
     cancel: () => {
-      wallPreviewGroup.find('.preview-length').forEach(el => el.remove());
-      if (wallStart) {
-        wallPreview?.remove();
-        wallPreviewGroup = null;
-        wallPreview = null;
-        wallStart = null;
+      if (wallPreviewGroup) {
+        wallPreviewGroup.find('.preview-length, .preview-key').forEach(el => el.remove());
+        wallPreviewGroup.remove();
       }
+      wallPreviewGroup = null;
+      wallPreview = null;
+      wallStart = null;
     },
   };
 
@@ -237,6 +222,7 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
   const moveWallControls = {
     start: (event) => {
       if (!selection.selectedWallId) return;
+      saveState();
       isMovingWall = true;
       moveStartCoords = getSVGCoordinates(event);
     },
@@ -1280,6 +1266,21 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     const BOUNDARY = { min: -50000, max: 50000 };
     return coords.x >= BOUNDARY.min && coords.x <= BOUNDARY.max && 
            coords.y >= BOUNDARY.min && coords.y <= BOUNDARY.max;
+  };
+
+  // 미리보기 키 업데이트 함수
+  const updatePreviewMarkers = (start, end) => {
+    wallPreviewGroup.find('.preview-key').forEach(el => el.remove());
+
+    const keySize = viewbox.width * 0.02;
+    [start, end].forEach(({ x, y }) => {
+      wallPreviewGroup
+        .circle(keySize)
+        .fill("#DDDDDD")
+        .stroke({ color: "#000", width: keySize * 0.1 })
+        .center(x, y)
+        .addClass('preview-key');
+    });
   };
 
   // == 유틸리티 함수들 == //

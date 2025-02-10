@@ -1,12 +1,14 @@
 <script setup>
-  import { ref } from "vue";
-  import { useSignupStore } from "./signup";  // Pinia Store 임포트
-  const store = useSignupStore();
+import { ref } from "vue";
+import { useSignupStore } from "./signup";
+import TheHeader from "@/components/the-header/TheHeader.vue";  // Pinia Store 임포트
+const store = useSignupStore();
 </script>
 
 <template>
-  <div>
-    <h1>회원가입</h1>
+  <TheHeader />
+  <div class="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg">
+    <h1 class="text-2xl font-bold text-center mb-6">회원가입</h1>
     <form @submit.prevent="store.signup">
       <<div class="form-group">
   <label for="nickname">닉네임</label>
@@ -61,40 +63,45 @@
 </div>
 
 
-      <div class="form-group">
-        <label for="password">비밀번호</label>
+      <div class="mb-4">
+        <label for="password" class="block text-sm font-medium text-gray-700">비밀번호</label>
         <input
-          type="password"
-          id="password"
-          v-model="store.state.password"
-          placeholder="비밀번호를 입력하세요"
-          required
+            type="password"
+            id="password"
+            v-model="store.state.password"
+            placeholder="비밀번호를 입력하세요"
+            required
+            class="w-full mt-2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
         />
-        <span v-if="!store.state.isPasswordValid" class="invalid">비밀번호는 최소 8자 이상이어야 합니다.</span>
+        <span v-if="!store.state.isPasswordValid" class="text-red-500 mt-1 text-sm">비밀번호는 최소 8자 이상이어야 합니다.</span>
       </div>
 
-      <div class="form-group">
-        <label for="confirmPassword">비밀번호 확인</label>
+      <div class="mb-6">
+        <label for="confirmPassword" class="block text-sm font-medium text-gray-700">비밀번호 확인</label>
         <input
-          type="password"
-          id="confirmPassword"
-          v-model="store.state.confirmPassword"
-          placeholder="비밀번호를 다시 입력하세요"
-          required
+            type="password"
+            id="confirmPassword"
+            v-model="store.state.confirmPassword"
+            placeholder="비밀번호를 다시 입력하세요"
+            required
+            class="w-full mt-2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
         />
-        <span v-if="!store.checkPassword" class="invalid">비밀번호가 일치하지 않습니다.</span>
+        <span v-if="!store.checkPassword" class="text-red-500 mt-1 text-sm">비밀번호가 일치하지 않습니다.</span>
       </div>
 
-      <button type="submit" :disabled="store.state.isSubmitting">회원가입</button>
+      <button type="submit" :disabled="store.state.isSubmitting" class="w-full py-3 bg-gray-500 text-white rounded-md hover:bg-gray-600 disabled:bg-gray-300">
+        회원가입
+      </button>
     </form>
   </div>
 </template>
 
+
 <style scoped>
-  .valid {
-    color: green;
-  }
-  .invalid {
-    color: red;
-  }
+.valid {
+  color: green;
+}
+.invalid {
+  color: red;
+}
 </style>
