@@ -2,8 +2,8 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import Home from "@/views/home/Home.vue";
 import Login from "@/views/login/Login.vue";
 import SignUp from "@/views/signup/SignUp.vue";
-import RoomList from "@/views/room/Room.vue";
-import FloorPlanEditor from "@/views/editor/Editor.vue";
+import Room from "@/views/room/Room.vue";
+import Editor from "@/views/editor/Editor.vue";
 import OAuthCallback from "@/views/login/OAuthCallback.vue";
 import OAuthSuccess from "../views/login/OAuthSuccess.vue";
 
@@ -15,8 +15,8 @@ const router = createRouter({
   routes: [
     { path: "/", name: "Home", component: Home },
     { path: "/login", name: "Login", component: Login },
-    { path: "/room", name: "Room", component: RoomList },
-    { path: '/editor/:roomId', name: 'Editor', component: FloorPlanEditor },
+    { path: "/room", name: "Room", component: Room },
+    { path: '/editor/:roomId', name: 'Editor', component: Editor },
     { path: "/signup", name: "SignUp", component: SignUp },
     { path: "/oauth/success", name: "OAuthSuccess", component: OAuthSuccess}
     // {
