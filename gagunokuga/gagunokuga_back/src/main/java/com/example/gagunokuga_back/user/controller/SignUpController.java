@@ -1,7 +1,7 @@
 package com.example.gagunokuga_back.user.controller;
 
-import com.example.gagunokuga_back.user.dto.CheckResponseDto;
-import com.example.gagunokuga_back.user.dto.UserRequestDto;
+import com.example.gagunokuga_back.user.dto.signup.CheckResponseDto;
+import com.example.gagunokuga_back.user.dto.signup.UserRequestDto;
 import com.example.gagunokuga_back.user.email.AuthCodeService;
 import com.example.gagunokuga_back.user.service.UserService;
 import lombok.RequiredArgsConstructor;

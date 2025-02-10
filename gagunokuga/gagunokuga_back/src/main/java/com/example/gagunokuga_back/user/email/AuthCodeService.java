@@ -1,6 +1,6 @@
 package com.example.gagunokuga_back.user.email;
 
-import com.example.gagunokuga_back.user.dto.UserRequestDto;
+import com.example.gagunokuga_back.user.dto.signup.UserRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;

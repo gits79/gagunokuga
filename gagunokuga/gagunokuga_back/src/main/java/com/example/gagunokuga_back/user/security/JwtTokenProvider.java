@@ -1,6 +1,6 @@
 package com.example.gagunokuga_back.user.security;
 
-import com.example.gagunokuga_back.user.dto.TokenResponseDto;
+import com.example.gagunokuga_back.user.dto.login.TokenResponseDto;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -59,6 +59,19 @@ public class JwtTokenProvider {
             throw new JwtException("Invalid JWT token");
         }
 
+    }
+
+    //토큰 유ㅎ성 검사
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 
