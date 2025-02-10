@@ -4,9 +4,10 @@ import Login from "@/views/login/Login.vue";
 import SignUp from "@/views/signup/SignUp.vue";
 import RoomList from "@/views/room/Room.vue";
 import FloorPlanEditor from "@/views/editor/Editor.vue";
+import ArticleList from "../views/article/ArticleList.vue";
 
 const routes = [
-  { path: "/", name: "Home", component: Home },
+  { path: "/", name: "Home", component: Home, children: [{ path: "", name: "ArticleList", component: ArticleList}] },
   { path: "/login", name: "Login", component: Login },
   { path: "/signup", name: "SignUp", component: SignUp },
   { path: "/room", name: "Room", component: RoomList },

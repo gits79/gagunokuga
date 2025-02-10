@@ -13,14 +13,13 @@
     <p class="text text-lg my-5">직접 꾸며놓은 피드! 구경하러 가볼까요?</p>
 
     <!-- 두 번째 줄 (24개 박스) -->
-    <div class="row grid grid-cols-4 gap-4 max-w-screen-lg w-full p-2">
-      <div v-for="i in 24" :key="i" class="box bg-gray-300 flex justify-center items-center aspect-square w-full overflow-hidden"></div>
-    </div>
+    <RouterView />
   </main>
 </template>
 
 <script setup>
 import TheHeader from "@/components/the-header/TheHeader.vue";
+import { RouterView } from "vue-router";
 </script>
 
 <style scoped>
