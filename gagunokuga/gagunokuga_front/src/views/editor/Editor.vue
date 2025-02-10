@@ -1,7 +1,7 @@
 <!-- src/views/FloorPlanEditor.vue -->
 <script setup>
 import { ref, onMounted } from "vue";
-import { useFloorPlanStore } from "./floorPlanEditorStore";
+import { useFloorPlanStore } from "./editorStore";
 import { useRoute } from "vue-router";
 
 const store = useFloorPlanStore();
@@ -28,9 +28,9 @@ const handleSave = () => {
 
     <!-- 왼쪽 사이드바 -->
     <aside class="sidebar left">
-      <router-link to="/"><button>홈으로</button></router-link>
+      <router-link to="/room"><button>룸목록</button></router-link>
       <p>툴 모음</p>
-      <button @click="handleSave">💾 저장</button>
+      <button @click="handleSave">저장</button>
       <p>현재 툴 : {{ store.toolState.currentTool }}</p>
       <button @click="store.toolState.currentTool = 'select'">선택 툴 [1]</button>
       <button @click="store.toolState.currentTool = 'wall'">벽 툴 [2]</button>
@@ -130,5 +130,5 @@ const handleSave = () => {
 
 <!-- 스타일 -->
 <style scoped>
-  @import "./FloorPlanEditor.css";
+  @import "./editor.css";
 </style>
