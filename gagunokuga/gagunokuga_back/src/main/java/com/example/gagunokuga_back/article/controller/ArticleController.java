@@ -7,6 +7,7 @@ import com.example.gagunokuga_back.article.dto.CreateArticleRequest;
 import com.example.gagunokuga_back.article.service.ArticleService;
 import com.example.gagunokuga_back.image.service.ImageService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +35,7 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.getArticleList(page));
     }
 
-    // 게시글 등록 -------------------------> 구현해야됨!!!!!!!!!!
+    // 게시글 등록
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<ArticleResponse> createArticle(@RequestPart("articleData") String articleData, @RequestPart("images") List<MultipartFile> images) {
 
@@ -72,9 +75,39 @@ public class ArticleController {
     }
 
     // 게시글 수정
-    @PutMapping("/{articleId}")
-    public ResponseEntity<ArticleResponse> updateArticle(@PathVariable("articleId") Long articleId, @RequestBody Article article) {
-        return null;
+    @PutMapping(path = "/{articleId}", consumes = {"multipart/form-data"})
+    public ResponseEntity<ArticleResponse> updateArticle(@PathVariable("articleId") Long articleId, @RequestPart("articleData") String articleData, @RequestPart(value="images", required = false) List<MultipartFile> newImages, @RequestPart(value = "deleteList", required = false) String deleted) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        CreateArticleRequest request;
+        List<Long> deleteList = new ArrayList<Long>();
+
+        try{
+            // String -> Json으로 dto 맵핑
+            request = objectMapper.readValue(articleData, CreateArticleRequest.class);
+
+            // deleteList가 JSON 문자열이라면 파싱
+            if (deleted != null && !deleted.isEmpty()) {
+                deleteList = objectMapper.readValue(deleted, new TypeReference<List<Long>>() {});
+            }
+
+        } catch (Exception e) {
+            // dto 맵핑할 수 없을 때
+            return ResponseEntity.badRequest().build();
+        }
+
+        ArticleResponse updatedArticle;
+        try{
+            updatedArticle = articleService.updateArticle(articleId, request, newImages, deleteList);
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.badRequest().build();
+        }
+        catch (Exception e) {
+            // 수정할 수 없을 때
+            return ResponseEntity.unprocessableEntity().build();
+        }
+
+        return ResponseEntity.ok(updatedArticle);
     }
 
     // 게시글 삭제

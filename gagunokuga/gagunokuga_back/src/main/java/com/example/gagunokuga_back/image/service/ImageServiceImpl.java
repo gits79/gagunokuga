@@ -22,7 +22,6 @@ public class ImageServiceImpl implements ImageService {
 
     // S3에 이미지 업로드 하기
     public String uploadImage(MultipartFile image) throws IOException {
-        System.out.println(bucketName);
         String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename(); // 고유한 파일 이름 생성
 
         // 메타데이터 설정
@@ -41,5 +40,16 @@ public class ImageServiceImpl implements ImageService {
 
     private String getPublicUrl(String fileName) {
         return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, amazonS3.getRegionName(), fileName);
+    }
+
+    @Override
+    public void deleteImage(String imageUrl) {
+
+        String baseUrl = String.format("https://%s.s3.%s.amazonaws.com/", bucketName, amazonS3.getRegionName());
+
+        String key = imageUrl.replace(baseUrl, "");
+        amazonS3.deleteObject(bucketName, key);
+
+        System.out.println("Deleted " + imageUrl);
     }
 }

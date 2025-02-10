@@ -2,6 +2,7 @@ package com.example.gagunokuga_back.article.service;
 
 import com.example.gagunokuga_back.article.domain.Article;
 import com.example.gagunokuga_back.article.domain.ArticleImage;
+import com.example.gagunokuga_back.article.dto.ArticleImageResponse;
 import com.example.gagunokuga_back.article.dto.ArticleListResponse;
 import com.example.gagunokuga_back.article.dto.ArticleResponse;
 import com.example.gagunokuga_back.article.dto.CreateArticleRequest;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -99,7 +101,66 @@ public class ArticleServiceImpl implements ArticleService {
 
         return article.map(ArticleResponse::fromEntity).orElse(null);
     }
+
     // 게시물 수정
+    @Override
+    public ArticleResponse updateArticle(Long articleId, CreateArticleRequest request, List<MultipartFile> newImages, List<Long> deleteList) throws AccessDeniedException {
+        // 1. 게시글 조회
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new EntityNotFoundException("Article Not Found"));
+
+        // 권한 체크
+        if(!article.getUser().getNickname().equals(request.getNickName())) {
+            throw new AccessDeniedException("Not owner of this article");
+        }
+
+        // 2. 게시글 수정
+        article.update(request.getTitle(), request.getContent());
+
+        // 3. 삭제할 이미지 처리
+        if(deleteList != null && !deleteList.isEmpty()) {
+            for(Long imageId : deleteList) {
+                // 이미지 조회
+                ArticleImage image = articleImageRepository.findById(imageId)
+                        .orElseThrow(() -> new EntityNotFoundException("Image Not Found"));
+
+                // s3에서 이미지 삭제
+                imageService.deleteImage(image.getImageUrl());
+
+                // article에서 이미지 삭제
+                article.getArticleImages().remove(image);
+
+                // db에서 이미지 삭제
+                articleImageRepository.delete(image);
+            }
+        }
+
+        // 4. 이미지 등록
+        if(newImages != null && !newImages.isEmpty()) {
+            for(MultipartFile image : newImages) {
+                // s3에 업로드
+                String imageUrl;
+                try {
+                    imageUrl = imageService.uploadImage(image);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                // 이미지 주소 db 등록
+                ArticleImage articleImage = ArticleImage.builder()
+                                .imageUrl(imageUrl)
+                                .article(article)
+                                .build();
+
+                // JPA 관계 추가 (article에도 반영)
+                article.getArticleImages().add(articleImage);
+
+                articleImageRepository.save(articleImage);
+            }
+        }
+
+        return ArticleResponse.fromEntity(article);
+    }
 
     // 게시물 삭제
     @Override

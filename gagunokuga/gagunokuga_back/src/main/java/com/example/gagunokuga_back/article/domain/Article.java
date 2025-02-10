@@ -33,5 +33,11 @@ public class Article extends BaseTimeEntity {
     private User user;
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<ArticleImage> articleImages;
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }
