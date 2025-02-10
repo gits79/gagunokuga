@@ -101,18 +101,24 @@ public class UserService {
         userRepository.delete(user);
     }
 
-//    //잃어버린 비번 재설정
-//    @Transactional
-//    public void reset(PasswordResetRequestDto passwordResetDto) {
-//        User user = userRepository.findByEmail(passwordResetDto.getEmail());
-//        if(user == null) {
-//            throw new NoSuchElementException("User not found");
-//        }
-//
-//        String tempPassword = UUID.randomUUID().toString().substring(0, 10);
-//        emailService.sendTempPwd(user.getEmail(), tempPassword);
-//        user.changePassword(passwordEncoder.encode(tempPassword));
-//    }
+    //잃어버린 비번 재설정
+    @Transactional
+    public void reset(PasswordResetRequestDto passwordResetDto) {
+        String email = passwordResetDto.getEmail();
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new NoSuchElementException("User not found");
+        }
+        try {
+            String tempPassword = UUID.randomUUID().toString().substring(0, 10);
+            emailService.sendTempPwd(email, tempPassword);
+            user.changePassword(passwordEncoder.encode(tempPassword));
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new InputMismatchException("Wrong password");
+        }
+    }
+
 
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -126,4 +132,6 @@ public class UserService {
         }
         return user;
     }
+
+
 }

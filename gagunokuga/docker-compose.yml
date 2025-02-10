@@ -1,11 +1,9 @@
-
-services:  #각 컨테이너에 대한 설정 정의
+services:  
 
   backend:
     build:
-      context: ./Gagunokuga_back  # context 위치에 있는 Dockerfile을 가지고 도커 빌드를 진행하겠다
+      context: ./gagunokuga_back  # context 위치에 있는 Dockerfile을 가지고 도커 빌드를 진행하겠다
       dockerfile: Dockerfile  # Dockerfile에 있는 내용을 바탕으로 도커 이미지를 만듬
-    image: g1767g/gagu-backend:2.0.0  # 빌드하려는 도커 이미지의 이름 또는 도커허브(깃허브처럼 도커이미지를 저장한다는 레퍼지토리라고 생각)에서 가져오기 위한 이미지 이름 지정 
     container_name: backend  # 컨테이너 이름 지정
     restart: always  # 컨테이너가 종료될 경우 자동 재시작 
     ports:
@@ -16,50 +14,53 @@ services:  #각 컨테이너에 대한 설정 정의
       redis:
         condition: service_healthy  # redis는 메인데이터베이스가 아니라 캐싱용이기 때문에 상관없으나 일단 스프링부트보다 먼저 켜지게 설정함
     env_file:
-      - .env  # 환경 변수 파일 로드
+      - ./gagunokuga_back/.env  # 환경 변수 파일 로드
     networks:
       - app-network  # 같은 네트워크(app-network)에 연결 (컨테이너 간 통신 가능) 같은 네트워크에 없으면 직접적인 통신 불가능하고 외부 IP를 통해서 연결
     healthcheck:  # 컨테이너가 정상적으로 실행되는지 확인
       test: ["CMD", "sh", "-c", "curl -f http://backend:8080/api/health || exit 1"]  # cmd 창에 sh -c "curl -f http://backend:8080/api/health" 를 입력한다고 생각하면 됨
       interval: 5s  # 5초마다 헬스체크 수행
       timeout: 5s  # 5초 동안 응답이 없으면 실패 처리
-      retries: 5  # 5번 재시도 후 컨테이너가 응답하지 않으면 비정상 상태로 판단
+      retries: 6  # 6번 재시도 후 컨테이너가 응답하지 않으면 비정상 상태로 판단
 
-  frontend:
+  nginx:
     build:
-      context: ./Gagunokuga_front 
-      dockerfile: Dockerfile  
-    image: g1767g/gagu-frontend:2.0.0  
-    container_name: frontend  
-    restart: always  
+      context: ./gagunokuga_front  # Vue.js 빌드도 nginx 컨테이너에서 수행
+      dockerfile: Dockerfile
     env_file:
-      - .env  
+      - ./gagunokuga_front/.env
+    container_name: nginx
+    restart: always  
+    ports:
+      - "80:80"    
+      - "443:443"  
+    volumes: # nginx.conf 파일 마운트
+      - /home/ubuntu/jenkins_workspace/gitlab-ci-pipeline/gagunokuga/nginx.conf:/etc/nginx/custom.conf:ro 
+      - /etc/letsencrypt:/etc/letsencrypt          # SSL 인증서 마운트
+    command: ["nginx", "-c", "/etc/nginx/custom.conf", "-g", "daemon off;"]
     depends_on:
       backend:
-        condition: service_healthy 
+        condition: service_healthy  
     networks:
       - app-network 
+    healthcheck:  
+      test: ["CMD", "nginx", "-t"] 
+      interval: 10s  
+      timeout: 10s  
+      retries: 3  
 
   mysql:
     image: mysql:8  
     container_name: mysql
     restart: always  
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} 
-      MYSQL_DATABASE: ${MYSQL_DATABASE}  
-      MYSQL_USER: ${MYSQL_USER}  
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD} 
     env_file:
-      - .env  
+      - ./gagunokuga_back/.env 
     ports:
       - "3306:3306"  
     networks:
       - app-network 
     volumes:
-      - mysql_data:/var/lib/mysql  # 여기서 볼륨이란 쉽게 말하면 저장하는 공간이라 생각하면 됨
-      # 도커 컨테이너는 데이터를 컨테이너가 실행하는 동안만 저장함 => 휘발성
-      # 따라서 컨테이너를 중단하거나 재실행하면 데이터가 없어짐
-      # 그래서 mysql_data라는 저장공간을 만들아서 컨테이너 내의 /var/lib/mysql이라는 공간에 저장한다는 뜻
+      - mysql_data:/var/lib/mysql  
     healthcheck:  
       test: ["CMD", "mysqladmin", "ping", "-h", "mysql"]  
       interval: 5s 
@@ -71,7 +72,7 @@ services:  #각 컨테이너에 대한 설정 정의
     container_name: redis
     restart: always  
     env_file:
-      - .env 
+      - ./gagunokuga_back/.env 
     ports:
       - "6379:6379" 
     networks:
@@ -84,31 +85,12 @@ services:  #각 컨테이너에 대한 설정 정의
       timeout: 5s  
       retries: 5  
 
-  nginx:
-    image: nginx:latest  
-    container_name: nginx
-    restart: always  
-    ports:
-      - "80:80"  
-    volumes:  
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro  
-    depends_on:
-      backend:
-        condition: service_healthy  
-    networks:
-      - app-network 
-    healthcheck:  
-      test: ["CMD", "nginx", "-t"] 
-      interval: 10s  
-      timeout: 10s  
-      retries: 3  
-
-# 컨테이너 간 통신을 위한 네트워크 설정
 networks:
   app-network:
-    driver: bridge  # 브리지 네트워크 사용 
+    # 젠킨스를 app-network로 네트워크 생성해서
+    external: true
+   # 기존에 존재하는 app-network 사용용
 
-#  볼륨 설정
 volumes:
-  mysql_data:  # MySQL 데이터를 영구 저장하는 볼륨
+  mysql_data: 
   redis_data:  

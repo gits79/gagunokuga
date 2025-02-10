@@ -46,4 +46,37 @@ public class EmailService {
         }
 
     }
+
+    public void sendTempPwd(String email, String tempPwd) {
+        String subject = "Gagunokuga 비밀번호 재설정";
+        String htmlContent = String.format("""
+                <div>
+                    <h2>Gagunokuga 비밀번호 재설정</h2>
+                    <br>
+                    <p>안녕하세요. 귀하의 임시 비밀번호를 안내해드립니다.</p>
+                    <p></p>
+                    <br>
+                    <p><strong style="font-size: 24px; color: #000;">임시비밀번호: %s</strong></p>
+                    <br>
+                    <p>임시 비밀번호는 반드시 수정 부탁드립니다.</p>
+                    </div>
+                """, tempPwd);
+
+        try {
+            //mimemessage 생성
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            helper.setTo(email);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+
+            //이메일 전송
+            javaMailSender.send(mimeMessage);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("이메일 전송 실패");
+
+        }
+    }
 }

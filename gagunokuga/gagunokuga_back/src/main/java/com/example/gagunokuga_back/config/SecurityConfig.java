@@ -43,7 +43,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtTokenProvider jwtTokenProvider) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))a
+                .cors(cors -> cors.disable())
                 // REST API.. csrf 보안 x
                 .csrf(csrf ->csrf.disable())
                 // JWT를 사용하기 때문에 세션x
@@ -53,11 +54,12 @@ public class SecurityConfig {
 
                         auth.requestMatchers(HttpMethod.GET,"/api/users").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/api/users").permitAll()
+                                .requestMatchers("/**").permitAll()
                                 .requestMatchers("/api/users/login").permitAll()
                                 .requestMatchers("/api/users/email").permitAll()
                                 .requestMatchers("/api/users/email/verify").permitAll()
                                 .requestMatchers("/api/users/nickname").permitAll()
-                                .requestMatchers("/api/articles/**").permitAll()
+                                .requestMatchers("/api/health").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -69,17 +71,17 @@ public class SecurityConfig {
 
 
     //cors 설정
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowCredentials(true);
+//        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 
 
     //spring security 로그인 요청 인증 수행

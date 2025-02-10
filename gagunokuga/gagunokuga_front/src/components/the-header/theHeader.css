@@ -1,0 +1,15 @@
+header {
+  background-color: #AAA;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+header nav ul {
+  display: flex;
+}
+
+header nav ul li a {
+  color: black;
+  margin-left: 10px;
+}
