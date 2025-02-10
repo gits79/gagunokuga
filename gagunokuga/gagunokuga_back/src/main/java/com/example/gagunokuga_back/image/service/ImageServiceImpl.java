@@ -1,8 +1,8 @@
 package com.example.gagunokuga_back.image.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,38 +17,44 @@ public class ImageServiceImpl implements ImageService {
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
+    @Value("${spring.cloud.aws.region.static}")
+    private String region;
 
-    private final AmazonS3 amazonS3;
+    private final S3Client s3Client;
 
     // S3에 이미지 업로드 하기
     public String uploadImage(MultipartFile image) throws IOException {
         String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename(); // 고유한 파일 이름 생성
 
-        // 메타데이터 설정
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType(image.getContentType());
-        metadata.setContentLength(image.getSize());
-
-        // S3에 파일 업로드 요청 생성
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, image.getInputStream(), metadata);
+        // S3 업로드 요청 객체 생성
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .contentType(image.getContentType()) // 콘텐츠 타입 설정
+                .build();
 
         // S3에 파일 업로드
-        amazonS3.putObject(putObjectRequest);
+        s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(image.getInputStream(), image.getSize()));
 
         return getPublicUrl(fileName);
     }
 
     private String getPublicUrl(String fileName) {
-        return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, amazonS3.getRegionName(), fileName);
+        return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, fileName);
     }
 
     @Override
     // S3 이미지 삭제
     public void deleteImage(String imageUrl) {
-
-        String baseUrl = String.format("https://%s.s3.%s.amazonaws.com/", bucketName, amazonS3.getRegionName());
-
+        String baseUrl = String.format("https://%s.s3.%s.amazonaws.com/", bucketName, region);
         String key = imageUrl.replace(baseUrl, "");
-        amazonS3.deleteObject(bucketName, key);
+
+        // S3에서 객체 삭제
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
+
+        s3Client.deleteObject(deleteObjectRequest);
     }
 }
