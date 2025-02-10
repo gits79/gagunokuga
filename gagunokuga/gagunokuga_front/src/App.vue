@@ -12,11 +12,16 @@ onMounted(() => {
   const accessToken = localStorage.getItem('accessToken');
   const refreshToken = localStorage.getItem('refreshToken');
 
+  console.log('Tokens in localStorage:', { accessToken, refreshToken }); // 로그 추가
+
+
   if (accessToken) {
     loginStore.state.token = accessToken;
     if (refreshToken) {
       loginStore.state.refreshToken = refreshToken;
     }
+
+    axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
   }
 });
 </script>
