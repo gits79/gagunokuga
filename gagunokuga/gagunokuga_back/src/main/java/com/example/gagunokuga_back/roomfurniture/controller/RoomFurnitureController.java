@@ -1,56 +1,38 @@
 package com.example.gagunokuga_back.roomfurniture.controller;
 
-import com.example.gagunokuga_back.roomfurniture.domain.RoomFurniture;
-import com.example.gagunokuga_back.roomfurniture.dto.RoomFurnitureListResponse;
+import com.example.gagunokuga_back.websocket.dto.FurnitureListDto;
 import com.example.gagunokuga_back.roomfurniture.service.RoomFurnitureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/rooms/{roomId}/furnitures")
+@RequestMapping("/api/rooms/{roomId}/furnitures")
 @RequiredArgsConstructor
 public class RoomFurnitureController {
     private final RoomFurnitureService roomFurnitureService;
     private final SimpMessageSendingOperations template;
 
-    @GetMapping("/fetch")
-    public ResponseEntity<RoomFurnitureListResponse> fetchAllRoomFurniture(@PathVariable("roomId") Long roomId) {
-        List<RoomFurniture> roomFurnitureList = roomFurnitureService.fetchAll(roomId);
-        RoomFurnitureListResponse roomFurnitureListResponse = RoomFurnitureListResponse.builder()
-                .totalCount(roomFurnitureList.size())
-                .furnitureList(roomFurnitureList).build();
-        return ResponseEntity.ok().body(roomFurnitureListResponse);
+    @GetMapping("/fetch")   // 룸 입장 시 캐싱 된 가구 가져오기
+    public ResponseEntity<FurnitureListDto> fetchAllRoomFurniture(@PathVariable("roomId") Long roomId) {
+        return ResponseEntity.ok().body(roomFurnitureService.getAllRoomFurniture(roomId));
     }
 
-    @GetMapping("/{furnitureId}")
+    @GetMapping("/{furnitureId}")   // 배치된 가구 생성 시
     public ResponseEntity<Void> getRoomFurniture(
             @PathVariable("roomId") Long roomId,
-            @PathVariable Long furnitureId) {
-        template.convertAndSend("/sub/rooms/" + roomId, roomFurnitureService.getRoomFurniture(roomId, furnitureId));
+            @PathVariable Long furnitureId,
+            @RequestParam(defaultValue = "0") Integer xpos,
+            @RequestParam(defaultValue = "0") Integer ypos) {
+        template.convertAndSend("/sub/rooms/" + roomId, roomFurnitureService.createRoomFurniture(roomId, furnitureId, xpos, ypos));
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/save")
+    @GetMapping("/save")    // 저장 버튼 눌렀을 때
     public ResponseEntity<Void> saveRoomFurniture(
             @PathVariable("roomId") Long roomId) {
         roomFurnitureService.saveAll(roomId);
         return ResponseEntity.ok().build();
     }
-
-    @MessageMapping("/rooms/{roomId}")
-    public ResponseEntity<Void> receiveFurnitureInfo(
-            @DestinationVariable Long roomId,
-            RoomFurniture roomFurniture) {
-        System.out.println(roomFurniture);
-        template.convertAndSend("/sub/rooms/" + roomId, roomFurniture);
-        roomFurnitureService.store(roomId, roomFurniture);
-        return ResponseEntity.ok().build();
-    }
-
 }
