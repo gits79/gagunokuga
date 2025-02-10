@@ -8,7 +8,7 @@ import lombok.Getter;
 public class SearchResponseDto {
 
     private String nickname;
-    private String ProfileImageUrl;
+    private String profileImageUrl;
 
 
 }
