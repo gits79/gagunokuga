@@ -1,4 +1,4 @@
-package com.example.gagunokuga_back.user.dto;
+package com.example.gagunokuga_back.user.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

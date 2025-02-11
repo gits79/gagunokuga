@@ -1,9 +1,11 @@
 package com.example.gagunokuga_back.config;
 
 
+import com.example.gagunokuga_back.user.oauth.OAuth2UserService;
 import com.example.gagunokuga_back.user.security.CustomUserDetailsService;
 import com.example.gagunokuga_back.user.security.JwtAuthenticationFilter;
 import com.example.gagunokuga_back.user.security.JwtTokenProvider;
+import com.example.gagunokuga_back.user.security.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +33,8 @@ import java.util.List;
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2UserService oAuth2UserService;
 
 
 
@@ -55,13 +59,22 @@ public class SecurityConfig {
                         auth.requestMatchers(HttpMethod.GET,"/api/users").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/api/users").permitAll()
                                 .requestMatchers("/**").permitAll()
-                                .requestMatchers("/api/articles/**").permitAll()
-                                .requestMatchers("/api/users/login").permitAll()
-                                .requestMatchers("/api/users/email").permitAll()
-                                .requestMatchers("/api/users/email/verify").permitAll()
-                                .requestMatchers("/api/users/nickname").permitAll()
+                                .requestMatchers("/api/users/login", "/api/users/email",
+                                        "/api/users/email/verify", "/api/users/nickname","api/users/pwd/reset", "/api/oauth/login/**").permitAll()
                                 .requestMatchers("/api/health").permitAll()
                                 .anyRequest().authenticated())
+                .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(endpoint ->
+                                endpoint.baseUri("/api/oauth/login"))
+                        .redirectionEndpoint(endpoint ->
+                                endpoint.baseUri("/oauth/callback"))
+                        .userInfoEndpoint(endpoint ->
+                                endpoint.userService(oAuth2UserService))
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler((request, response, exception) -> {
+                            response.sendRedirect("http://localhost:5173/login?error=true");
+                        })
+                )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .build();
 //                // USER 권한이 있어야 요청할 수 있음
@@ -77,8 +90,12 @@ public class SecurityConfig {
 //        CorsConfiguration configuration = new CorsConfiguration();
 //        configuration.setAllowCredentials(true);
 //        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+////        configuration.setAllowedOrigins(List.of("http://localhost:5174"));
+//        configuration.setAllowedMethods(List.of("OPTIONS","GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Refresh-Token"));
+//        configuration.setExposedHeaders(List.of("Authorization", "Refresh-Token"));
+//        configuration.setMaxAge(3600L); // 프리플라이트 요청의 캐시 시간 설정
+//
 //        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 //        source.registerCorsConfiguration("/**", configuration);
 //        return source;

@@ -1,4 +1,4 @@
-package com.example.gagunokuga_back.user.dto;
+package com.example.gagunokuga_back.user.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import lombok.Getter;
 public class SearchResponseDto {
 
     private String nickname;
-    private String ProfileImageUrl;
+    private String profileImageUrl;
 
 
 }

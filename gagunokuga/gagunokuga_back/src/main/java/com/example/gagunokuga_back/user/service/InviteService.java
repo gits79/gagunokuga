@@ -1,8 +1,8 @@
 package com.example.gagunokuga_back.user.service;
 
 import com.example.gagunokuga_back.user.domain.User;
-import com.example.gagunokuga_back.user.dto.SearchResponseDto;
-import com.example.gagunokuga_back.user.dto.SearchResultDto;
+import com.example.gagunokuga_back.user.dto.user.SearchResponseDto;
+import com.example.gagunokuga_back.user.dto.user.SearchResultDto;
 import com.example.gagunokuga_back.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
