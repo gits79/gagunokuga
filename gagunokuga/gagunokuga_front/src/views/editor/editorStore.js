@@ -9,7 +9,7 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
   // 객체 선언
   let draw = null; // SVG 객체
 
-  const baseURL = import.meta.env.VITE_APP_API_BASE_URL
+  const baseURL = import.meta.env.VITE_API_URL
 
   let isPanning = false;
   let panStart = { x: 0, y: 0 };
