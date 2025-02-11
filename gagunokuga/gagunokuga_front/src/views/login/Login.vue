@@ -22,12 +22,20 @@ const handleKakaoLogin = () => {
       <button type="submit">로그인</button>
     </form>
     <div class="kakao-login">
-      <button @click.prevent="handleKakaoLogin">  <!-- prevent 추가 -->
+      <button @click.prevent="handleKakaoLogin">
         <img src="@/assets/login/kakaoLogin.png" alt="카카오 로그인" />
       </button>
+    </div>
+    <div class="links">
+      <router-link to="/password-reset" class="link">비밀번호 찾기</router-link>
+       /
+      <router-link to="/signup" class="link">회원가입</router-link>
     </div>
   </div>
 </template>
 
+
+
 <style scoped>
+@import "./login.css";
 </style>

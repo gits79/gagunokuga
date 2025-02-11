@@ -30,7 +30,6 @@ onMounted(() => {
   <div >
     <TheHeader />
     <router-view />
-    <TheFooter />
   </div>
 </template>
 

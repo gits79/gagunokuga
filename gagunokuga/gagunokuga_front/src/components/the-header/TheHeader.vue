@@ -31,7 +31,7 @@ const logout = () => {
         <!-- 로그인 상태일 때 로그아웃 버튼 표시 -->
         <li v-if="isLoggedIn" @click="logout"><router-link to="/login">로그아웃</router-link></li>
 
-        <li><router-link to="/room">룸목록</router-link></li>
+        <li><router-link to="/room">도면에디터</router-link></li>
       </ul>
     </nav>
   </header>
