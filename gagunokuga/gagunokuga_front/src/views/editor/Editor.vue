@@ -1,10 +1,10 @@
 <!-- src/views/FloorPlanEditor.vue -->
 <script setup>
 import { ref, onMounted } from "vue";
-import { useFloorPlanStore } from "./editorStore";
+import { useEditorStore } from './editorStore';
 import { useRoute } from "vue-router";
 
-const store = useFloorPlanStore();
+const store = useEditorStore();
 const canvas = ref(null);
 const route = useRoute();
 

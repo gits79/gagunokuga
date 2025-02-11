@@ -3,23 +3,14 @@ import { off, SVG } from "@svgdotjs/svg.js";
 import { reactive, computed, watch, ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import { 
-  getIntersection, 
-  getClosestPointOnLine, 
-  getOrthogonalPoint, 
-  isInBoundary,
-  roundPoint 
-} from './utils/geometryUtils';
+import { useViewportModule } from './modules/viewportModule';
 
-export const useFloorPlanStore = defineStore("floorPlanStore", () => {
+export const useEditorStore = defineStore("editorStore", () => {
   
   // 객체 선언
   let draw = null; // SVG 객체
 
   const baseURL = import.meta.env.VITE_APP_API_BASE_URL
-
-  let isPanning = false;
-  let panStart = { x: 0, y: 0 };
 
   let wallLayer = null;
   let wallStart = null, wallPreview = null;
@@ -45,8 +36,6 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     return walls.find(wall => wall.id === selection.selectedWallId) || null;
   });
 
-  const viewbox = reactive({ x: -2000, y: -2000, width: 4000, height: 4000 });
-  
   const canUndo = computed(() => history.undoStack.length > 0);
   const canRedo = computed(() => history.redoStack.length > 0);
 
@@ -121,23 +110,14 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     }
   };
 
-  // 팬 컨트롤
-  const panControls = {
-    start: (event) => {
-      isPanning = true;
-      panStart = { x: event.clientX, y: event.clientY };
-    },
-    move: (event) => {
-      if (!isPanning) return;
-      const dx = (event.clientX - panStart.x) * viewbox.width / draw.node.clientWidth;
-      const dy = (event.clientY - panStart.y) * viewbox.height / draw.node.clientHeight;
-      viewbox.x -= dx;
-      viewbox.y -= dy;
-      draw.viewbox(viewbox.x, viewbox.y, viewbox.width, viewbox.height);
-      panStart = { x: event.clientX, y: event.clientY };
-    },
-    stop: () => isPanning = false
-  };
+  // viewportModule 초기화
+  const { 
+    viewbox, 
+    setDraw: setViewportDraw,
+    zoomLevel,
+    isPanning: viewportIsPanning,
+    panControls: viewportPanControls 
+  } = useViewportModule();
 
   // 줌 컨트롤롤
   const zoomCanvas = (event) => {
@@ -489,8 +469,20 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     renderLengthLabels();
   };
 
+  // 직각 보정 함수
+  const getOrthogonalPoint = (start, end) => roundPoint({
+    x: Math.abs(end.x - start.x) > Math.abs(end.y - start.y) ? end.x : start.x,
+    y: Math.abs(end.x - start.x) > Math.abs(end.y - start.y) ? start.y : end.y
+  });
+
   // 좌표 보정 함수
   const snapToMillimeter = (value) => Math.round(value);
+
+  // 점 보정 함수
+  const roundPoint = (point) => ({
+    x: snapToMillimeter(point.x),
+    y: snapToMillimeter(point.y),
+  });
 
   //  키 생성 함수
   const drawKeyPoint = (x, y) => {
@@ -857,6 +849,15 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     return closestPoint ? roundPoint(closestPoint) : currentPoint;
   };
 
+  // 선분 위의 가장 가까운 점 찾기
+  const getClosestPointOnLine = (start, end, point) => {
+    const lengthSquared = Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2);
+    if (lengthSquared === 0) return start;
+    let t = ((point.x - start.x) * (end.x - start.x) + (point.y - start.y) * (end.y - start.y)) / lengthSquared;
+    t = Math.max(0, Math.min(1, t));
+    return { x: start.x + t * (end.x - start.x), y: start.y + t * (end.y - start.y) };
+  };
+
   // 벽 두께 설정 함수
   const setWallThickness = (thickness) => {
     const newThickness = Math.max(1, Number(thickness));
@@ -978,6 +979,23 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
       }
     });
     return closestWallId;
+  };
+
+  // 선분 교차점 계산 함수
+  const getIntersection = (line1, line2) => {
+    const x1 = line1.x1, y1 = line1.y1;
+    const x2 = line1.x2, y2 = line1.y2;
+    const x3 = line2.x1, y3 = line2.y1;
+    const x4 = line2.x2, y4 = line2.y2;
+    const denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+    if (Math.abs(denominator) < 0.001) return null; // 평행선 처리
+    const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denominator;
+    const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denominator;
+    if (t < -0.001 || t > 1.001 || u < -0.001 || u > 1.001) return null;
+    return {
+      x: x1 + t * (x2 - x1),
+      y: y1 + t * (y2 - y1)
+    };
   };
 
   // 벽 분할 함수
@@ -1230,6 +1248,13 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     wallLayer.front();
   };
 
+  // 좌표제한 체크 함수
+  const isInBoundary = (coords) => {
+    const BOUNDARY = { min: -50000, max: 50000 };
+    return coords.x >= BOUNDARY.min && coords.x <= BOUNDARY.max && 
+           coords.y >= BOUNDARY.min && coords.y <= BOUNDARY.max;
+  };
+
   // 미리보기 키 업데이트 함수
   const updatePreviewMarkers = (start, end) => {
     wallPreviewGroup.find('.preview-key').forEach(el => el.remove());
@@ -1268,8 +1293,8 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
   // 캔버스 초기화
   const initializeCanvas = (canvasElement) => {
     draw = SVG().addTo(canvasElement).size("100%", "100%");
+    setViewportDraw(draw);  // 이 부분이 실행되고 있는지 확인 필요
     addGrid();
-    draw.viewbox(viewbox.x, viewbox.y, viewbox.width, viewbox.height);
     wallLayer = draw.group().addClass("wall-layer");
   };
     
@@ -1319,6 +1344,13 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
   };
 
   // === 도구 이벤트 설정 === //
+  const executeToolEvent = (eventName, event) => {
+    const tool = tools[toolState.currentTool];
+    if (tool && tool[eventName]) {
+      tool[eventName](event);
+    }
+  };
+  
   const tools = {
     select: {
       onClick: event => {
@@ -1338,22 +1370,21 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
           }
         } else {
           selection.selectedWallId = null;
-          isPanning = true;
-          panControls.start(event);
+          viewportPanControls.start(event);
         }
       },
       onMouseMove: event => {
         if (isMovingWall) {
           moveWallControls.move(event);
-        } else {
-          panControls.move(event);
+        } else if (viewportIsPanning.value) {
+          viewportPanControls.move(event);
         }
       },
       onMouseUp: event => {
         if (isMovingWall) {
           moveWallControls.stop();
-        } else {
-          panControls.stop();
+        } else if (viewportIsPanning.value) {
+          viewportPanControls.stop();
         }
       }
     },
@@ -1372,14 +1403,6 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
       onMouseMove: event => rectTool.move(getSVGCoordinates(event)),
     }
   };
-
-  // 이벤트 처리기 실행 함수 (이벤트 이름, 이벤트 객체)
-  const executeToolEvent = (eventName, event) => {
-    const tool = tools[toolState.currentTool];
-    if (tool && tool[eventName]) {
-      tool[eventName](event);
-    }
-  };
   
   // 리턴
   return {
@@ -1387,23 +1410,20 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     roomId,
     fetchWalls,
     saveWalls,
-
     toolState,
     executeToolEvent,
     initializeCanvas,
     zoomCanvas,
     handleKeyDown,
-    
     setWallThickness,
     setSnapDistance,
     wallControls,
-    rectTool, 
+    rectTool,
     canUndo,
     canRedo,
     undo,
     redo,
     toggleLengthLabels,
-
     selection,
     selectWall,
     selectedWallLength,
@@ -1411,6 +1431,7 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     updateSelectedWallLength,
     updateSelectedWallThickness,
     deleteSelectedWall,
+    viewportIsPanning
   };
     
 });
