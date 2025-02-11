@@ -2,7 +2,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 30px 100px;
+  padding: 30px 130px;
   background-color: #fff;
   /* border-bottom: 1px solid #ddd; */
 }
@@ -33,4 +33,24 @@ nav ul li a {
 
 nav ul li:last-child a {
   color: #EF5C4E; /* 룸목록만 빨간색 */
+}
+
+
+/* 프로필 이미지 */
+.profile {
+  display: flex;
+  gap: 10px;
+}
+
+.profile-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 20%;
+  object-fit: cover;  /* 이미지 비율을 유지하면서 가운데를 잘라냄 */
+}
+
+.nickname {
+  font-size: 16px;  /* 텍스트 크기 조정 */
+  font-family: Arial, sans-serif;  /* 원하는 폰트 설정 */
+  font-weight: bold;  /* 볼드체로 적용 */
 }

@@ -13,6 +13,7 @@ export const useLoginStore = defineStore("loginStore", () => {
     token: "",
     nickname: "", // 닉네임 추가
     profileImage: "", // 프로필이미지 추가
+    provider: "", // oAuth 여부 확인용
     error: "",
     showModal: false, // 모달 상태 추가
   });
@@ -37,7 +38,9 @@ export const useLoginStore = defineStore("loginStore", () => {
         state.token = response.data.accessToken;
         localStorage.setItem("accessToken", state.token);
         axios.defaults.headers.common["Authorization"] = `Bearer ${state.token}`;
-        router.push("/");
+        // 로그인 후 사용자 정보 바로 불러오기
+        await fetchUserInfo();  // 여기서 사용자 정보를 불러옴
+        await router.push("/");
       } else {
         alert("로그인 실패: 서버에서 토큰이 반환되지 않았습니다.");
       }
@@ -109,10 +112,11 @@ export const useLoginStore = defineStore("loginStore", () => {
       const response = await axios.get(`${baseURL}/api/users`, {
         headers: { Authorization: `Bearer ${state.token}` },
       });
-
+      console.log(response.data);
       if (response.data) {
         state.nickname = response.data.nickname;
-        state.profileImage = response.data.profileImage || "/default-profile.png";
+        state.profileImage = response.data.profileImageUrl || "@/assets/gagunokuga_logo_mark.svg";
+        state.provider = response.data.provider;
       }
     } catch (error) {
       console.error("사용자 정보 불러오기 실패:", error);
@@ -125,5 +129,6 @@ export const useLoginStore = defineStore("loginStore", () => {
     kakaoLogin,
     handleLoginSuccess,
     passwordReset,
+    fetchUserInfo,
   };
 });
