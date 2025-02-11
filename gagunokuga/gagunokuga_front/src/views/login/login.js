@@ -11,27 +11,18 @@ export const useLoginStore = defineStore("loginStore", () => {
     email: "",
     password: "",
     token: "",
+    nickname: "", // 닉네임 추가
+    profileImage: "", // 프로필이미지 추가
     error: "",
     showModal: false, // 모달 상태 추가
   });
 
+  // 로그인
   const login = async () => {
-    console.log("로그인 시도:", state.email);
     const fullUrl = `${baseURL}/api/users/login`;
 
     try {
-      console.log("요청 데이터:", {
-        email: state.email,
-        password: state.password,
-      });
-
       axios.interceptors.request.use(request => {
-        console.log('Starting Request:', {
-          url: request.url,
-          method: request.method,
-          data: request.data,
-          headers: request.headers
-        });
         return request;
       });
 
@@ -69,10 +60,12 @@ export const useLoginStore = defineStore("loginStore", () => {
     }
   };
 
+  // 카카오로그인
   const kakaoLogin = () => {
     window.location.href = `${baseURL}/api/oauth/login/kakao`;
   };
 
+  // 카카오로그인 연동 - 토큰 확인
   const handleLoginSuccess = async (tokenData) => {
     console.log('Handling login success with tokens:', tokenData);
 
@@ -98,6 +91,7 @@ export const useLoginStore = defineStore("loginStore", () => {
     }
   };
 
+  // 비밀번호 재설정
   const passwordReset = async (resetEmail) => {
     try {
       const response = await axios.post(`${baseURL}/api/users/reset-password`, { email: resetEmail });
@@ -106,6 +100,22 @@ export const useLoginStore = defineStore("loginStore", () => {
     } catch (error) {
       console.error('비밀번호 재설정 이메일 전송 실패', error);
       alert("비밀번호 재설정 요청 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 사용자 정보 불러오기
+  const fetchUserInfo = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/users`, {
+        headers: { Authorization: `Bearer ${state.token}` },
+      });
+
+      if (response.data) {
+        state.nickname = response.data.nickname;
+        state.profileImage = response.data.profileImage || "/default-profile.png";
+      }
+    } catch (error) {
+      console.error("사용자 정보 불러오기 실패:", error);
     }
   };
 
