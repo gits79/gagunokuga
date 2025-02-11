@@ -2,9 +2,18 @@
 import { useLoginStore } from './login';  // 로그인 상태를 가져옵니다.
 
 const loginStore = useLoginStore();  // 로그인 상태를 초기화
+
 const handleKakaoLogin = () => {
   loginStore.kakaoLogin();
 };
+
+const handlePasswordReset = () => {
+  loginStore.passwordReset(loginStore.state.email);  // 이메일을 넘겨줘야 합니다.
+};
+
+const toggleModal = () => {
+  loginStore.state.showModal = !loginStore.state.showModal;  // 모달 열기/닫기
+}
 </script>
 
 <template>
@@ -27,14 +36,25 @@ const handleKakaoLogin = () => {
       </button>
     </div>
     <div class="links">
-      <router-link to="/password-reset" class="link">비밀번호 찾기</router-link>
-       /
+      <button @click="toggleModal" class="link">비밀번호 찾기</button>
+      /
       <router-link to="/signup" class="link">회원가입</router-link>
     </div>
   </div>
+
+  <!-- 모달 창 -->
+  <div v-if="loginStore.state.showModal" class="modal-overlay" @click.self="toggleModal">
+    <div class="modal">
+      <h3>비밀번호 재설정</h3>
+      <div class="form-group">
+        <label for="reset-email">이메일</label>
+        <input v-model="loginStore.state.email" type="email" id="reset-email" required placeholder="이메일을 입력하세요" />
+      </div>
+      <button @click="handlePasswordReset">전송</button>
+      <button @click="toggleModal" class="close-modal">닫기</button>
+    </div>
+  </div>
 </template>
-
-
 
 <style scoped>
 @import "./login.css";

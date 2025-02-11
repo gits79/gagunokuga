@@ -18,7 +18,7 @@ const logout = () => {
 <template>
   <header>
     <router-link to="/" class="logo-link">
-      <img class="logo" src="@/assets/gagunokuga_logo_text.svg" alt="가구놓구가" />
+      <img class="logo" src="@/assets/gagunokuga_logo_logo.svg" alt="가구놓구가" />
     </router-link>
     <nav>
       <ul>
@@ -26,12 +26,11 @@ const logout = () => {
 
         <!-- 로그인 상태일 때 로그인/회원가입 숨기고, 로그아웃 보여주기 -->
         <li v-if="!isLoggedIn"><router-link to="/login">로그인</router-link></li>
-        <li v-if="!isLoggedIn"><router-link to="/signup">회원가입</router-link></li>
 
         <!-- 로그인 상태일 때 로그아웃 버튼 표시 -->
         <li v-if="isLoggedIn" @click="logout"><router-link to="/login">로그아웃</router-link></li>
 
-        <li><router-link to="/room">도면에디터</router-link></li>
+        <li><router-link to="/room">MY홈</router-link></li>
       </ul>
     </nav>
   </header>
