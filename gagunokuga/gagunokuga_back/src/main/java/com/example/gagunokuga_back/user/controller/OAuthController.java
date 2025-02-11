@@ -47,7 +47,7 @@ public class OAuthController {
 
             // URL 구조 수정: #/oauth/success 뒤에 쿼리 파라미터가 오도록 변경
             String redirectUrl = UriComponentsBuilder
-                    .fromUriString("http://localhost:5173/#/oauth/success") // 기본 URL
+                    .fromUriString("http://localhost:5173/oauth/success") // 기본 URL
                     .build()
                     .toUriString()
                     + "?accessToken=" + tokenResponseDto.getAccessToken()   // 해시 뒤에 쿼리 파라미터 추가
