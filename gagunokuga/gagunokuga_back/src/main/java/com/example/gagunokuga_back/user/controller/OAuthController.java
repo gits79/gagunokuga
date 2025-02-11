@@ -21,8 +21,8 @@ import java.net.URI;
 public class OAuthController {
 
     private final KakaoOauthService oauthService;
-    @Value("${DOMAIN}")
-    private String domain;
+    @Value("${DOMAIN_FRONT}")
+    private String domain_front;
 
     @GetMapping("/kakao")
     public ResponseEntity<String> startkakao() {
@@ -49,7 +49,7 @@ public class OAuthController {
 
             // URL 구조 수정: #/oauth/success 뒤에 쿼리 파라미터가 오도록 변경
             String redirectUrl = UriComponentsBuilder
-                    .fromUriString("http://" + domain + "/oauth/success") // 기본 URL
+                    .fromUriString("http://" + domain_front + "/oauth/success") // 기본 URL
                     .build()
                     .toUriString()
                     + "?accessToken=" + tokenResponseDto.getAccessToken()   // 해시 뒤에 쿼리 파라미터 추가
