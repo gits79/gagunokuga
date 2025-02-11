@@ -6,6 +6,7 @@ import axios from "axios";
 import { coordinateUtils, svgUtils } from './modules/utilsModule';
 import { gridModule } from './modules/gridModule';
 import { createHistoryModule } from './modules/historyModule';
+import { createViewModule } from './modules/viewModule';
 
 export const useEditorStore = defineStore("editorStore", () => {
   
@@ -41,8 +42,6 @@ export const useEditorStore = defineStore("editorStore", () => {
     return walls.find(wall => wall.id === selection.selectedWallId) || null;
   });
 
-  const viewbox = reactive({ x: -2000, y: -2000, width: 4000, height: 4000 });
-  
   const { 
     history, 
     canUndo, 
@@ -62,6 +61,21 @@ export const useEditorStore = defineStore("editorStore", () => {
 
   // 그리드 함수를 모듈의 함수로 교체
   const addGrid = () => gridModule.createGrid(draw);
+
+  let viewModule = null;
+
+  // 캔버스 초기화
+  const initializeCanvas = (canvasElement) => {
+    draw = SVG().addTo(canvasElement).size("100%", "100%");
+    addGrid();
+    
+    // view 모듈 생성
+    viewModule = createViewModule(draw);
+    draw.viewbox(viewModule.viewbox.x, viewModule.viewbox.y, 
+                viewModule.viewbox.width, viewModule.viewbox.height);
+    
+    wallLayer = draw.group().addClass("wall-layer");
+  };
 
   // 서버에서 벽 데이터 불러오기
   const fetchWalls = async (id) => {
@@ -134,43 +148,6 @@ export const useEditorStore = defineStore("editorStore", () => {
     }
   };
 
-  // 팬 컨트롤
-  const panControls = {
-    start: (event) => {
-      isPanning = true;
-      panStart = { x: event.clientX, y: event.clientY };
-    },
-    move: (event) => {
-      if (!isPanning) return;
-      const dx = (event.clientX - panStart.x) * viewbox.width / draw.node.clientWidth;
-      const dy = (event.clientY - panStart.y) * viewbox.height / draw.node.clientHeight;
-      viewbox.x -= dx;
-      viewbox.y -= dy;
-      draw.viewbox(viewbox.x, viewbox.y, viewbox.width, viewbox.height);
-      panStart = { x: event.clientX, y: event.clientY };
-    },
-    stop: () => isPanning = false
-  };
-
-  // 줌 컨트롤롤
-  const zoomCanvas = (event) => {
-    const zoomFactor = event.deltaY > 0 ? 1.1 : 0.9;
-    const point = draw.node.createSVGPoint();
-    point.x = event.clientX;
-    point.y = event.clientY;
-    const svgPoint = point.matrixTransform(draw.node.getScreenCTM().inverse());
-    const newWidth = viewbox.width * zoomFactor;
-    const newHeight = viewbox.height * zoomFactor;
-    const dx = (svgPoint.x - viewbox.x) * (newWidth / viewbox.width - 1);
-    const dy = (svgPoint.y - viewbox.y) * (newHeight / viewbox.height - 1);
-    viewbox.x -= dx;
-    viewbox.y -= dy;
-    viewbox.width = newWidth;
-    viewbox.height = newHeight;
-    draw.viewbox(viewbox.x, viewbox.y, viewbox.width, viewbox.height);
-    updateVisualElements();
-  };
-
   // 벽 생성 컨트롤
   const wallControls = {
     start: (coords) => {
@@ -197,7 +174,7 @@ export const useEditorStore = defineStore("editorStore", () => {
       if (length > 1) {
         const midX = (wallStart.x + end.x) / 2;
         const midY = (wallStart.y + end.y) / 2;
-        const fontSize = viewbox.width * 0.025;
+        const fontSize = viewModule.viewbox.width * 0.025;
         wallPreviewGroup
           .text(`${length}mm`)
           .font({ size: fontSize, anchor: 'middle' })
@@ -357,7 +334,7 @@ export const useEditorStore = defineStore("editorStore", () => {
       });
       
       // 가로/세로 길이 표시
-      const fontSize = viewbox.width * 0.02;
+      const fontSize = viewModule.viewbox.width * 0.02;
       
       // 가로 길이
       if (width > 1) {
@@ -446,7 +423,7 @@ export const useEditorStore = defineStore("editorStore", () => {
 
   //  키 생성 함수
   const drawKeyPoint = (x, y) => {
-    const keySize = viewbox.width * 0.02;
+    const keySize = viewModule.viewbox.width * 0.02;
     draw.circle(keySize)
       .fill("#fff")
       .stroke({ color: "#000", width: keySize * 0.1 })
@@ -465,7 +442,7 @@ export const useEditorStore = defineStore("editorStore", () => {
 
   // 화살표 생성 함수
   const drawArrow = (x, y, angle, isStart) => {
-    const arrowSize = viewbox.width * 0.0125;
+    const arrowSize = viewModule.viewbox.width * 0.0125;
     const arrowAngle = Math.PI * 0.4;
     const direction = isStart ? 1 : -1;
     
@@ -481,14 +458,14 @@ export const useEditorStore = defineStore("editorStore", () => {
     
     return draw.polyline([[p1.x, p1.y], [p2.x, p2.y], [p3.x, p3.y]])
       .fill('none')
-      .stroke({ width: viewbox.width * 0.00125, color: '#000' })
+      .stroke({ width: viewModule.viewbox.width * 0.00125, color: '#000' })
       .addClass('dimension');
   };
 
   // 연결선 생성 함수
   const drawDimensionLine = (start, end) => {
     return draw.line(start.x, start.y, end.x, end.y)
-      .stroke({ width: viewbox.width * 0.00125, color: '#000' })
+      .stroke({ width: viewModule.viewbox.width * 0.00125, color: '#000' })
       .addClass('dimension');
   };
 
@@ -528,7 +505,7 @@ export const useEditorStore = defineStore("editorStore", () => {
     const isVertical = Math.abs(wall.y2 - wall.y1) > Math.abs(wall.x2 - wall.x1);
     const isUpward = wall.y1 > wall.y2;
     const isRightward = wall.x1 < wall.x2;
-    const offset = wall.thickness / 2 + viewbox.width * 0.0125;
+    const offset = wall.thickness / 2 + viewModule.viewbox.width * 0.0125;
 
     // 직교 보정용 오프셋
     let upperLeftOffset = 0, upperRightOffset = 0, lowerLeftOffset = 0, lowerRightOffset = 0;
@@ -610,7 +587,7 @@ export const useEditorStore = defineStore("editorStore", () => {
     const midX = (wall.x1 + wall.x2) / 2;
     const midY = (wall.y1 + wall.y2) / 2;
     const length = Math.round(Math.hypot(wall.x2 - wall.x1, wall.y2 - wall.y1));
-    const fontSize = Math.min(100, viewbox.width / 64);
+    const fontSize = Math.min(100, viewModule.viewbox.width / 64);
     const maxOffset = length / 2;
     const dimensionLineOffset = Math.min(
       maxOffset, 
@@ -1203,7 +1180,7 @@ export const useEditorStore = defineStore("editorStore", () => {
   const updatePreviewMarkers = (start, end) => {
     wallPreviewGroup.find('.preview-key').forEach(el => el.remove());
 
-    const keySize = viewbox.width * 0.02;
+    const keySize = viewModule.viewbox.width * 0.02;
     [start, end].forEach(({ x, y }) => {
       wallPreviewGroup
         .circle(keySize)
@@ -1216,14 +1193,6 @@ export const useEditorStore = defineStore("editorStore", () => {
 
   // == 유틸리티 함수들 == //
 
-  // 캔버스 초기화
-  const initializeCanvas = (canvasElement) => {
-    draw = SVG().addTo(canvasElement).size("100%", "100%");
-    addGrid();
-    draw.viewbox(viewbox.x, viewbox.y, viewbox.width, viewbox.height);
-    wallLayer = draw.group().addClass("wall-layer");
-  };
-    
   // 단축키 처리 함수
   const handleKeyDown = (event) => {
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
@@ -1281,22 +1250,21 @@ export const useEditorStore = defineStore("editorStore", () => {
           }
         } else {
           selection.selectedWallId = null;
-          isPanning = true;
-          panControls.start(event);
+          viewModule?.panControls.start(event);
         }
       },
       onMouseMove: event => {
         if (isMovingWall) {
           moveWallControls.move(event);
         } else {
-          panControls.move(event);
+          viewModule?.panControls.move(event);
         }
       },
-      onMouseUp: event => {
+      onMouseUp: () => {
         if (isMovingWall) {
           moveWallControls.stop();
         } else {
-          panControls.stop();
+          viewModule?.panControls.stop();
         }
       }
     },
@@ -1331,6 +1299,11 @@ export const useEditorStore = defineStore("editorStore", () => {
   const undo = () => historyUndo(walls, wallLayer, wallCreationMethods.renderWall, updateVisualElements);
   const redo = () => historyRedo(walls, wallLayer, wallCreationMethods.renderWall, updateVisualElements);
 
+  // 줌 이벤트 핸들러 수정
+  const handleZoom = (event) => {
+    viewModule?.zoomCanvas(event);
+  };
+
   // 리턴
   return {
     walls,
@@ -1341,7 +1314,7 @@ export const useEditorStore = defineStore("editorStore", () => {
     toolState,
     executeToolEvent,
     initializeCanvas,
-    zoomCanvas,
+    zoomCanvas: handleZoom,
     handleKeyDown,
     
     setWallThickness,
@@ -1361,6 +1334,7 @@ export const useEditorStore = defineStore("editorStore", () => {
     updateSelectedWallLength,
     updateSelectedWallThickness,
     deleteSelectedWall,
+    viewbox: computed(() => viewModule?.viewbox),
   };
     
 });
