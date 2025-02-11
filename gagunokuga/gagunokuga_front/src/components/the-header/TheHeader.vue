@@ -17,6 +17,9 @@ const logout = () => {
 
 <template>
   <header>
+    <router-link to="/" class="logo-link">
+      <img class="logo" src="@/assets/gagunokuga_logo_text.svg" alt="가구놓구가" />
+    </router-link>
     <nav>
       <ul>
         <li><router-link to="/">홈</router-link></li>

@@ -1,15 +1,36 @@
 header {
-  background-color: #AAA;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  padding: 50px 100px;
+  background-color: #fff;
+  /* border-bottom: 1px solid #ddd; */
 }
 
-header nav ul {
+.logo-link {
+  padding-left: 16px;
+}
+
+.logo {
+  height: 40px; /* 로고 크기 조절 */
+}
+
+nav ul {
   display: flex;
+  list-style: none; /* 리스트 앞 점 제거 */
+  padding-right: 16px;
 }
 
-header nav ul li a {
+nav ul li {
+  margin-left: 20px; /* 항목 간 간격 조절 */
+}
+
+nav ul li a {
+  text-decoration: none;
   color: black;
-  margin-left: 10px;
+  font-weight: bold;
+}
+
+nav ul li:last-child a {
+  color: #EF5C4E; /* 룸목록만 빨간색 */
 }
