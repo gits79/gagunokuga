@@ -1,10 +1,9 @@
 package com.example.gagunokuga_back.user.service;
 
-import com.example.gagunokuga_back.user.dto.LoginRequestDto;
-import com.example.gagunokuga_back.user.dto.TokenResponseDto;
-import com.example.gagunokuga_back.user.domain.User;
-import com.example.gagunokuga_back.user.exception.UserNotFoundException;
+import com.example.gagunokuga_back.user.dto.login.LoginRequestDto;
+import com.example.gagunokuga_back.user.dto.login.TokenResponseDto;
 import com.example.gagunokuga_back.user.repository.UserRepository;
+import com.example.gagunokuga_back.user.security.CustomUserDetails;
 import com.example.gagunokuga_back.user.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,19 +19,26 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
 
+//      기존 방식임
+//    public TokenResponseDto login(LoginRequestDto loginDto) {
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                loginDto.getEmail(), loginDto.getPassword()));
+//
+//        User user = userRepository.findByEmail(loginDto.getEmail());
+//
+//
+//        return jwtTokenProvider.createToken(user.getId());
+//    }
+//
 
     public TokenResponseDto login(LoginRequestDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                loginDto.getEmail(), loginDto.getPassword()));
+                        loginDto.getEmail(), loginDto.getPassword()));
 
-        User user = userRepository.findByEmail(loginDto.getEmail());
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        if(user == null) {
-            throw new UserNotFoundException("가입되지 않은 회원입니다.");
-        }
-
-
-        return jwtTokenProvider.createToken(user.getId());
+        return jwtTokenProvider.createToken(userDetails.getId());
     }
 }

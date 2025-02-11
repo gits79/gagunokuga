@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import Home from "@/views/home/Home.vue";
 import Login from "@/views/login/Login.vue";
 import SignUp from "@/views/signup/SignUp.vue";
@@ -11,7 +11,7 @@ import OAuthSuccess from "../views/login/OAuthSuccess.vue";
 
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes: [
     { path: "/", name: "Home", component: Home },
     { path: "/login", name: "Login", component: Login },
@@ -52,7 +52,8 @@ window.addEventListener('load', () => {
 
     console.log("Original URL:", fullPath);
     console.log("Search params:", url.search);
-    window.location.href = `/#/oauth/success${url.search}`;
+    window.location.href = `/oauth/success${url.search}`;
+    
   }
 });
 

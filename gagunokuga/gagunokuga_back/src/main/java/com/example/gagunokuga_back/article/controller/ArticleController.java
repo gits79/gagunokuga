@@ -1,19 +1,14 @@
 package com.example.gagunokuga_back.article.controller;
 
-import com.example.gagunokuga_back.article.domain.Article;
 import com.example.gagunokuga_back.article.dto.ArticleListResponse;
 import com.example.gagunokuga_back.article.dto.ArticleResponse;
 import com.example.gagunokuga_back.article.dto.CreateArticleRequest;
 import com.example.gagunokuga_back.article.service.ArticleService;
-import com.example.gagunokuga_back.image.service.ImageService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +16,6 @@ import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/articles")

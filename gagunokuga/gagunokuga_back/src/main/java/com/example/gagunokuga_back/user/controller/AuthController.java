@@ -1,7 +1,7 @@
 package com.example.gagunokuga_back.user.controller;
 
-import com.example.gagunokuga_back.user.dto.LoginRequestDto;
-import com.example.gagunokuga_back.user.dto.TokenResponseDto;
+import com.example.gagunokuga_back.user.dto.login.LoginRequestDto;
+import com.example.gagunokuga_back.user.dto.login.TokenResponseDto;
 import com.example.gagunokuga_back.user.exception.UserNotFoundException;
 import com.example.gagunokuga_back.user.service.AuthService;
 import lombok.RequiredArgsConstructor;

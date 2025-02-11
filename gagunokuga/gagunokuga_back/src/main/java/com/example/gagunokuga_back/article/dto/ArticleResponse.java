@@ -18,7 +18,7 @@ public class ArticleResponse {
     private String title;
     private String content;
     private LocalDateTime createdAt;
-    private String nickName;
+    private String nickname;
     private String profileImageUrl;
     private List<ArticleImageResponse> articleImages; // 이미지 URL 리스트
 
@@ -34,7 +34,7 @@ public class ArticleResponse {
                 .title(article.getTitle())
                 .content(article.getContent())
                 .createdAt(article.getCreatedAt())
-                .nickName(article.getUser().getNickname()) // User 엔티티에서 닉네임 가져오기
+                .nickname(article.getUser().getNickname()) // User 엔티티에서 닉네임 가져오기
                 .profileImageUrl(article.getUser().getProfileImageUrl()) // 프로필 이미지 URL
                 .articleImages(articleImageResponses) // 변환된 이미지 리스트
                 .build();
