@@ -4,6 +4,7 @@ import TheFooter from "@/components/the-footer/TheFooter.vue";
 import "@/styles/global.css";
 import { useLoginStore } from "@/views/login/login";
 import { onMounted } from 'vue';
+import axios from "axios";
 
 const loginStore = useLoginStore();
 
