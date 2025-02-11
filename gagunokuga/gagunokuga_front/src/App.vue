@@ -29,7 +29,7 @@ onMounted(() => {
 
 <template>
   <div >
-    <TheHeader />
+    <!-- <TheHeader /> -->
     <router-view />
   </div>
 </template>
