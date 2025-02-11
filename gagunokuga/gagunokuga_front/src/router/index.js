@@ -32,13 +32,15 @@ const router = createRouter({
           name: "ArticleDetail",
           component: ArticleDetail
         },
-      ]
+      ],
+      meta: { showHeader: true },
     },
-    { path: "/login", name: "Login", component: Login },
-    { path: "/room", name: "Room", component: Room },
-    { path: '/editor/:roomId', name: 'Editor', component: Editor },
-    { path: "/signup", name: "SignUp", component: SignUp },
-    { path: "/oauth/success", name: "OAuthSuccess", component: OAuthSuccess},
+    
+    { path: "/login", name: "Login", component: Login, meta: { showHeader: true }, },
+    { path: "/room", name: "Room", component: Room, meta: { showHeader: true }, },
+    { path: '/editor/:roomId', name: 'Editor', component: Editor, meta: { showHeader: false }, },
+    { path: "/signup", name: "SignUp", component: SignUp, meta: { showHeader: true }, },
+    { path: "/oauth/success", name: "OAuthSuccess", component: OAuthSuccess, meta: { showHeader: false }, },
     { path: "/pwdcheck", name: "PasswordCheck", component: PwdCheck, meta: { showHeader: true }, },
     { path: "/mypage", name: "MyPage", component: MyPage, meta: { showHeader: true }, },
 
