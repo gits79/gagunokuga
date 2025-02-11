@@ -1,14 +1,10 @@
 package com.example.gagunokuga_back.furniture.controller;
 
-import com.example.gagunokuga_back.furniture.domain.Furniture;
 import com.example.gagunokuga_back.furniture.dto.FurnitureListResponse;
-import com.example.gagunokuga_back.furniture.repository.FurnitureRepository;
 import com.example.gagunokuga_back.furniture.service.FurnitureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/furnitures")

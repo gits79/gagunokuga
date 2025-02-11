@@ -23,14 +23,14 @@ public class WallServiceImpl implements WallService {
     private final RoomRepository roomRepository;
 
     @Override
-    public WallListResponse getWallsByRoom(Long roomid) {
-        Room room = roomRepository.findById(roomid)
-                .orElseThrow(() -> new IllegalArgumentException("해당 방이 존재하지 않습니다: " + roomid));
+    public WallListResponse getWallsByRoom(Long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 방이 존재하지 않습니다: " + roomId));
 
         List<WallResponse> walls = wallRepository.findByRoom(room).stream()
                 .map(wall -> new WallResponse(
                         wall.getId(),
-                        roomid,
+                        roomId,
                         wall.getStartx(),
                         wall.getStarty(),
                         wall.getEndx(),
@@ -39,14 +39,14 @@ public class WallServiceImpl implements WallService {
                 ))
                 .collect(Collectors.toList());
 
-        return new WallListResponse(roomid, walls);
+        return new WallListResponse(roomId, walls);
     }
 
     @Transactional
     @Override
     public void saveWalls(WallListRequest wallListRequest) {
-        Room room = roomRepository.findById(wallListRequest.getRoomid())
-                .orElseThrow(() -> new IllegalArgumentException("해당 방이 존재하지 않습니다: " + wallListRequest.getRoomid()));
+        Room room = roomRepository.findById(wallListRequest.getRoomId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 방이 존재하지 않습니다: " + wallListRequest.getRoomId()));
 
         // 삭제된 벽들 일괄 처리
         if (wallListRequest.getDeletedWalls() != null && !wallListRequest.getDeletedWalls().isEmpty()) {
