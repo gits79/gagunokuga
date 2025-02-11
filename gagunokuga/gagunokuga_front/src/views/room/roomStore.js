@@ -4,7 +4,7 @@ import axios from 'axios'
 
 export const useRoomListStore = defineStore('roomList', () => {
   const rooms = ref([])
-  const baseURL = import.meta.env.VITE_APP_API_BASE_URL
+  const baseURL = import.meta.env.VITE_API_URL
 
   // ✅ 방 목록 불러오기
   const fetchRooms = async () => {

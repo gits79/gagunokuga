@@ -52,7 +52,8 @@ window.addEventListener('load', () => {
 
     console.log("Original URL:", fullPath);
     console.log("Search params:", url.search);
-    window.location.href = `/#/oauth/success${url.search}`;
+    window.location.href = `/oauth/success${url.search}`;
+    
   }
 });
 

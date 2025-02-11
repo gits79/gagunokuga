@@ -1,14 +1,17 @@
 package com.example.gagunokuga_back.config;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.regions.Region;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConfigurationProperties(prefix = "spring.cloud.aws")
 public class S3Config {
     @Value("${spring.cloud.aws.credentials.access-key}")
     private String accessKey;
@@ -18,11 +21,12 @@ public class S3Config {
     private String region;
 
     @Bean
-    public AmazonS3 amazonS3() {
-        BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(accessKey, secretKey);
+    public S3Client s3Client() {
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(accessKey, secretKey);
 
-        return AmazonS3ClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
-                .withRegion(region).build();
+        return S3Client.builder()
+                .region(Region.of(region))
+                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+                .build();
     }
 }
