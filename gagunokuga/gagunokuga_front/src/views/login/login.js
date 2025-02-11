@@ -11,27 +11,19 @@ export const useLoginStore = defineStore("loginStore", () => {
     email: "",
     password: "",
     token: "",
+    nickname: "", // 닉네임 추가
+    profileImage: "", // 프로필이미지 추가
+    provider: "", // oAuth 여부 확인용
     error: "",
     showModal: false, // 모달 상태 추가
   });
 
+  // 로그인
   const login = async () => {
-    console.log("로그인 시도:", state.email);
     const fullUrl = `${baseURL}/api/users/login`;
 
     try {
-      console.log("요청 데이터:", {
-        email: state.email,
-        password: state.password,
-      });
-
       axios.interceptors.request.use(request => {
-        console.log('Starting Request:', {
-          url: request.url,
-          method: request.method,
-          data: request.data,
-          headers: request.headers
-        });
         return request;
       });
 
@@ -46,7 +38,9 @@ export const useLoginStore = defineStore("loginStore", () => {
         state.token = response.data.accessToken;
         localStorage.setItem("accessToken", state.token);
         axios.defaults.headers.common["Authorization"] = `Bearer ${state.token}`;
-        router.push("/");
+        // 로그인 후 사용자 정보 바로 불러오기
+        await fetchUserInfo();  // 여기서 사용자 정보를 불러옴
+        await router.push("/");
       } else {
         alert("로그인 실패: 서버에서 토큰이 반환되지 않았습니다.");
       }
@@ -69,10 +63,12 @@ export const useLoginStore = defineStore("loginStore", () => {
     }
   };
 
+  // 카카오로그인
   const kakaoLogin = () => {
     window.location.href = `${baseURL}/api/oauth/login/kakao`;
   };
 
+  // 카카오로그인 연동 - 토큰 확인
   const handleLoginSuccess = async (tokenData) => {
     console.log('Handling login success with tokens:', tokenData);
 
@@ -98,6 +94,7 @@ export const useLoginStore = defineStore("loginStore", () => {
     }
   };
 
+  // 비밀번호 재설정
   const passwordReset = async (resetEmail) => {
     try {
       const response = await axios.post(`${baseURL}/api/users/reset-password`, { email: resetEmail });
@@ -109,11 +106,29 @@ export const useLoginStore = defineStore("loginStore", () => {
     }
   };
 
+  // 사용자 정보 불러오기
+  const fetchUserInfo = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/users`, {
+        headers: { Authorization: `Bearer ${state.token}` },
+      });
+      console.log(response.data);
+      if (response.data) {
+        state.nickname = response.data.nickname;
+        state.profileImage = response.data.profileImageUrl || "@/assets/gagunokuga_logo_mark.svg";
+        state.provider = response.data.provider;
+      }
+    } catch (error) {
+      console.error("사용자 정보 불러오기 실패:", error);
+    }
+  };
+
   return {
     login,
     state,
     kakaoLogin,
     handleLoginSuccess,
     passwordReset,
+    fetchUserInfo,
   };
 });
