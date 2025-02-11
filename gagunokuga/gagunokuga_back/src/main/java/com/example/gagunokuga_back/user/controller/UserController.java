@@ -1,9 +1,9 @@
 package com.example.gagunokuga_back.user.controller;
 
-import com.example.gagunokuga_back.user.dto.PasswordRequestDto;
+import com.example.gagunokuga_back.user.dto.user.PasswordRequestDto;
 import com.example.gagunokuga_back.user.dto.PasswordResetRequestDto;
-import com.example.gagunokuga_back.user.dto.UpdateRequestDto;
-import com.example.gagunokuga_back.user.dto.UserResponseDto;
+import com.example.gagunokuga_back.user.dto.user.UpdateRequestDto;
+import com.example.gagunokuga_back.user.dto.login.UserResponseDto;
 import com.example.gagunokuga_back.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -2,6 +2,11 @@ package com.example.gagunokuga_back.user.service;
 
 import com.example.gagunokuga_back.user.domain.User;
 import com.example.gagunokuga_back.user.dto.*;
+import com.example.gagunokuga_back.user.dto.login.UserResponseDto;
+import com.example.gagunokuga_back.user.dto.signup.CheckResponseDto;
+import com.example.gagunokuga_back.user.dto.signup.UserRequestDto;
+import com.example.gagunokuga_back.user.dto.user.PasswordRequestDto;
+import com.example.gagunokuga_back.user.dto.user.UpdateRequestDto;
 import com.example.gagunokuga_back.user.email.EmailService;
 import com.example.gagunokuga_back.user.repository.UserRepository;
 import com.example.gagunokuga_back.user.security.CustomUserDetails;
@@ -120,17 +125,34 @@ public class UserService {
     }
 
 
+    //토큰으로 유저 확인
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication ==null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
             throw new InvalidOneTimeTokenException("no token information");
         }
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userRepository.findByEmail(customUserDetails.getUsername());
-        if(user ==null) {
+        if (user == null) {
             throw new NoSuchElementException("no such user");
         }
         return user;
+    }
+
+    @Transactional
+    public User saveOrUpdate(User user) {
+        User existingUser = userRepository.findByEmail(user.getEmail());
+        if(existingUser != null) {
+            // 기존 유저가 카카오 유저인 경우 업데이트
+            if("kakao".equals(existingUser.getProvider())) {
+                existingUser.changeNickname(user.getNickname());
+                existingUser.changeProfileImgUrl(user.getProfileImageUrl());
+                return userRepository.save(existingUser);
+            }
+            // 일반 회원가입 유저인 경우 예외 발생
+            throw new IllegalArgumentException("User already exists with this email");
+        }
+        return userRepository.save(user);
     }
 
 
