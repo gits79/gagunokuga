@@ -115,28 +115,11 @@ export const useEditorStore = defineStore("editorStore", () => {
     viewbox, 
     setDraw: setViewportDraw,
     zoomLevel,
-    isPanning: viewportIsPanning,
-    panControls: viewportPanControls 
+    isPanning,
+    panControls,
+    zoomControls,
+    onViewportChange
   } = useViewportModule();
-
-  // 줌 컨트롤롤
-  const zoomCanvas = (event) => {
-    const zoomFactor = event.deltaY > 0 ? 1.1 : 0.9;
-    const point = draw.node.createSVGPoint();
-    point.x = event.clientX;
-    point.y = event.clientY;
-    const svgPoint = point.matrixTransform(draw.node.getScreenCTM().inverse());
-    const newWidth = viewbox.width * zoomFactor;
-    const newHeight = viewbox.height * zoomFactor;
-    const dx = (svgPoint.x - viewbox.x) * (newWidth / viewbox.width - 1);
-    const dy = (svgPoint.y - viewbox.y) * (newHeight / viewbox.height - 1);
-    viewbox.x -= dx;
-    viewbox.y -= dy;
-    viewbox.width = newWidth;
-    viewbox.height = newHeight;
-    draw.viewbox(viewbox.x, viewbox.y, viewbox.width, viewbox.height);
-    updateVisualElements();
-  };
 
   // 벽 생성 컨트롤
   const wallControls = {
@@ -1293,9 +1276,12 @@ export const useEditorStore = defineStore("editorStore", () => {
   // 캔버스 초기화
   const initializeCanvas = (canvasElement) => {
     draw = SVG().addTo(canvasElement).size("100%", "100%");
-    setViewportDraw(draw);  // 이 부분이 실행되고 있는지 확인 필요
+    setViewportDraw(draw);
     addGrid();
     wallLayer = draw.group().addClass("wall-layer");
+    
+    // 뷰포트 변경 콜백 설정
+    onViewportChange.value = updateVisualElements;
   };
     
   // 마우스 좌표 -> SVG좌표 함수
@@ -1370,21 +1356,21 @@ export const useEditorStore = defineStore("editorStore", () => {
           }
         } else {
           selection.selectedWallId = null;
-          viewportPanControls.start(event);
+          panControls.start(event);
         }
       },
       onMouseMove: event => {
         if (isMovingWall) {
           moveWallControls.move(event);
-        } else if (viewportIsPanning.value) {
-          viewportPanControls.move(event);
+        } else if (isPanning.value) {
+          panControls.move(event);
         }
       },
       onMouseUp: event => {
         if (isMovingWall) {
           moveWallControls.stop();
-        } else if (viewportIsPanning.value) {
-          viewportPanControls.stop();
+        } else if (isPanning.value) {
+          panControls.stop();
         }
       }
     },
@@ -1413,7 +1399,6 @@ export const useEditorStore = defineStore("editorStore", () => {
     toolState,
     executeToolEvent,
     initializeCanvas,
-    zoomCanvas,
     handleKeyDown,
     setWallThickness,
     setSnapDistance,
@@ -1431,7 +1416,10 @@ export const useEditorStore = defineStore("editorStore", () => {
     updateSelectedWallLength,
     updateSelectedWallThickness,
     deleteSelectedWall,
-    viewportIsPanning
+    isPanning,
+    panControls,
+    zoomControls,
+    zoomLevel
   };
     
 });

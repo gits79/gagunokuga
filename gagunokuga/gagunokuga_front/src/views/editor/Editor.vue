@@ -70,7 +70,7 @@ const handleSave = () => {
       @mousemove="store.executeToolEvent('onMouseMove', $event)"
       @mouseup="store.executeToolEvent('onMouseUp', $event)"
       @click="store.executeToolEvent('onClick', $event)"
-      @wheel.prevent="store.zoomCanvas"
+      @wheel.prevent="store.zoomControls.handleWheel"
     ></div>
 
     <!-- 오른쪽 속성 사이드바 -->

@@ -35,6 +35,40 @@ export const useViewportModule = () => {
     }
   };
 
+  // 뷰포트 변경 콜백
+  const onViewportChange = ref(null);
+
+  // 줌 컨트롤 추가
+  const zoomControls = {
+    zoom: (scale) => {
+      if (!draw.value) return;
+
+      const oldWidth = viewbox.width;
+      const oldHeight = viewbox.height;
+      const newWidth = oldWidth * scale;
+      const newHeight = oldHeight * scale;
+      const dx = (oldWidth - newWidth) / 2;
+      const dy = (oldHeight - newHeight) / 2;
+
+      viewbox.width = newWidth;
+      viewbox.height = newHeight;
+      viewbox.x += dx;
+      viewbox.y += dy;
+
+      draw.value.viewbox(viewbox.x, viewbox.y, viewbox.width, viewbox.height);
+      
+      if (onViewportChange.value) {
+        onViewportChange.value();
+      }
+    },
+
+    handleWheel: (event) => {
+      event.preventDefault();
+      const scale = event.deltaY > 0 ? 1.1 : 0.9;
+      zoomControls.zoom(scale);
+    }
+  };
+
   /**
    * 팬 컨트롤러
    */
@@ -70,6 +104,8 @@ export const useViewportModule = () => {
     setDraw,
     zoomLevel,
     isPanning,
-    panControls
+    panControls,
+    zoomControls,
+    onViewportChange
   };
 }; 
