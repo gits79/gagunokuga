@@ -8,6 +8,8 @@ import OAuthCallback from "@/views/login/OAuthCallback.vue";
 import OAuthSuccess from "../views/login/OAuthSuccess.vue";
 import PwdCheck from "../views/mypage/Passwordcheck.vue";
 import MyPage from "../views/mypage/Mypage.vue";
+import ArticleList from "../views/article/ArticleList.vue";
+import ArticleDetail from "../views/article/ArticleDetail.vue";
 
 
 
@@ -36,7 +38,10 @@ const router = createRouter({
     { path: "/room", name: "Room", component: Room },
     { path: '/editor/:roomId', name: 'Editor', component: Editor },
     { path: "/signup", name: "SignUp", component: SignUp },
-    { path: "/oauth/success", name: "OAuthSuccess", component: OAuthSuccess}
+    { path: "/oauth/success", name: "OAuthSuccess", component: OAuthSuccess},
+    { path: "/pwdcheck", name: "PasswordCheck", component: PwdCheck, meta: { showHeader: true }, },
+    { path: "/mypage", name: "MyPage", component: MyPage, meta: { showHeader: true }, },
+
     // {
     //   path: '/oauth/callback',
     //   name: "OAuthCallback",
