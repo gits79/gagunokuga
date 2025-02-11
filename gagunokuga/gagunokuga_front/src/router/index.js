@@ -26,10 +26,10 @@ const router = createRouter({
           component: ArticleList
         },
         {
-          path: "article/:articleId",
+          path: "/article/:articleId",
           name: "ArticleDetail",
           component: ArticleDetail
-        }
+        },
       ]
     },
     { path: "/login", name: "Login", component: Login },

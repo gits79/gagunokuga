@@ -12,8 +12,20 @@ export const useArticleStore = defineStore('articleStore', () => {
         try {
             const response = await axios.get(`${baseURL}/articles`);
             articleList.value = response.data;
-            console.log(articleList.value);
             return articleList.value;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // 게시물 상세 조회
+    const article = ref({});
+    const getArticle = async (articleId) => {
+        try {
+            const response = await axios.get(`${baseURL}/articles/${articleId}`);
+            console.log(response.data);
+            article.value = response.data;
+            return article.value;
         } catch (error) {
             console.error(error);
         }
@@ -22,7 +34,9 @@ export const useArticleStore = defineStore('articleStore', () => {
 
   return {
     articleList,
-    getArticleList
+    getArticleList,
+    getArticle,
+    article
     
   }
 })

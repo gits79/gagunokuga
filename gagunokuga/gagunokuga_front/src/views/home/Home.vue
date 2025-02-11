@@ -22,5 +22,5 @@ import { RouterView } from "vue-router";
 </script>
 
 <style scoped>
-  @import "./home.css";
+@import "./Home.css";
 </style>
