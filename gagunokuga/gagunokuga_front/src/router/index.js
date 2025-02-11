@@ -2,45 +2,21 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "@/views/home/Home.vue";
 import Login from "@/views/login/Login.vue";
 import SignUp from "@/views/signup/SignUp.vue";
-<<<<<<< HEAD
-<<<<<<< HEAD
 import Room from "@/views/room/Room.vue";
 import Editor from "@/views/editor/Editor.vue";
 import OAuthCallback from "@/views/login/OAuthCallback.vue";
 import OAuthSuccess from "../views/login/OAuthSuccess.vue";
+import ArticleList from "../views/article/ArticleList.vue";
+import ArticleDetail from "../views/article/ArticleDetail.vue";
 
 
 
-=======
-import RoomList from "@/views/room/Room.vue";
-import FloorPlanEditor from "@/views/editor/Editor.vue";
-import ArticleList from "@/views/article/ArticleList.vue";
-import ArticleDetail from "@/views/article/ArticleDetail.vue";
-
-const routes = [
-  { path: "/", name: "Home", component: Home, children: [{ path: "", name: "ArticleList", component: ArticleList}, { path: "article:articleId", name: "ArticleDetail", component: ArticleDetail}]},
-  { path: "/login", name: "Login", component: Login },
-  { path: "/signup", name: "SignUp", component: SignUp },
-  { path: "/room", name: "Room", component: RoomList },
-  { path: '/editor/:roomId', name: 'Editor', component: FloorPlanEditor },
-];
->>>>>>> a9ffdbc ([front] article init)
-=======
-import Room from "@/views/room/Room.vue";
-import Editor from "@/views/editor/Editor.vue";
-import ArticleList from "@/views/article/ArticleList.vue";
-import ArticleDetail from "@/views/article/ArticleDetail.vue";
-
-
->>>>>>> 1a9f0db ([S12P11A607-83] modify router index.js)
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-<<<<<<< HEAD
-    { path: "/", name: "Home", component: Home },
-=======
-    { path: "/",
+    { 
+      path: "/",
       name: "Home",
       component: Home,
       children: [
@@ -53,19 +29,14 @@ const router = createRouter({
           path: "article/:articleId",
           name: "ArticleDetail",
           component: ArticleDetail
-        },
+        }
       ]
-  },
->>>>>>> 1a9f0db ([S12P11A607-83] modify router index.js)
+    },
     { path: "/login", name: "Login", component: Login },
     { path: "/room", name: "Room", component: Room },
     { path: '/editor/:roomId', name: 'Editor', component: Editor },
     { path: "/signup", name: "SignUp", component: SignUp },
-<<<<<<< HEAD
     { path: "/oauth/success", name: "OAuthSuccess", component: OAuthSuccess}
-=======
-    // { path: "/oauth/success", name: "OAuthSuccess", component: OAuthSuccess}
->>>>>>> 1a9f0db ([S12P11A607-83] modify router index.js)
     // {
     //   path: '/oauth/callback',
     //   name: "OAuthCallback",
@@ -89,7 +60,6 @@ const router = createRouter({
     //   }
     // }
   ]
-<<<<<<< HEAD
 });
 
 // OAuth 콜백 URL을 처리하기 위한 전역 리스너는 그대로 유지
@@ -103,21 +73,6 @@ window.addEventListener('load', () => {
     window.location.href = `/oauth/success${url.search}`;
     
   }
-=======
->>>>>>> 1a9f0db ([S12P11A607-83] modify router index.js)
 });
-
-// // OAuth 콜백 URL을 처리하기 위한 전역 리스너는 그대로 유지
-// window.addEventListener('load', () => {
-//   const fullPath = window.location.href;
-//   if (fullPath.includes('/oauth/callback')) {
-//     const url = new URL(fullPath);
-
-//     console.log("Original URL:", fullPath);
-//     console.log("Search params:", url.search);
-//     window.location.href = `/oauth/success${url.search}`;
-    
-//   }
-// });
 
 export default router;
