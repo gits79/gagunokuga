@@ -143,6 +143,13 @@ public class UserService {
     public User saveOrUpdate(User user) {
         User existingUser = userRepository.findByEmail(user.getEmail());
         if(existingUser != null) {
+            // 기존 유저가 카카오 유저인 경우 업데이트
+            if("kakao".equals(existingUser.getProvider())) {
+                existingUser.changeNickname(user.getNickname());
+                existingUser.changeProfileImgUrl(user.getProfileImageUrl());
+                return userRepository.save(existingUser);
+            }
+            // 일반 회원가입 유저인 경우 예외 발생
             throw new IllegalArgumentException("User already exists with this email");
         }
         return userRepository.save(user);

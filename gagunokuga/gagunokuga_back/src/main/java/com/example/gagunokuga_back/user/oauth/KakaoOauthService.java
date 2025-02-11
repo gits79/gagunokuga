@@ -132,10 +132,9 @@ public class KakaoOauthService {
         String email = (String) kakaoAccount.get("email");
         String nickname = (String) profile.get("nickname");
         String profileImage = (String) profile.get("profile_image_url");
-        String providerId = (String) profile.get("provider_id");
-        String providerUserId = (String) profile.get("provider_user_id");
+        String providerId = String.valueOf(response.get("id"));
 
-        return new User(email, nickname, profileImage);
+        return new User(email, nickname, "kakao", providerId, profileImage, 0);
 
     }
 
