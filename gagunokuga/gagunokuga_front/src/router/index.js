@@ -8,6 +8,8 @@ import OAuthCallback from "@/views/login/OAuthCallback.vue";
 import OAuthSuccess from "../views/login/OAuthSuccess.vue";
 import PwdCheck from "../views/mypage/Passwordcheck.vue";
 import MyPage from "../views/mypage/Mypage.vue";
+import ArticleList from "../views/article/ArticleList.vue";
+import ArticleDetail from "../views/article/ArticleDetail.vue";
 
 
 
@@ -15,7 +17,25 @@ import MyPage from "../views/mypage/Mypage.vue";
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: "/", name: "Home", component: Home, meta: { showHeader: true }, },
+    { 
+      path: "/",
+      name: "Home",
+      component: Home,
+      children: [
+        {
+          path: "",
+          name: "ArticleList",
+          component: ArticleList
+        },
+        {
+          path: "/article/:articleId",
+          name: "ArticleDetail",
+          component: ArticleDetail
+        },
+      ],
+      meta: { showHeader: true },
+    },
+    
     { path: "/login", name: "Login", component: Login, meta: { showHeader: true }, },
     { path: "/room", name: "Room", component: Room, meta: { showHeader: true }, },
     { path: '/editor/:roomId', name: 'Editor', component: Editor, meta: { showHeader: false }, },
@@ -23,6 +43,7 @@ const router = createRouter({
     { path: "/oauth/success", name: "OAuthSuccess", component: OAuthSuccess, meta: { showHeader: false }, },
     { path: "/pwdcheck", name: "PasswordCheck", component: PwdCheck, meta: { showHeader: true }, },
     { path: "/mypage", name: "MyPage", component: MyPage, meta: { showHeader: true }, },
+
     // {
     //   path: '/oauth/callback',
     //   name: "OAuthCallback",
