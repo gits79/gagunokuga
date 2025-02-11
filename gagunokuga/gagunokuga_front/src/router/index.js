@@ -6,8 +6,8 @@ import Room from "@/views/room/Room.vue";
 import Editor from "@/views/editor/Editor.vue";
 import OAuthCallback from "@/views/login/OAuthCallback.vue";
 import OAuthSuccess from "../views/login/OAuthSuccess.vue";
-import ArticleList from "../views/article/ArticleList.vue";
-import ArticleDetail from "../views/article/ArticleDetail.vue";
+import PwdCheck from "../views/mypage/Passwordcheck.vue";
+import MyPage from "../views/mypage/Mypage.vue";
 
 
 
