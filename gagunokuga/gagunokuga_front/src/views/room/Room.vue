@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRoomListStore } from './roomStore'
 import defaultThumbnail from '@/assets/gagunokugaLogo.png'
