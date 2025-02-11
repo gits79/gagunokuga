@@ -11,7 +11,7 @@ public class ChatResponse {
     private Long id;
     private String content;
     private Long roomId;
-    private String nickName;
+    private String nickname;
     private String profileImageUrl;
 
 }

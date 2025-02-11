@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface WallRepository extends JpaRepository<Wall, Long> {
-    // 특정 방(roomid)에 속한 벽 리스트 조회
+    // 특정 방(roomId)에 속한 벽 리스트 조회
     List<Wall> findByRoom(Room room);
 
     // 여러 벽을 한 번에 삭제하는 메서드 추가
