@@ -1,6 +1,6 @@
 package com.example.gagunokuga_back.user.controller;
 
-import com.example.gagunokuga_back.user.dto.SearchResultDto;
+import com.example.gagunokuga_back.user.dto.user.SearchResultDto;
 import com.example.gagunokuga_back.user.service.InviteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
