@@ -3,8 +3,10 @@ import { off, SVG } from "@svgdotjs/svg.js";
 import { reactive, computed, watch, ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
+import { coordinateUtils, svgUtils } from './modules/utilsModule';
+import { gridModule } from './modules/gridModule';
 
-export const useFloorPlanStore = defineStore("floorPlanStore", () => {
+export const useEditorStore = defineStore("editorStore", () => {
   
   // 객체 선언
   let draw = null; // SVG 객체
@@ -42,6 +44,17 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
   
   const canUndo = computed(() => history.undoStack.length > 0);
   const canRedo = computed(() => history.redoStack.length > 0);
+
+  // 유틸리티 함수들을 새로운 모듈의 함수로 교체
+  const roundPoint = coordinateUtils.roundPoint;
+  const snapToMillimeter = coordinateUtils.snapToMillimeter;
+  const getClosestPointOnLine = coordinateUtils.getClosestPointOnLine;
+  const getOrthogonalPoint = coordinateUtils.getOrthogonalPoint;
+  const isInBoundary = coordinateUtils.isInBoundary;
+  const getSVGCoordinates = (event) => svgUtils.getSVGCoordinates(event, draw);
+
+  // 그리드 함수를 모듈의 함수로 교체
+  const addGrid = () => gridModule.createGrid(draw);
 
   // 서버에서 벽 데이터 불러오기
   const fetchWalls = async (id) => {
@@ -482,21 +495,6 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     renderLengthLabels();
   };
 
-  // 직각 보정 함수
-  const getOrthogonalPoint = (start, end) => roundPoint({
-    x: Math.abs(end.x - start.x) > Math.abs(end.y - start.y) ? end.x : start.x,
-    y: Math.abs(end.x - start.x) > Math.abs(end.y - start.y) ? start.y : end.y
-  });
-
-  // 좌표 보정 함수
-  const snapToMillimeter = (value) => Math.round(value);
-
-  // 점 보정 함수
-  const roundPoint = (point) => ({
-    x: snapToMillimeter(point.x),
-    y: snapToMillimeter(point.y),
-  });
-
   //  키 생성 함수
   const drawKeyPoint = (x, y) => {
     const keySize = viewbox.width * 0.02;
@@ -860,15 +858,6 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
       }
     }
     return closestPoint ? roundPoint(closestPoint) : currentPoint;
-  };
-
-  // 선분 위의 가장 가까운 점 찾기
-  const getClosestPointOnLine = (start, end, point) => {
-    const lengthSquared = Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2);
-    if (lengthSquared === 0) return start;
-    let t = ((point.x - start.x) * (end.x - start.x) + (point.y - start.y) * (end.y - start.y)) / lengthSquared;
-    t = Math.max(0, Math.min(1, t));
-    return { x: start.x + t * (end.x - start.x), y: start.y + t * (end.y - start.y) };
   };
 
   // 벽 두께 설정 함수
@@ -1261,13 +1250,6 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     wallLayer.front();
   };
 
-  // 좌표제한 체크 함수
-  const isInBoundary = (coords) => {
-    const BOUNDARY = { min: -50000, max: 50000 };
-    return coords.x >= BOUNDARY.min && coords.x <= BOUNDARY.max && 
-           coords.y >= BOUNDARY.min && coords.y <= BOUNDARY.max;
-  };
-
   // 미리보기 키 업데이트 함수
   const updatePreviewMarkers = (start, end) => {
     wallPreviewGroup.find('.preview-key').forEach(el => el.remove());
@@ -1285,24 +1267,6 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
 
   // == 유틸리티 함수들 == //
 
-  // 그리드
-  const addGrid = () => {
-    const GRID_BOUNDARY = { min: -50000, max: 50000 };
-    draw.find(".grid-line").forEach(line => line.remove());
-    for (let i = GRID_BOUNDARY.min; i <= GRID_BOUNDARY.max; i += 100) {
-      const color = i % 1000 === 0 ? "#111" : "#555";
-      const width = i % 1000 === 0 ? 1 : 0.5;
-      draw.line(GRID_BOUNDARY.min, i, GRID_BOUNDARY.max, i).stroke({ width, color }).addClass("grid-line");
-      draw.line(i, GRID_BOUNDARY.min, i, GRID_BOUNDARY.max).stroke({ width, color }).addClass("grid-line");
-    }
-    draw.line(GRID_BOUNDARY.min, 0, GRID_BOUNDARY.max, 0).stroke({ width: 10, color: "#000" }).addClass("grid-line");
-    draw.line(0, GRID_BOUNDARY.min, 0, GRID_BOUNDARY.max).stroke({ width: 10, color: "#000" }).addClass("grid-line");
-    [GRID_BOUNDARY.min, GRID_BOUNDARY.max].forEach(pos => {
-      draw.line(pos, GRID_BOUNDARY.min, pos, GRID_BOUNDARY.max).stroke({ width: 50, color: "#f00" }).addClass("grid-line");
-      draw.line(GRID_BOUNDARY.min, pos, GRID_BOUNDARY.max, pos).stroke({ width: 50, color: "#f00" }).addClass("grid-line");
-    });
-  };
-
   // 캔버스 초기화
   const initializeCanvas = (canvasElement) => {
     draw = SVG().addTo(canvasElement).size("100%", "100%");
@@ -1311,14 +1275,6 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     wallLayer = draw.group().addClass("wall-layer");
   };
     
-  // 마우스 좌표 -> SVG좌표 함수
-  const getSVGCoordinates = (event) => {
-    const point = draw.node.createSVGPoint();
-    point.x = event.clientX;
-    point.y = event.clientY;
-    return point.matrixTransform(draw.node.getScreenCTM().inverse());
-  };
-
   // 단축키 처리 함수
   const handleKeyDown = (event) => {
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
