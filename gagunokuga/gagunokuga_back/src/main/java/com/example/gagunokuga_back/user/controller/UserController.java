@@ -19,6 +19,7 @@ public class UserController {
     //마이페이지 들어가기 전 비밀번호 입력해서 맞는지 확인
     @PostMapping("/pwd")
     public ResponseEntity<?> checkPassword(@RequestBody PasswordRequestDto passwordRequestDto) {
+        System.out.println(passwordRequestDto.getPassword());
         userService.checkPassword(passwordRequestDto);
         return ResponseEntity.ok().build();
     }

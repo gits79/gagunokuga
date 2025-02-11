@@ -12,7 +12,7 @@ export const useLoginStore = defineStore("loginStore", () => {
     password: "",
     token: "",
     error: "",
-    showModal: false,  // 모달 상태 추가
+    showModal: false, // 모달 상태 추가
   });
 
   const login = async () => {
@@ -20,10 +20,27 @@ export const useLoginStore = defineStore("loginStore", () => {
     const fullUrl = `${baseURL}/api/users/login`;
 
     try {
+      console.log("요청 데이터:", {
+        email: state.email,
+        password: state.password,
+      });
+
+      axios.interceptors.request.use(request => {
+        console.log('Starting Request:', {
+          url: request.url,
+          method: request.method,
+          data: request.data,
+          headers: request.headers
+        });
+        return request;
+      });
+
       const response = await axios.post(fullUrl, {
         email: state.email,
         password: state.password,
       });
+
+      console.log("로그인 응답 데이터:", response.data);
 
       if (response.data && response.data.accessToken) {
         state.token = response.data.accessToken;
@@ -35,6 +52,18 @@ export const useLoginStore = defineStore("loginStore", () => {
       }
     } catch (error) {
       console.error("로그인 요청 오류:", error);
+      if (error.response) {
+        console.error("Error Response Data:", error.response.data);
+        console.error("Error Response Status:", error.response.status);
+
+        if (error.response.status === 404) {
+          alert(error.response.data || "가입되지 않은 회원입니다.");
+        } else {
+          alert("서버 오류가 발생했습니다.");
+        }
+      } else {
+        alert("서버 연결에 실패했습니다.");
+      }
       state.error = "서버 오류가 발생했습니다.";
       return { success: false, message: state.error };
     }
@@ -44,12 +73,39 @@ export const useLoginStore = defineStore("loginStore", () => {
     window.location.href = `${baseURL}/api/oauth/login/kakao`;
   };
 
+  const handleLoginSuccess = async (tokenData) => {
+    console.log('Handling login success with tokens:', tokenData);
+
+    if (tokenData?.accessToken && tokenData?.refreshToken) {
+      try {
+        state.token = tokenData.accessToken;
+        localStorage.setItem("accessToken", tokenData.accessToken);
+        localStorage.setItem("refreshToken", tokenData.refreshToken);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${tokenData.accessToken}`;
+
+        console.log('Tokens stored successfully:', {
+          access: localStorage.getItem('accessToken'),
+          refresh: localStorage.getItem('refreshToken')
+        });
+        return true;
+      } catch (error) {
+        console.error('Error storing tokens:', error);
+        return false;
+      }
+    } else {
+      console.error('Invalid token data received:', tokenData);
+      return false;
+    }
+  };
+
   const passwordReset = async (resetEmail) => {
     try {
-      const response = await axios.post('/api/users/reset-password', { email: resetEmail });
+      const response = await axios.post(`${baseURL}/api/users/reset-password`, { email: resetEmail });
       console.log('비밀번호 재설정 이메일 전송 성공', response.data);
+      alert("비밀번호 재설정 이메일이 전송되었습니다.");
     } catch (error) {
       console.error('비밀번호 재설정 이메일 전송 실패', error);
+      alert("비밀번호 재설정 요청 중 오류가 발생했습니다.");
     }
   };
 
@@ -57,6 +113,7 @@ export const useLoginStore = defineStore("loginStore", () => {
     login,
     state,
     kakaoLogin,
+    handleLoginSuccess,
     passwordReset,
   };
 });
