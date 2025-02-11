@@ -38,8 +38,6 @@ export const useLoginStore = defineStore("loginStore", () => {
       const response = await axios.post(fullUrl, {
         email: state.email,
         password: state.password,
-      }, {
-        withCredentials: true
       });
 
       console.log("로그인 응답 데이터:", response.data);
