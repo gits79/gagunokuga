@@ -1,5 +1,6 @@
 package com.example.gagunokuga_back.user.controller;
 
+import com.example.gagunokuga_back.user.domain.User;
 import com.example.gagunokuga_back.user.dto.user.PasswordRequestDto;
 import com.example.gagunokuga_back.user.dto.PasswordResetRequestDto;
 import com.example.gagunokuga_back.user.dto.user.UpdateRequestDto;
@@ -8,6 +9,7 @@ import com.example.gagunokuga_back.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/users")
@@ -31,11 +33,25 @@ public class UserController {
         return ResponseEntity.ok().body(userInfo);
     }
 
-    //내 정보 수정
+    //내 정보 수정(닉넴, 비번)
     @PutMapping
-    public ResponseEntity<Void> updateUser(@RequestBody UpdateRequestDto updateRequestDto) {
-        userService.update(updateRequestDto);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<UserResponseDto> updateUser(@RequestBody UpdateRequestDto updateRequestDto) {
+        User updatedUser = userService.updateBasicInfo(updateRequestDto);
+        return ResponseEntity.ok(UserResponseDto.builder()
+                .email(updatedUser.getEmail())
+                .nickname(updatedUser.getNickname())
+                .profileImageUrl(updatedUser.getProfileImageUrl()).build());
+    }
+
+    //프로필 이미지 수정 - null일때 될지 몰라요
+    @PutMapping("/profile-image")
+    public ResponseEntity<UserResponseDto> updateUserProfileImage(@RequestPart("profileImage") MultipartFile profileImage) {
+        User updatedUser = userService.updateProfileImage(profileImage);
+        return ResponseEntity.ok(UserResponseDto.builder()
+                .email(updatedUser.getEmail())
+                .nickname(updatedUser.getNickname())
+                .profileImageUrl(updatedUser.getProfileImageUrl()).build());
+
     }
 
 
