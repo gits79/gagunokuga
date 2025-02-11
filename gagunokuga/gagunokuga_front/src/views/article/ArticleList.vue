@@ -1,14 +1,20 @@
 <template>
-  <div class="container mx-auto p-4">
+  <div class="container mx-auto p-4 flex justify-center">
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       <div v-for="article in store.articleList.articles" :key="article.id" 
-        class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+        class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-transform transform hover:scale-105 w-72 h-auto">
         <router-link :to="'/article/' + article.id" class="block">
-          <img :src="article.articleImages[0]?.imageUrl" alt="article_thumbnail" 
-            class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105" />
+          <div class="overflow-hidden">
+            <img :src="article.articleImages[0]?.imageUrl" alt="article_thumbnail" 
+              class="w-full h-60 object-cover transition-transform duration-300 group-hover:scale-105" />
+          </div>
           <div class="p-4">
             <h3 class="text-lg font-semibold text-gray-900 truncate">{{ article.title }}</h3>
-            <p class="text-sm text-gray-600 mt-1 line-clamp-2">{{ article.content }}</p>
+            <div class="flex items-center mt-2">
+              <img :src="article.profileImageUrl ? article.profileImageUrl : 'src/assets/default_profile.png'" 
+                alt="author_profile" class="w-6 h-6 rounded-full mr-2" />
+              <span class="text-sm text-gray-600">{{ article.nickname }}</span>
+            </div>
           </div>
         </router-link>
       </div>
@@ -30,7 +36,6 @@ onMounted(() => {
 <style scoped>
 .line-clamp-2 {
   display: -webkit-box;
-  /* -webkit-line-clamp: 2; */
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

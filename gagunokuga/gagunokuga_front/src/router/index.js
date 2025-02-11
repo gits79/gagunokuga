@@ -13,10 +13,11 @@ import OAuthSuccess from "../views/login/OAuthSuccess.vue";
 =======
 import RoomList from "@/views/room/Room.vue";
 import FloorPlanEditor from "@/views/editor/Editor.vue";
-import ArticleList from "../views/article/ArticleList.vue";
+import ArticleList from "@/views/article/ArticleList.vue";
+import ArticleDetail from "@/views/article/ArticleDetail.vue";
 
 const routes = [
-  { path: "/", name: "Home", component: Home, children: [{ path: "", name: "ArticleList", component: ArticleList}] },
+  { path: "/", name: "Home", component: Home, children: [{ path: "", name: "ArticleList", component: ArticleList}, { path: "article:articleId", name: "ArticleDetail", component: ArticleDetail}]},
   { path: "/login", name: "Login", component: Login },
   { path: "/signup", name: "SignUp", component: SignUp },
   { path: "/room", name: "Room", component: RoomList },
