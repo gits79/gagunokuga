@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { coordinateUtils, svgUtils } from './modules/utilsModule';
 import { gridModule } from './modules/gridModule';
-import { createHistoryModule } from './modules/historyModule';
 
 export const useEditorStore = defineStore("editorStore", () => {
   
@@ -43,14 +42,8 @@ export const useEditorStore = defineStore("editorStore", () => {
 
   const viewbox = reactive({ x: -2000, y: -2000, width: 4000, height: 4000 });
   
-  const { 
-    history, 
-    canUndo, 
-    canRedo, 
-    saveState: historySaveState, 
-    undo: historyUndo, 
-    redo: historyRedo 
-  } = createHistoryModule();
+  const canUndo = computed(() => history.undoStack.length > 0);
+  const canRedo = computed(() => history.redoStack.length > 0);
 
   // 유틸리티 함수들을 새로운 모듈의 함수로 교체
   const roundPoint = coordinateUtils.roundPoint;
@@ -427,6 +420,64 @@ export const useEditorStore = defineStore("editorStore", () => {
       }
       rectTool.startPoint = null;
     }
+  };
+
+  // walls 상태 변경을 추적하기 위한 history 스택 추가
+  const history = reactive({
+    undoStack: [],  // 실행 취소용 스택
+    redoStack: [],  // 다시 실행용 스택
+    isRecording: true  // 현재 history 기록 여부
+  });
+
+  // 현재 상태를 저장하는 함수
+  const saveState = () => {
+    if (!history.isRecording) return;
+    history.undoStack.push(JSON.stringify(walls));
+    history.redoStack = [];  // redo 스택 초기화
+  };
+
+  // 상태를 복원하는 함수
+  const loadState = (state) => {
+    // DOM에서 현재 벽들 제거
+    wallLayer.children().forEach(wall => wall.remove());
+    
+    // walls 배열 초기화 및 새로운 상태로 교체
+    walls.splice(0, walls.length, ...JSON.parse(state));
+    
+    // 벽 다시 그리기
+    walls.forEach(wall => {
+      wallCreationMethods.renderWall(wall);
+    });
+    
+    // 시각요소 업데이트
+    updateVisualElements();
+    selection.selectedWallId = null;  // 선택 초기화
+  };
+
+  // Undo 함수
+  const undo = () => {
+    if (history.undoStack.length === 0) return;
+    
+    // 현재 상태를 redo 스택에 저장
+    history.redoStack.push(JSON.stringify(walls));
+    
+    // 이전 상태 복원
+    history.isRecording = false;  // 상태 복원 중 history 기록 방지
+    loadState(history.undoStack.pop());
+    history.isRecording = true;
+  };
+
+  // Redo 함수
+  const redo = () => {
+    if (history.redoStack.length === 0) return;
+    
+    // 현재 상태를 undo 스택에 저장
+    history.undoStack.push(JSON.stringify(walls));
+    
+    // 다음 상태 복원
+    history.isRecording = false;
+    loadState(history.redoStack.pop());
+    history.isRecording = true;
   };
 
   // 레이블 토글
@@ -1324,13 +1375,6 @@ export const useEditorStore = defineStore("editorStore", () => {
     }
   };
   
-  // 상태 저장 함수
-  const saveState = () => historySaveState(walls);
-
-  // undo/redo 함수 정의
-  const undo = () => historyUndo(walls, wallLayer, wallCreationMethods.renderWall, updateVisualElements);
-  const redo = () => historyRedo(walls, wallLayer, wallCreationMethods.renderWall, updateVisualElements);
-
   // 리턴
   return {
     walls,
