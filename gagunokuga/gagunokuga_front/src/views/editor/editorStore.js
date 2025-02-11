@@ -7,6 +7,7 @@ import { coordinateUtils, svgUtils } from './modules/utilsModule';
 import { gridModule } from './modules/gridModule';
 import { createHistoryModule } from './modules/historyModule';
 import { createViewModule } from './modules/viewModule';
+import { createToolModule } from './modules/toolModule';
 
 export const useEditorStore = defineStore("editorStore", () => {
   
@@ -26,12 +27,14 @@ export const useEditorStore = defineStore("editorStore", () => {
   const roomId = ref(null);
   const deletedWalls = reactive([]);
 
-  const toolState = reactive({
-    currentTool: "select",
-    wallThickness: 100,
-    snapDistance: 100,
-    showLengthLabels: true,
-  });
+  const { 
+    toolState, 
+    setCurrentTool,
+    setWallThickness,
+    setSnapDistance,
+    toggleLengthLabels,
+    createToolHandlers 
+  } = createToolModule();
 
   let isMovingWall = false;
   let moveStartCoords = { x: 0, y: 0 };
@@ -406,12 +409,6 @@ export const useEditorStore = defineStore("editorStore", () => {
     }
   };
 
-  // 레이블 토글
-  const toggleLengthLabels = () => {
-    toolState.showLengthLabels = !toolState.showLengthLabels;
-    updateVisualElements();
-  };
-
   // == 유틸리티 함수들 == //
 
   // 화면갱신
@@ -784,18 +781,6 @@ export const useEditorStore = defineStore("editorStore", () => {
       }
     }
     return closestPoint ? roundPoint(closestPoint) : currentPoint;
-  };
-
-  // 벽 두께 설정 함수
-  const setWallThickness = (thickness) => {
-    const newThickness = Math.max(1, Number(thickness));
-    toolState.wallThickness = newThickness;
-  };
-
-  // 스냅 거리 설정 함수
-  const setSnapDistance = (distance) => {
-    const newDistance = Math.max(1, Number(distance));
-    toolState.snapDistance = newDistance;
   };
 
   // 벽 선택 함수
@@ -1197,33 +1182,30 @@ export const useEditorStore = defineStore("editorStore", () => {
   const handleKeyDown = (event) => {
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
     switch (event.key) {
-      case "Escape": // ESC
+      case "Escape":
         if (toolState.currentTool === "wall") {
           wallControls.cancel();
         } else if (toolState.currentTool === "rect") {
           rectTool.cancel();
         }
         break;
-      case "Delete": // Delete
+      case "Delete":
         if (selection.selectedWallId) {
           deleteSelectedWall();
         }
         break;
-      case "1": toolState.currentTool = "select"; break; // 1 : 선택
-      case "2": toolState.currentTool = "wall"; break; // 2 : 벽
-      case "3": toolState.currentTool = "rect"; break; // 3 : 사각형
-      case "l": case "L": toggleLengthLabels(); break; // l : 레이블 토글
+      case "1": setCurrentTool("select"); break;
+      case "2": setCurrentTool("wall"); break;
+      case "3": setCurrentTool("rect"); break;
+      case "l": case "L": 
+        toggleLengthLabels();  // toolModule의 함수 사용
+        updateVisualElements(); // 시각적 요소 업데이트 추가
+        break;
       default:
-        if (event.ctrlKey) { // Ctrl
+        if (event.ctrlKey) {
           switch (event.key) {
-            case "z": // Ctrl + z
-              event.preventDefault();
-              undo();
-              break;
-            case "y": // Ctrl + y
-              event.preventDefault();
-              redo();
-              break;
+            case "z": event.preventDefault(); undo(); break;
+            case "y": event.preventDefault(); redo(); break;
           }
         }
         break;
@@ -1231,14 +1213,14 @@ export const useEditorStore = defineStore("editorStore", () => {
   };
 
   // === 도구 이벤트 설정 === //
-  const tools = {
-    select: {
-      onClick: event => {
+  const tools = createToolHandlers({
+    selectHandlers: {
+      onClick: (event) => {
         const coords = getSVGCoordinates(event);
         selectWall(coords);
         updateWallSelectionVisuals();
       },
-      onMouseDown: event => {
+      onMouseDown: (event) => {
         const coords = getSVGCoordinates(event);
         const clickedWallId = getWallAtCoords(coords);
         if (clickedWallId) {
@@ -1253,7 +1235,7 @@ export const useEditorStore = defineStore("editorStore", () => {
           viewModule?.panControls.start(event);
         }
       },
-      onMouseMove: event => {
+      onMouseMove: (event) => {
         if (isMovingWall) {
           moveWallControls.move(event);
         } else {
@@ -1268,21 +1250,18 @@ export const useEditorStore = defineStore("editorStore", () => {
         }
       }
     },
-    wall: {
-      onClick: event => {
-        const coords = getSVGCoordinates(event);
-        wallControls.onClick(coords);
-      },
-      onMouseMove: event => wallControls.preview(getSVGCoordinates(event))
+    wallHandlers: {
+      onClick: (event) => wallControls.onClick(getSVGCoordinates(event)),
+      onMouseMove: (event) => wallControls.preview(getSVGCoordinates(event))
     },
-    rect: {
-      onClick: event => {
+    rectHandlers: {
+      onClick: (event) => {
         const coords = getSVGCoordinates(event);
         !rectTool.startPoint ? rectTool.start(coords) : rectTool.finish(coords);
       },
-      onMouseMove: event => rectTool.move(getSVGCoordinates(event)),
+      onMouseMove: (event) => rectTool.move(getSVGCoordinates(event))
     }
-  };
+  });
 
   // 이벤트 처리기 실행 함수 (이벤트 이름, 이벤트 객체)
   const executeToolEvent = (eventName, event) => {
@@ -1302,6 +1281,7 @@ export const useEditorStore = defineStore("editorStore", () => {
   // 줌 이벤트 핸들러 수정
   const handleZoom = (event) => {
     viewModule?.zoomCanvas(event);
+    updateVisualElements();
   };
 
   // 리턴
