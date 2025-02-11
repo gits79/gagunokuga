@@ -33,5 +33,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-@import "./ArticleList.css";
+@import "./articleList.css";
 </style>
