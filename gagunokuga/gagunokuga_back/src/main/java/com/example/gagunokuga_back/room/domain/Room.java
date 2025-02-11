@@ -29,6 +29,7 @@ public class Room extends BaseTimeEntity {
         this.roomName = roomName;
     }
 
+    @Builder.Default
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Wall> walls = new ArrayList<>();
 
