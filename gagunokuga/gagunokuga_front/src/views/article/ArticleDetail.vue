@@ -1,5 +1,4 @@
 <template>
-    <TheHeader />
     <div>
         <h3>
             Hello, ArticleDetail!
