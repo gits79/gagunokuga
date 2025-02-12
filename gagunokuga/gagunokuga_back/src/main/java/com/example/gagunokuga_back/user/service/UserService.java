@@ -74,7 +74,7 @@ public class UserService {
     @Transactional
     public UserResponseDto getUserInfo() {
         User user = getCurrentUser();
-        return new UserResponseDto(user.getEmail(), user.getNickname(), user.getProfileImageUrl());
+        return new UserResponseDto(user.getEmail(), user.getNickname(), user.getProfileImageUrl(), user.getProvider());
     }
 
     //정보 수정
