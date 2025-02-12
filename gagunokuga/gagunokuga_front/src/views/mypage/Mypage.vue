@@ -26,6 +26,7 @@ const email = computed(() => loginStore.state.email);
 const profileImage = computed(() => loginStore.state.profileImage || "@/assets/gagunokugaLogo.png");
 
 const router = useRouter();
+const baseURL = import.meta.env.VITE_API_URL;
 
 // 프로필 수정 페이지로 이동
 const goToProfileEdit = () => {
@@ -40,13 +41,13 @@ const goToInfoEdit = () => {
 // 삭제 요청 보내기
 const deleteAccount = async () => {
   try {
-    await axios.delete("/api/user/delete", {
+    await axios.delete(`${baseURL}/api/user/delete`, {
       headers: {
         Authorization: `Bearer ${loginStore.state.token}`,
       },
     });
     loginStore.logout();
-    router.push("/login");
+    await router.push("/login");
   } catch (error) {
     console.error("삭제 중 오류 발생:", error);
   }

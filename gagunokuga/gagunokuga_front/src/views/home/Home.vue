@@ -4,7 +4,7 @@
     <div class="row">
       <div class="box"></div>
       <!-- 클릭 이벤트를 추가 -->
-      <div class="box2" @click="handleClick">
+      <div class="box2" >
         <img class="logo" src="@/assets/gagunokuga_logo_link.svg" alt="도면에디터 바로가기" />
       </div>
     </div>
