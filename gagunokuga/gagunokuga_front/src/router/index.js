@@ -11,6 +11,7 @@ import PwdCheck from "../views/mypage/Passwordcheck.vue";
 import MyPage from "../views/mypage/Mypage.vue";
 import ArticleList from "../views/article/ArticleList.vue";
 import ArticleDetail from "../views/article/ArticleDetail.vue";
+import ArticleCreate from "../views/article/ArticleCreate.vue";
 
 
 
@@ -33,6 +34,11 @@ const router = createRouter({
           name: "ArticleDetail",
           component: ArticleDetail
         },
+        {
+          path: "/article/create",
+          name: "ArticleCreate",
+          component: ArticleCreate
+        }
       ],
       meta: { showHeader: true },
     },
