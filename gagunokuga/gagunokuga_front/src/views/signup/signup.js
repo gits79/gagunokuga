@@ -28,10 +28,6 @@ export const useSignupStore = defineStore("signupStore", () => {
   });
 
 
-  
-  // 이메일 형식 확인
-  // const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
   // 닉네임 중복 확인
   const checkNickname = async () => {
     if (!state.nickname) {
@@ -150,6 +146,12 @@ export const useSignupStore = defineStore("signupStore", () => {
 
   // 회원가입 처리
   const signup = async () => {
+
+    if (!state.isEmailVerified) {
+      alert("이메일 인증이 필요합니다.");
+      return;
+    }
+  
     state.isSubmitting = true;
     try {
       const profileImageUrl = generateAvatarUrl(state.nickname);
