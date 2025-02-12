@@ -11,7 +11,9 @@ import com.example.gagunokuga_back.user.dto.user.UpdateRequestDto;
 import com.example.gagunokuga_back.user.email.EmailService;
 import com.example.gagunokuga_back.user.repository.UserRepository;
 import com.example.gagunokuga_back.user.security.CustomUserDetails;
+import io.jsonwebtoken.io.EncodingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.ott.InvalidOneTimeTokenException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +30,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -53,15 +56,14 @@ public class UserService {
     @Transactional
     public void signup(UserRequestDto requestDto) {
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
-        //String profileImg = api불러와서 해결하기
-        User user = new User(
+                User user = new User(
                 requestDto.getEmail(),
                 encodedPassword,
                 requestDto.getNickname()
         );
 
+        user.changeProfileImgUrl(requestDto.getProfileImageUrl());
         userRepository.save(user);
-//         return new UserResponseDto(user.getEmail(), user.getNickname(), user.getProfileImageUrl());
     }
 
     //비번 체크

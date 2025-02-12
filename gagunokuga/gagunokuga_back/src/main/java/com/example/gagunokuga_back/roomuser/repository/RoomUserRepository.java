@@ -3,6 +3,8 @@ package com.example.gagunokuga_back.roomuser.repository;
 import com.example.gagunokuga_back.room.domain.Room;
 import com.example.gagunokuga_back.roomuser.domain.RoomUser;
 import com.example.gagunokuga_back.user.domain.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,7 +21,7 @@ public interface RoomUserRepository extends JpaRepository<RoomUser, Long> {
     void deleteAllByRoom(Room room);
 
     @Query("SELECT r.room FROM RoomUser r WHERE r.user = :user")
-    List<Room> selectAllByUser(@Param("user") User user);
+    Page<Room> selectAllByUser(@Param("user") User user, Pageable pageable);
 
     @Query("SELECT r.room FROM RoomUser r WHERE r.user = :user AND r.isHost = true")
     List<Room> selectAllByUserAndIsHostIsTrue(@Param("user") User user);

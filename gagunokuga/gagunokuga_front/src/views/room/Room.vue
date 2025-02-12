@@ -37,7 +37,7 @@ const handleUpdateRoomName = async (roomId, currentName) => {
 
 // ✅ 에디터로 이동
 const goToEditor = (roomId) => {
-  router.push({ name: 'Editor', params: { roomId } })
+  router.push({ name: 'FloorEditor', params: { roomId } })
 }
 </script>
 

@@ -85,7 +85,16 @@
         <span v-if="!store.checkPassword" class="invalid">비밀번호가 일치하지 않습니다.</span>
       </div>
 
-      <button type="submit" :disabled="store.state.isSubmitting">회원가입</button>
+      <button 
+        type="submit" 
+        :disabled="
+          store.state.isSubmitting || 
+          !store.state.isEmailVerified || 
+          !store.state.isNicknameValid || 
+          !store.state.isPasswordValid || 
+          !store.checkPassword
+        "
+      >회원가입</button>
     </form>
   </div>
 </template>
