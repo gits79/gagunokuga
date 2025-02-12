@@ -1,15 +1,13 @@
 <script setup>
 import { useLoginStore } from "@/views/login/login";  // 로그인 상태를 가져옵니다
 import { computed, watchEffect } from "vue";
-// 이미지 경로를 import로 불러오기
-import defaultProfileImage from "@/assets/gagunokugaLogo.png";  // 기본 이미지 경로
 
 const loginStore = useLoginStore();  // 로그인 상태 초기화
 
 // 로그인 상태에 따라 메뉴 항목을 동적으로 처리
 const isLoggedIn = computed(() => !!loginStore.state.token);  // 로그인 상태 판단
 const nickname = computed(() => loginStore.state.nickname);
-const profileImage = computed(() => loginStore.state.profileImage || defaultProfileImage);
+const profileImage = computed(() => loginStore.state.profileImage);
 const isProvided = computed(() => !!loginStore.state.provider);  // provider가 null일 경우 false로 변환
 
 // 페이지 로드 시 사용자 정보 불러오기
