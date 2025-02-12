@@ -5,6 +5,11 @@ import com.example.gagunokuga_back.room.dto.RoomListResponse;
 import com.example.gagunokuga_back.room.dto.RoomResponse;
 import com.example.gagunokuga_back.room.dto.UpdateRoomNameRequest;
 import com.example.gagunokuga_back.room.repository.RoomRepository;
+import com.example.gagunokuga_back.roomuser.domain.RoomUser;
+import com.example.gagunokuga_back.roomuser.repository.RoomUserRepository;
+import com.example.gagunokuga_back.roomuser.service.RoomUserService;
+import com.example.gagunokuga_back.user.domain.User;
+import com.example.gagunokuga_back.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +25,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
+    private final UserService userService;
+    private final RoomUserService roomUserService;
+    private final RoomUserRepository roomUserRepository;
     private static final int PAGE_SIZE = 24;
 
     @Override
@@ -28,7 +36,10 @@ public class RoomServiceImpl implements RoomService {
                 .roomName(roomName)
                 .thumbnailUrl(thumbnailUrl)
                 .build();
-        roomRepository.save(room);
+        roomRepository.saveAndFlush(room);
+
+        User user = userService.getCurrentUser();
+        roomUserService.assignHost(room, user);
     }
 
     @Override
@@ -62,6 +73,15 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void deleteRoom(Long roomId) {
-        roomRepository.deleteById(roomId);
+        Room room = roomRepository.findById(roomId).orElse(null);
+        User currentUser = userService.getCurrentUser();
+
+        if(room != null) {
+            RoomUser roomUser = roomUserRepository.findByRoomAndUser(room, currentUser);
+            if (roomUser != null && roomUser.getIsHost()) {
+                roomRepository.delete(room);
+                roomUserService.deleteRoomUsers(room);
+            }
+        }
     }
 }
