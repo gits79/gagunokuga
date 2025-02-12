@@ -3,27 +3,25 @@ import { off, SVG } from "@svgdotjs/svg.js";
 import { reactive, computed, watch, ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import { coordinateUtils, svgUtils } from './modules/utilsModule';
-import { gridModule } from './modules/gridModule';
-import { createHistoryModule } from './modules/historyModule';
-import { createViewModule } from './modules/viewModule';
-import { createToolModule } from './modules/toolModule';
+import { coordinateUtils, svgUtils } from '@/views/editor/modules/utilsModule';
+import { gridModule } from '@/views/editor/modules/gridModule';
+import { createHistoryModule } from '@/views/editor/modules/historyModule';
+import { createViewModule } from '@/views/editor/modules/viewModule';
+import { createToolModule } from '@/views/editor/modules/toolModule';
+import { createWallModule } from '@/views/editor/modules/wallModule';
 
-export const useEditorStore = defineStore("editorStore", () => {
+export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   
   // 객체 선언
   let draw = null; // SVG 객체
 
   const baseURL = import.meta.env.VITE_API_URL
 
-  let isPanning = false;
-  let panStart = { x: 0, y: 0 };
-
   let wallLayer = null;
   let wallStart = null, wallPreview = null;
   let wallPreviewGroup = null;
 
-  const walls = reactive([]);
+  const { walls, setWallLayer, getWallLayer } = createWallModule();
   const roomId = ref(null);
   const deletedWalls = reactive([]);
 
@@ -66,6 +64,7 @@ export const useEditorStore = defineStore("editorStore", () => {
   const addGrid = () => gridModule.createGrid(draw);
 
   let viewModule = null;
+  let wallModule = null;
 
   // 캔버스 초기화
   const initializeCanvas = (canvasElement) => {
@@ -78,6 +77,7 @@ export const useEditorStore = defineStore("editorStore", () => {
                 viewModule.viewbox.width, viewModule.viewbox.height);
     
     wallLayer = draw.group().addClass("wall-layer");
+    setWallLayer(wallLayer);
   };
 
   // 서버에서 벽 데이터 불러오기
@@ -724,8 +724,8 @@ export const useEditorStore = defineStore("editorStore", () => {
     draw.find('.length-label').forEach(len => len.remove());
     draw.find('.dimension').forEach(dim => dim.remove());
     if (toolState.showLengthLabels) {
-      wallLayer.children().forEach(wall => {
-        const wallId = wall.attr('data-id');
+      walls.forEach(wall => {
+        const wallId = wall.id;
         if (wallId) {
           createLengthLabel(wallId);
         }
