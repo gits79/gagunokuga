@@ -1,6 +1,9 @@
 package com.example.gagunokuga_back.user.service;
 
 import com.example.gagunokuga_back.image.service.ImageService;
+import com.example.gagunokuga_back.room.domain.Room;
+import com.example.gagunokuga_back.room.service.RoomService;
+import com.example.gagunokuga_back.roomuser.service.RoomUserService;
 import com.example.gagunokuga_back.user.domain.User;
 import com.example.gagunokuga_back.user.dto.*;
 import com.example.gagunokuga_back.user.dto.login.UserResponseDto;
@@ -24,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -37,6 +41,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final ImageService imageService;
+    private final RoomUserService roomUserService;
+    private final RoomService roomService;
 
 
     //이메일 중복 체크
@@ -128,8 +134,16 @@ public class UserService {
 
     //삭제
     @Transactional
-    public void delete() {
+    public void deleteUser() {
         User user = getCurrentUser();
+
+        if(user.getProfileImageUrl() != null) {
+            imageService.deleteImage(user.getProfileImageUrl());
+        }
+        List<Room> ownedRooms = roomUserService.getOwnedRooms(); //호스트인 유저 갖고옴
+        for(Room room : ownedRooms) {
+            roomService.deleteRoom(room.getId());
+        }
         userRepository.delete(user);
     }
 
