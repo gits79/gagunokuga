@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <router-link to="/article/create" class="create-button">글쓰기</router-link>
     <div class="grid-container">
       <div v-for="article in store.articleList.articles" :key="article.id" class="card">
         <router-link :to="'/article/' + article.id" class="card-link">
@@ -23,6 +24,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useArticleStore } from './articleStore';
+import router from '../../router';
 
 const store = useArticleStore();
 
