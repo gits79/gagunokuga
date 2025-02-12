@@ -29,3 +29,27 @@ button {
   user-select: none;
   -webkit-user-drag: none;
 }
+
+.furniture-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.furniture-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.furniture-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  background-color: #000;
+}
+
+.furniture-name {
+  margin-top: 5px;
+  text-align: center;
+}

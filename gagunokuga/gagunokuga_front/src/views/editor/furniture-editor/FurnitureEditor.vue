@@ -9,6 +9,24 @@
   const canvas = ref(null);
   const route = useRoute();
 
+  const onDrop = (event) => {
+    event.preventDefault();
+    store.createImage(event);
+    const furnitureId = event.dataTransfer.getData('furnitureId');
+    const rect = canvas.value.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    logDroppedFurniture(x, y, furnitureId);
+  };
+
+  const onDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const logDroppedFurniture = (x, y, id) => {
+    console.log('Dropped furniture:', { x, y, id });
+  };
+
   onMounted(() => {
     store.fetchWalls(route.params.roomId);
     store.initializeCanvas(canvas.value);
@@ -27,7 +45,13 @@
       @mouseup="store.executeToolEvent('onMouseUp', $event)"
       @click="store.executeToolEvent('onClick', $event)"
       @wheel.prevent="store.zoomCanvas"
-    ></div>
+      @drop="onDrop"
+      @dragover="onDragOver"
+    >
+    <!-- <svg :viewBox="`${store.viewBox.x} ${store.viewBox.y} ${store.viewBox.width} ${store.viewBox.height}`" class="w-full h-full">
+        <rect width="800" height="600" fill="#f3f4f6" />
+      </svg> -->
+  </div>
     <RightSidebar />
   </div>
 </template>

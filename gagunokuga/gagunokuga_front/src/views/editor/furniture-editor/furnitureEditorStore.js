@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { SVG } from "@svgdotjs/svg.js";
+import '@svgdotjs/svg.draggable.js';
 import { reactive, computed, watch, ref } from "vue";
 import axios from "axios";
 import { svgUtils } from '@/views/editor/modules/utilsModule';
@@ -7,6 +8,7 @@ import { gridModule } from '@/views/editor/modules/gridModule';
 import { createViewModule } from '@/views/editor/modules/viewModule';
 import { createToolModule } from '@/views/editor/modules/toolModule';
 import { createWallModule } from '@/views/editor/modules/wallModule';
+import { get } from "lodash";
 
 export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () => {
   
@@ -540,8 +542,32 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     updateVisualElements();
   };
 
+  // x, y 좌표를 받아서 해당 좌표에 이미지 생성
+  const createImage = (event) => {
+    const {x, y} = getSVGCoordinates(event);
+    console.log(x, y);
+    const image = draw.image('../../../src/assets/furniture/sofa.svg').size(174, 100);
+    image.move(x-50, y-50);
+    // 이미지 드래그 앤 드랍 가능하도록 이벤트 추가
+    image.draggable();
+    image.on('dragstart', (event) => {
+      console.log('dragstart', event);
+    });
+    image.on('dragmove', (event) => {
+      console.log('dragmove', event);
+    });
+    image.on('dragend', (event) => {
+      console.log('dragend', event);
+    });
+    
+
+  };
+
   // 리턴
   return {
+    createImage,
+
+    
     walls,
     roomId,
     fetchWalls,
