@@ -112,7 +112,7 @@ export const useLoginStore = defineStore("loginStore", () => {
       const response = await axios.get(`${baseURL}/api/users`, {
         headers: { Authorization: `Bearer ${state.token}` },
       });
-      console.log(response.data);
+      //console.log(response.data);
       if (response.data) {
         state.nickname = response.data.nickname;
         state.profileImage = response.data.profileImageUrl || defaultProfileImage;
