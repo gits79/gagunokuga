@@ -5,7 +5,8 @@ export const createToolModule = () => {
     currentTool: "select",
     wallThickness: 100,
     snapDistance: 100,
-    showLengthLabels: true
+    showLengthLabels: localStorage.getItem('showLengthLabels') !== 'false',
+    isSpacePressed: false
   });
 
   // 도구 상태 변경 함수들
@@ -23,6 +24,12 @@ export const createToolModule = () => {
 
   const toggleLengthLabels = () => {
     toolState.showLengthLabels = !toolState.showLengthLabels;
+    localStorage.setItem('showLengthLabels', toolState.showLengthLabels);
+  };
+
+  // 스페이스바 상태 설정 함수 추가
+  const setSpacePressed = (pressed) => {
+    toolState.isSpacePressed = pressed;
   };
 
   // 도구별 이벤트 핸들러 생성 함수
@@ -55,6 +62,7 @@ export const createToolModule = () => {
     setWallThickness,
     setSnapDistance,
     toggleLengthLabels,
-    createToolHandlers
+    createToolHandlers,
+    setSpacePressed
   };
 }; 
