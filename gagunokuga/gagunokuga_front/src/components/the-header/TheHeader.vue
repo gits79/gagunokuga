@@ -52,6 +52,7 @@ const logout = () => {
 
         <li v-if="isLoggedIn" @click="logout"><router-link to="/login">로그아웃</router-link></li>
         <li v-if="isLoggedIn && !isProvided"><router-link to="/pwdcheck">마이페이지</router-link></li>
+        <li v-if="isLoggedIn"><router-link to="/article">게시판</router-link></li>
         <li v-if="isLoggedIn"><router-link to="/room">마이홈</router-link></li>
 
       </ul>

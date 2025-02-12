@@ -10,7 +10,7 @@ export const useArticleStore = defineStore('articleStore', () => {
     const articleList = ref([]);
     const getArticleList = async () => {
         try {
-            const response = await axios.get(`${baseURL}/articles`);
+            const response = await axios.get(`${baseURL}/api/articles`);
             articleList.value = response.data;
             return articleList.value;
         } catch (error) {
@@ -22,7 +22,7 @@ export const useArticleStore = defineStore('articleStore', () => {
     const article = ref({});
     const getArticle = async (articleId) => {
         try {
-            const response = await axios.get(`${baseURL}/articles/${articleId}`);
+            const response = await axios.get(`${baseURL}/api/articles/${articleId}`);
             console.log(response.data);
             article.value = response.data;
             return article.value;

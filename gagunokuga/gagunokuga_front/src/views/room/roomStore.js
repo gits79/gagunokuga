@@ -9,7 +9,6 @@ export const useRoomListStore = defineStore('roomList', () => {
   // ✅ 방 목록 불러오기
   const fetchRooms = async () => {
     try {
-      console.log(baseURL)
       const response = await axios.get(`${baseURL}/api/rooms`)
       rooms.value = response.data.rooms
     } catch (error) {
