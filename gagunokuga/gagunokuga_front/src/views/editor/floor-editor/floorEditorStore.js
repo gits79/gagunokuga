@@ -3,31 +3,36 @@ import { off, SVG } from "@svgdotjs/svg.js";
 import { reactive, computed, watch, ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
+import { coordinateUtils, svgUtils } from '@/views/editor/modules/utilsModule';
+import { gridModule } from '@/views/editor/modules/gridModule';
+import { createHistoryModule } from '@/views/editor/modules/historyModule';
+import { createViewModule } from '@/views/editor/modules/viewModule';
+import { createToolModule } from '@/views/editor/modules/toolModule';
+import { createWallModule } from '@/views/editor/modules/wallModule';
 
-export const useFloorPlanStore = defineStore("floorPlanStore", () => {
+export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   
   // 객체 선언
   let draw = null; // SVG 객체
 
   const baseURL = import.meta.env.VITE_API_URL
 
-  let isPanning = false;
-  let panStart = { x: 0, y: 0 };
-
   let wallLayer = null;
   let wallStart = null, wallPreview = null;
   let wallPreviewGroup = null;
 
-  const walls = reactive([]);
+  const { walls, setWallLayer, getWallLayer } = createWallModule();
   const roomId = ref(null);
   const deletedWalls = reactive([]);
 
-  const toolState = reactive({
-    currentTool: "select",
-    wallThickness: 100,
-    snapDistance: 100,
-    showLengthLabels: true,
-  });
+  const { 
+    toolState, 
+    setCurrentTool,
+    setWallThickness,
+    setSnapDistance,
+    toggleLengthLabels,
+    createToolHandlers 
+  } = createToolModule();
 
   let isMovingWall = false;
   let moveStartCoords = { x: 0, y: 0 };
@@ -38,10 +43,42 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     return walls.find(wall => wall.id === selection.selectedWallId) || null;
   });
 
-  const viewbox = reactive({ x: -2000, y: -2000, width: 4000, height: 4000 });
-  
-  const canUndo = computed(() => history.undoStack.length > 0);
-  const canRedo = computed(() => history.redoStack.length > 0);
+  const { 
+    history, 
+    canUndo, 
+    canRedo, 
+    saveState: historySaveState, 
+    undo: historyUndo, 
+    redo: historyRedo 
+  } = createHistoryModule();
+
+  // 유틸리티 함수들을 새로운 모듈의 함수로 교체
+  const roundPoint = coordinateUtils.roundPoint;
+  const snapToMillimeter = coordinateUtils.snapToMillimeter;
+  const getClosestPointOnLine = coordinateUtils.getClosestPointOnLine;
+  const getOrthogonalPoint = coordinateUtils.getOrthogonalPoint;
+  const isInBoundary = coordinateUtils.isInBoundary;
+  const getSVGCoordinates = (event) => svgUtils.getSVGCoordinates(event, draw);
+
+  // 그리드 함수를 모듈의 함수로 교체
+  const addGrid = () => gridModule.createGrid(draw);
+
+  let viewModule = null;
+  let wallModule = null;
+
+  // 캔버스 초기화
+  const initializeCanvas = (canvasElement) => {
+    draw = SVG().addTo(canvasElement).size("100%", "100%");
+    addGrid();
+    
+    // view 모듈 생성
+    viewModule = createViewModule(draw);
+    draw.viewbox(viewModule.viewbox.x, viewModule.viewbox.y, 
+                viewModule.viewbox.width, viewModule.viewbox.height);
+    
+    wallLayer = draw.group().addClass("wall-layer");
+    setWallLayer(wallLayer);
+  };
 
   // 서버에서 벽 데이터 불러오기
   const fetchWalls = async (id) => {
@@ -114,43 +151,6 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     }
   };
 
-  // 팬 컨트롤
-  const panControls = {
-    start: (event) => {
-      isPanning = true;
-      panStart = { x: event.clientX, y: event.clientY };
-    },
-    move: (event) => {
-      if (!isPanning) return;
-      const dx = (event.clientX - panStart.x) * viewbox.width / draw.node.clientWidth;
-      const dy = (event.clientY - panStart.y) * viewbox.height / draw.node.clientHeight;
-      viewbox.x -= dx;
-      viewbox.y -= dy;
-      draw.viewbox(viewbox.x, viewbox.y, viewbox.width, viewbox.height);
-      panStart = { x: event.clientX, y: event.clientY };
-    },
-    stop: () => isPanning = false
-  };
-
-  // 줌 컨트롤롤
-  const zoomCanvas = (event) => {
-    const zoomFactor = event.deltaY > 0 ? 1.1 : 0.9;
-    const point = draw.node.createSVGPoint();
-    point.x = event.clientX;
-    point.y = event.clientY;
-    const svgPoint = point.matrixTransform(draw.node.getScreenCTM().inverse());
-    const newWidth = viewbox.width * zoomFactor;
-    const newHeight = viewbox.height * zoomFactor;
-    const dx = (svgPoint.x - viewbox.x) * (newWidth / viewbox.width - 1);
-    const dy = (svgPoint.y - viewbox.y) * (newHeight / viewbox.height - 1);
-    viewbox.x -= dx;
-    viewbox.y -= dy;
-    viewbox.width = newWidth;
-    viewbox.height = newHeight;
-    draw.viewbox(viewbox.x, viewbox.y, viewbox.width, viewbox.height);
-    updateVisualElements();
-  };
-
   // 벽 생성 컨트롤
   const wallControls = {
     start: (coords) => {
@@ -177,7 +177,7 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
       if (length > 1) {
         const midX = (wallStart.x + end.x) / 2;
         const midY = (wallStart.y + end.y) / 2;
-        const fontSize = viewbox.width * 0.025;
+        const fontSize = viewModule.viewbox.width * 0.025;
         wallPreviewGroup
           .text(`${length}mm`)
           .font({ size: fontSize, anchor: 'middle' })
@@ -337,7 +337,7 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
       });
       
       // 가로/세로 길이 표시
-      const fontSize = viewbox.width * 0.02;
+      const fontSize = viewModule.viewbox.width * 0.02;
       
       // 가로 길이
       if (width > 1) {
@@ -409,70 +409,6 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     }
   };
 
-  // walls 상태 변경을 추적하기 위한 history 스택 추가
-  const history = reactive({
-    undoStack: [],  // 실행 취소용 스택
-    redoStack: [],  // 다시 실행용 스택
-    isRecording: true  // 현재 history 기록 여부
-  });
-
-  // 현재 상태를 저장하는 함수
-  const saveState = () => {
-    if (!history.isRecording) return;
-    history.undoStack.push(JSON.stringify(walls));
-    history.redoStack = [];  // redo 스택 초기화
-  };
-
-  // 상태를 복원하는 함수
-  const loadState = (state) => {
-    // DOM에서 현재 벽들 제거
-    wallLayer.children().forEach(wall => wall.remove());
-    
-    // walls 배열 초기화 및 새로운 상태로 교체
-    walls.splice(0, walls.length, ...JSON.parse(state));
-    
-    // 벽 다시 그리기
-    walls.forEach(wall => {
-      wallCreationMethods.renderWall(wall);
-    });
-    
-    // 시각요소 업데이트
-    updateVisualElements();
-    selection.selectedWallId = null;  // 선택 초기화
-  };
-
-  // Undo 함수
-  const undo = () => {
-    if (history.undoStack.length === 0) return;
-    
-    // 현재 상태를 redo 스택에 저장
-    history.redoStack.push(JSON.stringify(walls));
-    
-    // 이전 상태 복원
-    history.isRecording = false;  // 상태 복원 중 history 기록 방지
-    loadState(history.undoStack.pop());
-    history.isRecording = true;
-  };
-
-  // Redo 함수
-  const redo = () => {
-    if (history.redoStack.length === 0) return;
-    
-    // 현재 상태를 undo 스택에 저장
-    history.undoStack.push(JSON.stringify(walls));
-    
-    // 다음 상태 복원
-    history.isRecording = false;
-    loadState(history.redoStack.pop());
-    history.isRecording = true;
-  };
-
-  // 레이블 토글
-  const toggleLengthLabels = () => {
-    toolState.showLengthLabels = !toolState.showLengthLabels;
-    updateVisualElements();
-  };
-
   // == 유틸리티 함수들 == //
 
   // 화면갱신
@@ -482,24 +418,9 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     renderLengthLabels();
   };
 
-  // 직각 보정 함수
-  const getOrthogonalPoint = (start, end) => roundPoint({
-    x: Math.abs(end.x - start.x) > Math.abs(end.y - start.y) ? end.x : start.x,
-    y: Math.abs(end.x - start.x) > Math.abs(end.y - start.y) ? start.y : end.y
-  });
-
-  // 좌표 보정 함수
-  const snapToMillimeter = (value) => Math.round(value);
-
-  // 점 보정 함수
-  const roundPoint = (point) => ({
-    x: snapToMillimeter(point.x),
-    y: snapToMillimeter(point.y),
-  });
-
   //  키 생성 함수
   const drawKeyPoint = (x, y) => {
-    const keySize = viewbox.width * 0.02;
+    const keySize = viewModule.viewbox.width * 0.02;
     draw.circle(keySize)
       .fill("#fff")
       .stroke({ color: "#000", width: keySize * 0.1 })
@@ -518,7 +439,7 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
 
   // 화살표 생성 함수
   const drawArrow = (x, y, angle, isStart) => {
-    const arrowSize = viewbox.width * 0.0125;
+    const arrowSize = viewModule.viewbox.width * 0.0125;
     const arrowAngle = Math.PI * 0.4;
     const direction = isStart ? 1 : -1;
     
@@ -534,14 +455,14 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     
     return draw.polyline([[p1.x, p1.y], [p2.x, p2.y], [p3.x, p3.y]])
       .fill('none')
-      .stroke({ width: viewbox.width * 0.00125, color: '#000' })
+      .stroke({ width: viewModule.viewbox.width * 0.00125, color: '#000' })
       .addClass('dimension');
   };
 
   // 연결선 생성 함수
   const drawDimensionLine = (start, end) => {
     return draw.line(start.x, start.y, end.x, end.y)
-      .stroke({ width: viewbox.width * 0.00125, color: '#000' })
+      .stroke({ width: viewModule.viewbox.width * 0.00125, color: '#000' })
       .addClass('dimension');
   };
 
@@ -581,7 +502,7 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     const isVertical = Math.abs(wall.y2 - wall.y1) > Math.abs(wall.x2 - wall.x1);
     const isUpward = wall.y1 > wall.y2;
     const isRightward = wall.x1 < wall.x2;
-    const offset = wall.thickness / 2 + viewbox.width * 0.0125;
+    const offset = wall.thickness / 2 + viewModule.viewbox.width * 0.0125;
 
     // 직교 보정용 오프셋
     let upperLeftOffset = 0, upperRightOffset = 0, lowerLeftOffset = 0, lowerRightOffset = 0;
@@ -663,7 +584,7 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     const midX = (wall.x1 + wall.x2) / 2;
     const midY = (wall.y1 + wall.y2) / 2;
     const length = Math.round(Math.hypot(wall.x2 - wall.x1, wall.y2 - wall.y1));
-    const fontSize = Math.min(100, viewbox.width / 64);
+    const fontSize = Math.min(100, viewModule.viewbox.width / 64);
     const maxOffset = length / 2;
     const dimensionLineOffset = Math.min(
       maxOffset, 
@@ -803,8 +724,8 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     draw.find('.length-label').forEach(len => len.remove());
     draw.find('.dimension').forEach(dim => dim.remove());
     if (toolState.showLengthLabels) {
-      wallLayer.children().forEach(wall => {
-        const wallId = wall.attr('data-id');
+      walls.forEach(wall => {
+        const wallId = wall.id;
         if (wallId) {
           createLengthLabel(wallId);
         }
@@ -860,27 +781,6 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
       }
     }
     return closestPoint ? roundPoint(closestPoint) : currentPoint;
-  };
-
-  // 선분 위의 가장 가까운 점 찾기
-  const getClosestPointOnLine = (start, end, point) => {
-    const lengthSquared = Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2);
-    if (lengthSquared === 0) return start;
-    let t = ((point.x - start.x) * (end.x - start.x) + (point.y - start.y) * (end.y - start.y)) / lengthSquared;
-    t = Math.max(0, Math.min(1, t));
-    return { x: start.x + t * (end.x - start.x), y: start.y + t * (end.y - start.y) };
-  };
-
-  // 벽 두께 설정 함수
-  const setWallThickness = (thickness) => {
-    const newThickness = Math.max(1, Number(thickness));
-    toolState.wallThickness = newThickness;
-  };
-
-  // 스냅 거리 설정 함수
-  const setSnapDistance = (distance) => {
-    const newDistance = Math.max(1, Number(distance));
-    toolState.snapDistance = newDistance;
   };
 
   // 벽 선택 함수
@@ -1261,18 +1161,11 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     wallLayer.front();
   };
 
-  // 좌표제한 체크 함수
-  const isInBoundary = (coords) => {
-    const BOUNDARY = { min: -50000, max: 50000 };
-    return coords.x >= BOUNDARY.min && coords.x <= BOUNDARY.max && 
-           coords.y >= BOUNDARY.min && coords.y <= BOUNDARY.max;
-  };
-
   // 미리보기 키 업데이트 함수
   const updatePreviewMarkers = (start, end) => {
     wallPreviewGroup.find('.preview-key').forEach(el => el.remove());
 
-    const keySize = viewbox.width * 0.02;
+    const keySize = viewModule.viewbox.width * 0.02;
     [start, end].forEach(({ x, y }) => {
       wallPreviewGroup
         .circle(keySize)
@@ -1285,71 +1178,34 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
 
   // == 유틸리티 함수들 == //
 
-  // 그리드
-  const addGrid = () => {
-    const GRID_BOUNDARY = { min: -50000, max: 50000 };
-    draw.find(".grid-line").forEach(line => line.remove());
-    for (let i = GRID_BOUNDARY.min; i <= GRID_BOUNDARY.max; i += 100) {
-      const color = i % 1000 === 0 ? "#111" : "#555";
-      const width = i % 1000 === 0 ? 1 : 0.5;
-      draw.line(GRID_BOUNDARY.min, i, GRID_BOUNDARY.max, i).stroke({ width, color }).addClass("grid-line");
-      draw.line(i, GRID_BOUNDARY.min, i, GRID_BOUNDARY.max).stroke({ width, color }).addClass("grid-line");
-    }
-    draw.line(GRID_BOUNDARY.min, 0, GRID_BOUNDARY.max, 0).stroke({ width: 10, color: "#000" }).addClass("grid-line");
-    draw.line(0, GRID_BOUNDARY.min, 0, GRID_BOUNDARY.max).stroke({ width: 10, color: "#000" }).addClass("grid-line");
-    [GRID_BOUNDARY.min, GRID_BOUNDARY.max].forEach(pos => {
-      draw.line(pos, GRID_BOUNDARY.min, pos, GRID_BOUNDARY.max).stroke({ width: 50, color: "#f00" }).addClass("grid-line");
-      draw.line(GRID_BOUNDARY.min, pos, GRID_BOUNDARY.max, pos).stroke({ width: 50, color: "#f00" }).addClass("grid-line");
-    });
-  };
-
-  // 캔버스 초기화
-  const initializeCanvas = (canvasElement) => {
-    draw = SVG().addTo(canvasElement).size("100%", "100%");
-    addGrid();
-    draw.viewbox(viewbox.x, viewbox.y, viewbox.width, viewbox.height);
-    wallLayer = draw.group().addClass("wall-layer");
-  };
-    
-  // 마우스 좌표 -> SVG좌표 함수
-  const getSVGCoordinates = (event) => {
-    const point = draw.node.createSVGPoint();
-    point.x = event.clientX;
-    point.y = event.clientY;
-    return point.matrixTransform(draw.node.getScreenCTM().inverse());
-  };
-
   // 단축키 처리 함수
   const handleKeyDown = (event) => {
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
     switch (event.key) {
-      case "Escape": // ESC
+      case "Escape":
         if (toolState.currentTool === "wall") {
           wallControls.cancel();
         } else if (toolState.currentTool === "rect") {
           rectTool.cancel();
         }
         break;
-      case "Delete": // Delete
+      case "Delete":
         if (selection.selectedWallId) {
           deleteSelectedWall();
         }
         break;
-      case "1": toolState.currentTool = "select"; break; // 1 : 선택
-      case "2": toolState.currentTool = "wall"; break; // 2 : 벽
-      case "3": toolState.currentTool = "rect"; break; // 3 : 사각형
-      case "l": case "L": toggleLengthLabels(); break; // l : 레이블 토글
+      case "1": setCurrentTool("select"); break;
+      case "2": setCurrentTool("wall"); break;
+      case "3": setCurrentTool("rect"); break;
+      case "l": case "L": 
+        toggleLengthLabels();  // toolModule의 함수 사용
+        updateVisualElements(); // 시각적 요소 업데이트 추가
+        break;
       default:
-        if (event.ctrlKey) { // Ctrl
+        if (event.ctrlKey) {
           switch (event.key) {
-            case "z": // Ctrl + z
-              event.preventDefault();
-              undo();
-              break;
-            case "y": // Ctrl + y
-              event.preventDefault();
-              redo();
-              break;
+            case "z": event.preventDefault(); undo(); break;
+            case "y": event.preventDefault(); redo(); break;
           }
         }
         break;
@@ -1357,14 +1213,14 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
   };
 
   // === 도구 이벤트 설정 === //
-  const tools = {
-    select: {
-      onClick: event => {
+  const tools = createToolHandlers({
+    selectHandlers: {
+      onClick: (event) => {
         const coords = getSVGCoordinates(event);
         selectWall(coords);
         updateWallSelectionVisuals();
       },
-      onMouseDown: event => {
+      onMouseDown: (event) => {
         const coords = getSVGCoordinates(event);
         const clickedWallId = getWallAtCoords(coords);
         if (clickedWallId) {
@@ -1376,40 +1232,36 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
           }
         } else {
           selection.selectedWallId = null;
-          isPanning = true;
-          panControls.start(event);
+          viewModule?.panControls.start(event);
         }
       },
-      onMouseMove: event => {
+      onMouseMove: (event) => {
         if (isMovingWall) {
           moveWallControls.move(event);
         } else {
-          panControls.move(event);
+          viewModule?.panControls.move(event);
         }
       },
-      onMouseUp: event => {
+      onMouseUp: () => {
         if (isMovingWall) {
           moveWallControls.stop();
         } else {
-          panControls.stop();
+          viewModule?.panControls.stop();
         }
       }
     },
-    wall: {
-      onClick: event => {
-        const coords = getSVGCoordinates(event);
-        wallControls.onClick(coords);
-      },
-      onMouseMove: event => wallControls.preview(getSVGCoordinates(event))
+    wallHandlers: {
+      onClick: (event) => wallControls.onClick(getSVGCoordinates(event)),
+      onMouseMove: (event) => wallControls.preview(getSVGCoordinates(event))
     },
-    rect: {
-      onClick: event => {
+    rectHandlers: {
+      onClick: (event) => {
         const coords = getSVGCoordinates(event);
         !rectTool.startPoint ? rectTool.start(coords) : rectTool.finish(coords);
       },
-      onMouseMove: event => rectTool.move(getSVGCoordinates(event)),
+      onMouseMove: (event) => rectTool.move(getSVGCoordinates(event))
     }
-  };
+  });
 
   // 이벤트 처리기 실행 함수 (이벤트 이름, 이벤트 객체)
   const executeToolEvent = (eventName, event) => {
@@ -1419,6 +1271,19 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     }
   };
   
+  // 상태 저장 함수
+  const saveState = () => historySaveState(walls);
+
+  // undo/redo 함수 정의
+  const undo = () => historyUndo(walls, wallLayer, wallCreationMethods.renderWall, updateVisualElements);
+  const redo = () => historyRedo(walls, wallLayer, wallCreationMethods.renderWall, updateVisualElements);
+
+  // 줌 이벤트 핸들러 수정
+  const handleZoom = (event) => {
+    viewModule?.zoomCanvas(event);
+    updateVisualElements();
+  };
+
   // 리턴
   return {
     walls,
@@ -1429,7 +1294,7 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     toolState,
     executeToolEvent,
     initializeCanvas,
-    zoomCanvas,
+    zoomCanvas: handleZoom,
     handleKeyDown,
     
     setWallThickness,
@@ -1449,6 +1314,7 @@ export const useFloorPlanStore = defineStore("floorPlanStore", () => {
     updateSelectedWallLength,
     updateSelectedWallThickness,
     deleteSelectedWall,
+    viewbox: computed(() => viewModule?.viewbox),
   };
     
 });

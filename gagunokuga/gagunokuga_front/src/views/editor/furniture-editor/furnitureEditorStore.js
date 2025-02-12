@@ -1,0 +1,559 @@
+import { defineStore } from "pinia";
+import { SVG } from "@svgdotjs/svg.js";
+import { reactive, computed, watch, ref } from "vue";
+import axios from "axios";
+import { svgUtils } from '@/views/editor/modules/utilsModule';
+import { gridModule } from '@/views/editor/modules/gridModule';
+import { createViewModule } from '@/views/editor/modules/viewModule';
+import { createToolModule } from '@/views/editor/modules/toolModule';
+import { createWallModule } from '@/views/editor/modules/wallModule';
+
+export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () => {
+  
+  // 객체 선언
+  let draw = null; // SVG 객체
+
+  const baseURL = import.meta.env.VITE_API_URL
+
+  let wallLayer = null;
+
+  const { walls, setWallLayer, getWallLayer } = createWallModule();
+  const roomId = ref(null);
+
+  const { 
+    toolState, 
+    toggleLengthLabels,
+    createToolHandlers 
+  } = createToolModule();
+
+  const selection = reactive({ selectedWallId: null });
+
+  // 유틸리티 함수들을 새로운 모듈의 함수로 교체
+  const getSVGCoordinates = (event) => svgUtils.getSVGCoordinates(event, draw);
+
+  // 그리드 함수를 모듈의 함수로 교체
+  const addGrid = () => gridModule.createGrid(draw);
+
+  let viewModule = null;
+
+  // 캔버스 초기화
+  const initializeCanvas = (canvasElement) => {
+    draw = SVG().addTo(canvasElement).size("100%", "100%");
+    addGrid();
+    
+    // view 모듈 생성
+    viewModule = createViewModule(draw);
+    draw.viewbox(viewModule.viewbox.x, viewModule.viewbox.y, 
+                viewModule.viewbox.width, viewModule.viewbox.height);
+    
+    wallLayer = draw.group().addClass("wall-layer");
+    setWallLayer(wallLayer);
+  };
+
+  // 서버에서 벽 데이터 불러오기
+  const fetchWalls = async (id) => {
+    try {
+      roomId.value = id;
+      const response = await axios.get(`${baseURL}/api/rooms/${id}/walls`);
+      
+      if (response.data && response.data.walls) {
+        // 삭제되지 않은 벽만 필터링하여 저장
+        walls.splice(0, walls.length, ...response.data.walls
+          .filter(wall => wall.isDeleted !== true)
+          .map(wall => ({
+            id: wall.id,
+            x1: wall.startx,    
+            y1: wall.starty,    
+            x2: wall.endx,      
+            y2: wall.endy,      
+            thickness: wall.thickness || 100  
+          }))
+        );
+  
+        // 벽 데이터 로드 후 시각적 요소 업데이트
+        if (wallLayer) {
+          wallLayer.children().forEach(wall => wall.remove()); // 기존 벽 제거
+          walls.forEach(wall => {
+            wallCreationMethods.renderWall(wall); // 새로운 벽 렌더링
+          });
+          updateVisualElements();
+        }
+      }
+    } catch (error) {
+      console.error("벽 데이터를 불러오는 중 오류 발생:", error);
+    }
+  };
+
+  // == 유틸리티 함수들 == //
+
+  // 화면갱신
+  const updateVisualElements = () => {
+    fillCornerSpaces();
+    renderKeyPoints();
+    renderLengthLabels();
+  };
+
+  //  키 생성 함수
+  const drawKeyPoint = (x, y) => {
+    const keySize = viewModule.viewbox.width * 0.02;
+    draw.circle(keySize)
+      .fill("#fff")
+      .stroke({ color: "#000", width: keySize * 0.1 })
+      .center(x, y)
+      .addClass("key")
+  };
+
+  // 키 렌더링 함수
+  const renderKeyPoints = () => {
+    draw.find('.key').forEach(key => key.remove());
+    wallLayer.children().forEach(wall => {
+      drawKeyPoint(parseFloat(wall.attr('x1')), parseFloat(wall.attr('y1')));
+      drawKeyPoint(parseFloat(wall.attr('x2')), parseFloat(wall.attr('y2')));
+    });
+  };
+
+  // 화살표 생성 함수
+  const drawArrow = (x, y, angle, isStart) => {
+    const arrowSize = viewModule.viewbox.width * 0.0125;
+    const arrowAngle = Math.PI * 0.4;
+    const direction = isStart ? 1 : -1;
+    
+    const p1 = {
+      x: x + direction * arrowSize * Math.cos(angle + arrowAngle),
+      y: y + direction * arrowSize * Math.sin(angle + arrowAngle)
+    };
+    const p2 = { x, y };
+    const p3 = {
+      x: x + direction * arrowSize * Math.cos(angle - arrowAngle),
+      y: y + direction * arrowSize * Math.sin(angle - arrowAngle)
+    };
+    
+    return draw.polyline([[p1.x, p1.y], [p2.x, p2.y], [p3.x, p3.y]])
+      .fill('none')
+      .stroke({ width: viewModule.viewbox.width * 0.00125, color: '#000' })
+      .addClass('dimension');
+  };
+
+  // 연결선 생성 함수
+  const drawDimensionLine = (start, end) => {
+    return draw.line(start.x, start.y, end.x, end.y)
+      .stroke({ width: viewModule.viewbox.width * 0.00125, color: '#000' })
+      .addClass('dimension');
+  };
+
+  // 직교벽 찾는 함수
+  const findIntersectingWalls = (point, wallId, isCurrentWallVertical) => {
+    return walls
+      .filter(w =>
+        w.id !== wallId &&
+        ((w.x1 === point.x && w.y1 === point.y) || (w.x2 === point.x && w.y2 === point.y))
+      )
+      .map(w => {
+        const isMeetingAtStart = w.x1 === point.x && w.y1 === point.y;
+        const isVertical = Math.abs(w.y2 - w.y1) > Math.abs(w.x2 - w.x1);
+
+        if (isCurrentWallVertical) {
+          return {
+            ...w,
+            isVertical: isVertical,
+            isLeftward: !isVertical ? (isMeetingAtStart ? w.x1 > w.x2 : w.x2 > w.x1) : false,
+            isRightward: !isVertical ? (isMeetingAtStart ? w.x1 < w.x2 : w.x2 < w.x1) : false
+          };
+        } else {
+          return {
+            ...w,
+            isVertical: isVertical,
+            isLower: isVertical ? (isMeetingAtStart ? w.y1 < w.y2 : w.y2 < w.y1) : false,
+            isUpper: isVertical ? (isMeetingAtStart ? w.y1 > w.y2 : w.y2 > w.y1) : false
+          };
+        }
+      });
+  };
+
+  const createLengthLabel = (wallId) => {
+    const wall = walls.find(w => w.id === wallId);
+    if (!wall) return;
+    
+    const isVertical = Math.abs(wall.y2 - wall.y1) > Math.abs(wall.x2 - wall.x1);
+    const isUpward = wall.y1 > wall.y2;
+    const isRightward = wall.x1 < wall.x2;
+    const offset = wall.thickness / 2 + viewModule.viewbox.width * 0.0125;
+
+    // 직교 보정용 오프셋
+    let upperLeftOffset = 0, upperRightOffset = 0, lowerLeftOffset = 0, lowerRightOffset = 0;
+    let leftUpperOffset = 0, leftLowerOffset = 0, rightUpperOffset = 0, rightLowerOffset = 0;
+    
+    // 수평
+    if (!isVertical) {
+      let leftPoint = isRightward ? { x: wall.x1, y: wall.y1 } : { x: wall.x2, y: wall.y2 };
+      let rightPoint = isRightward ? { x: wall.x2, y: wall.y2 } : { x: wall.x1, y: wall.y1 };
+
+      const leftIntersectingWalls = findIntersectingWalls(leftPoint, wallId, false);
+      const rightIntersectingWalls = findIntersectingWalls(rightPoint, wallId, false);
+
+      const leftUpperWalls = leftIntersectingWalls.filter(w => w.isUpper);
+      const leftLowerWalls = leftIntersectingWalls.filter(w => w.isLower);
+      const rightUpperWalls = rightIntersectingWalls.filter(w => w.isUpper);
+      const rightLowerWalls = rightIntersectingWalls.filter(w => w.isLower);
+
+      if (leftUpperWalls.length > 0 && leftLowerWalls.length > 0) {
+        upperLeftOffset -= leftUpperWalls[0].thickness / 2;
+        lowerLeftOffset -= leftLowerWalls[0].thickness / 2;
+      } else if (leftUpperWalls.length > 0) {
+        upperLeftOffset -= leftUpperWalls[0].thickness / 2;
+        lowerLeftOffset += leftUpperWalls[0].thickness / 2;
+      } else if (leftLowerWalls.length > 0) {
+        upperLeftOffset += leftLowerWalls[0].thickness / 2;
+        lowerLeftOffset -= leftLowerWalls[0].thickness / 2;
+      }
+
+      if (rightUpperWalls.length > 0 && rightLowerWalls.length > 0) {
+        upperRightOffset -= rightUpperWalls[0].thickness / 2;
+        lowerRightOffset -= rightLowerWalls[0].thickness / 2;
+      } else if (rightUpperWalls.length > 0) {
+        upperRightOffset -= rightUpperWalls[0].thickness / 2;
+        lowerRightOffset += rightUpperWalls[0].thickness / 2;
+      } else if (rightLowerWalls.length > 0) {
+        upperRightOffset += rightLowerWalls[0].thickness / 2;
+        lowerRightOffset -= rightLowerWalls[0].thickness / 2;
+      }
+    // 수직
+    } else {
+      let upperPoint = isUpward ? { x: wall.x2, y: wall.y2 } : { x: wall.x1, y: wall.y1 };
+      let lowerPoint = isUpward ? { x: wall.x1, y: wall.y1 } : { x: wall.x2, y: wall.y2 };
+      const upperIntersectingWalls = findIntersectingWalls(upperPoint, wallId, true);
+      const lowerIntersectingWalls = findIntersectingWalls(lowerPoint, wallId, true);
+    
+      const upperLeftWalls = upperIntersectingWalls.filter(w => w.isLeftward);
+      const upperRightWalls = upperIntersectingWalls.filter(w => w.isRightward);
+      const lowerLeftWalls = lowerIntersectingWalls.filter(w => w.isLeftward);
+      const lowerRightWalls = lowerIntersectingWalls.filter(w => w.isRightward);
+    
+      if (upperLeftWalls.length > 0 && upperRightWalls.length > 0) {
+        leftUpperOffset -= upperLeftWalls[0].thickness / 2;
+        rightUpperOffset -= upperRightWalls[0].thickness / 2;
+      } else if (upperLeftWalls.length > 0) {
+        leftUpperOffset -= upperLeftWalls[0].thickness / 2;
+        rightUpperOffset += upperLeftWalls[0].thickness / 2;
+      } else if (upperRightWalls.length > 0) {
+        leftUpperOffset += upperRightWalls[0].thickness / 2;
+        rightUpperOffset -= upperRightWalls[0].thickness / 2;
+      }
+    
+      if (lowerLeftWalls.length > 0 && lowerRightWalls.length > 0) {
+        leftLowerOffset -= lowerLeftWalls[0].thickness / 2;
+        rightLowerOffset -= lowerRightWalls[0].thickness / 2;
+      } else if (lowerLeftWalls.length > 0) {
+        leftLowerOffset -= lowerLeftWalls[0].thickness / 2;
+        rightLowerOffset += lowerLeftWalls[0].thickness / 2;
+      } else if (lowerRightWalls.length > 0) {
+        leftLowerOffset += lowerRightWalls[0].thickness / 2;
+        rightLowerOffset -= lowerRightWalls[0].thickness / 2;
+      }
+    }
+    
+    // 기존 요소들 제거
+    draw.find(`.length-label[data-id='${wall.id}']`).forEach(label => label.remove());
+    draw.find(`.dimension[data-id='${wall.id}']`).forEach(dim => dim.remove());
+    
+    const midX = (wall.x1 + wall.x2) / 2;
+    const midY = (wall.y1 + wall.y2) / 2;
+    const length = Math.round(Math.hypot(wall.x2 - wall.x1, wall.y2 - wall.y1));
+    const fontSize = Math.min(100, viewModule.viewbox.width / 64);
+    const maxOffset = length / 2;
+    const dimensionLineOffset = Math.min(
+      maxOffset, 
+      fontSize * (0.5 + Math.log10(length) / 2)
+    ) * (isVertical ? (wall.y2 < wall.y1 ? 1 : -1) : (wall.x2 > wall.x1 ? 1 : -1));
+
+    // 벽의 방향 결정
+    const angle = isVertical 
+      ? (wall.y2 > wall.y1 ? Math.PI * 0.5 : -Math.PI * 0.5)
+      : (wall.x2 > wall.x1 ? 0 : Math.PI);
+
+    if (isVertical) {
+      // 세로 벽 (좌/우 분리)
+      const leftLabelGroup = draw.group().addClass('length-label').attr('data-id', `${wall.id}-left`);
+      const rightLabelGroup = draw.group().addClass('length-label').attr('data-id', `${wall.id}-right`);
+      
+      const leftLength = length + (leftUpperOffset + leftLowerOffset);
+      const rightLength = length + (rightUpperOffset + rightLowerOffset);
+
+      const isUpward = wall.y2 < wall.y1;
+      const arrowAngle = Math.PI * 0.5;
+
+      let upperPoint = isUpward ? { x: wall.x2, y: wall.y2 } : { x: wall.x1, y: wall.y1 };
+      let lowerPoint = isUpward ? { x: wall.x1, y: wall.y1 } : { x: wall.x2, y: wall.y2 };
+
+      const leftDimensionLineOffset = Math.min(
+        maxOffset, 
+        fontSize * (0.5 + Math.log10(leftLength) / 2)
+      );
+      const rightDimensionLineOffset = Math.min(
+        maxOffset, 
+        fontSize * (0.5 + Math.log10(rightLength) / 2)
+      );
+      
+      // 왼쪽 텍스트
+      const leftLabel = leftLabelGroup.text(`${leftLength}mm`)
+        .font({ size: fontSize, anchor: 'middle' })
+        .center(midX - offset, midY)
+        .rotate(90, midX - offset, midY);
+      // 오른쪽 텍스트
+      const rightLabel = rightLabelGroup.text(`${rightLength}mm`)
+        .font({ size: fontSize, anchor: 'middle' })
+        .center(midX + offset, midY)
+        .rotate(90, midX + offset, midY);
+      // 왼쪽 상단 연결선
+      drawDimensionLine(
+        { x: midX - offset, y: midY - leftDimensionLineOffset },
+        { x: midX - offset, y: upperPoint.y - leftUpperOffset }
+      );
+      // // 왼쪽 하단 연결선
+      drawDimensionLine(
+        { x: midX - offset, y: midY + leftDimensionLineOffset },
+        { x: midX - offset, y: lowerPoint.y + leftLowerOffset }
+      );
+      // 오른쪽 상단 연결선
+      drawDimensionLine(
+        { x: midX + offset, y: midY - rightDimensionLineOffset },
+        { x: midX + offset, y: upperPoint.y - rightUpperOffset }
+      );
+      // 오른쪽 하단 연결선
+      drawDimensionLine(
+        { x: midX + offset, y: midY + rightDimensionLineOffset },
+        { x: midX + offset, y: lowerPoint.y + rightLowerOffset }
+      );
+      // 왼쪽 상단 화살표
+      drawArrow(midX - offset, upperPoint.y - leftUpperOffset, arrowAngle, true);
+      // 왼쪽 하단 화살표
+      drawArrow(midX - offset, lowerPoint.y + leftLowerOffset, arrowAngle, false);
+      // 우측 상단 화살표
+      drawArrow(midX + offset, upperPoint.y - rightUpperOffset, arrowAngle, true);
+      // 우측 하단 화살표
+      drawArrow(midX + offset, lowerPoint.y + rightLowerOffset, arrowAngle, false);
+    } else {
+      // 가로 벽 (상단/하단 분리)
+      const topLabelGroup = draw.group().addClass('length-label').attr('data-id', `${wall.id}-top`);
+      const bottomLabelGroup = draw.group().addClass('length-label').attr('data-id', `${wall.id}-bottom`);
+      
+      const upperLength = length + (upperLeftOffset + upperRightOffset);
+      const lowerLength = length + (lowerLeftOffset + lowerRightOffset);
+
+      const isRightward = wall.x1 < wall.x2;
+      const arrowAngle = 0;
+
+      let rightPoint = isRightward ? { x: wall.x2, y: wall.y2 } : { x: wall.x1, y: wall.y1 };
+      let leftPoint = isRightward ? { x: wall.x1, y: wall.y1 } : { x: wall.x2, y: wall.y2 };
+
+      const upperDimensionLineOffset = Math.min(
+        maxOffset, 
+        fontSize * (0.5 + Math.log10(upperLength) / 2)
+      );
+      const lowerDimensionLineOffset = Math.min(
+        maxOffset, 
+        fontSize * (0.5 + Math.log10(lowerLength) / 2)
+      );
+
+      // 상단 텍스트
+      const topLabel = topLabelGroup.text(`${upperLength}mm`)
+        .font({ size: fontSize, anchor: 'middle' })
+        .center(midX, midY - offset);
+      // 하단 텍스트
+      const bottomLabel = bottomLabelGroup.text(`${lowerLength}mm`)
+        .font({ size: fontSize, anchor: 'middle' })
+        .center(midX, midY + offset);
+      // 상단 좌측 연결선
+      drawDimensionLine(
+        { x: midX - upperDimensionLineOffset, y: midY - offset },
+        { x: leftPoint.x - upperLeftOffset, y: midY - offset }
+      );
+      // 상단 우측 연결선
+      drawDimensionLine(
+        { x: midX + upperDimensionLineOffset, y: midY - offset },
+        { x: rightPoint.x + upperRightOffset, y: midY - offset }
+      );
+      // 하단 좌측 연결선
+      drawDimensionLine(
+        { x: midX - lowerDimensionLineOffset, y: midY + offset },
+        { x: leftPoint.x - lowerLeftOffset, y: midY + offset }
+      );
+      // 하단 우측 연결선
+      drawDimensionLine(
+        { x: midX + lowerDimensionLineOffset, y: midY + offset },
+        { x: rightPoint.x + lowerRightOffset, y: midY + offset }
+      );
+      // 상단 좌측 화살표
+      drawArrow(leftPoint.x - upperLeftOffset, midY - offset, arrowAngle, true);
+      // 상단 우측 화살표
+      drawArrow(rightPoint.x + upperRightOffset, midY - offset, arrowAngle, false);
+      // 하단 좌측 화살표
+      drawArrow(leftPoint.x - lowerLeftOffset, midY + offset, arrowAngle, true);
+      // 하단 우측 화살표
+      drawArrow(rightPoint.x + lowerRightOffset, midY + offset, arrowAngle, false);
+    }
+  };
+
+  // 길이레이블 렌더링 함수
+  const renderLengthLabels = () => {
+    draw.find('.length-label').forEach(len => len.remove());
+    draw.find('.dimension').forEach(dim => dim.remove());
+    if (toolState.showLengthLabels) {
+      walls.forEach(wall => {
+        const wallId = wall.id;
+        if (wallId) {
+          createLengthLabel(wallId);
+        }
+      });
+    }
+  };
+
+  // 벽 생성 및 분할 관련 메서드들
+  const wallCreationMethods = {
+    // 벽 렌더링
+    renderWall: (wall) => {
+      const element = wallLayer.line(wall.x1, wall.y1, wall.x2, wall.y2)
+        .stroke({ width: wall.thickness, color: "#999" })
+        .data('id', wall.id);
+      return element;
+    },
+  };
+
+  // 모서리 채우기 함수
+  const fillCornerSpaces = () => {
+    draw.find('.corner-space').forEach(space => space.remove());
+    
+    // 벽들의 끝점을 Map으로 관리 (좌표를 키로 사용)
+    const cornerMap = new Map();
+    
+    wallLayer.children().forEach(wall => {
+      const points = [
+        [wall.attr('x1'), wall.attr('y1')],
+        [wall.attr('x2'), wall.attr('y2')]
+      ];
+      
+      points.forEach(([x, y]) => {
+        const key = `${Math.round(x)},${Math.round(y)}`;
+        if (!cornerMap.has(key)) {
+          cornerMap.set(key, []);
+        }
+        cornerMap.get(key).push(wall);
+      });
+    });
+
+    // 교차점에서 모서리 처리
+    cornerMap.forEach((walls, key) => {
+      if (walls.length === 2) {
+        const [wallA, wallB] = walls;
+        const [x, y] = key.split(',').map(Number);
+        
+        // 두 벽의 방향 확인 (수직/수평)
+        const isWallAVertical = Math.abs(wallA.attr('x1') - wallA.attr('x2')) < 1;
+        const isWallBVertical = Math.abs(wallB.attr('x1') - wallB.attr('x2')) < 1;
+        
+        if (isWallAVertical !== isWallBVertical) {
+          const thicknessA = wallA.attr('stroke-width');
+          const thicknessB = wallB.attr('stroke-width');
+          
+          const width = isWallAVertical ? thicknessA : thicknessB;
+          const height = isWallAVertical ? thicknessB : thicknessA;
+          
+          draw.rect(width, height)
+            .center(x, y)
+            .fill("#999")
+            .addClass('corner-space');
+        }
+      }
+    });
+
+    wallLayer.front();
+  };
+
+  // == 유틸리티 함수들 == //
+
+  // 단축키 처리 함수
+  const handleKeyDown = (event) => {
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+    switch (event.key) {
+      case "Escape":
+        break;
+      case "Delete":
+        break;
+      case "1": break;
+      case "2": break;
+      case "3": break;
+      case "l": case "L": 
+        toggleLengthLabels();  // toolModule의 함수 사용
+        updateVisualElements(); // 시각적 요소 업데이트 추가
+        break;
+      default:
+        if (event.ctrlKey) {
+          switch (event.key) {
+            case "z": break;
+            case "y": break;
+          }
+        }
+        break;
+    }
+  };
+
+  // === 도구 이벤트 설정 === //
+  const tools = createToolHandlers({
+    selectHandlers: {
+      onClick: (event) => {
+      },
+      onMouseDown: (event) => {
+        const coords = getSVGCoordinates(event);
+        viewModule?.panControls.start(event);
+      },
+      onMouseMove: (event) => {
+        viewModule?.panControls.move(event);
+      },
+      onMouseUp: () => {
+        viewModule?.panControls.stop();
+      }
+    },
+    wallHandlers: {
+      onClick: (event) => wallControls.onClick(getSVGCoordinates(event)),
+      onMouseMove: (event) => wallControls.preview(getSVGCoordinates(event))
+    },
+    rectHandlers: {
+      onClick: (event) => {
+        const coords = getSVGCoordinates(event);
+        !rectTool.startPoint ? rectTool.start(coords) : rectTool.finish(coords);
+      },
+      onMouseMove: (event) => rectTool.move(getSVGCoordinates(event))
+    }
+  });
+
+  // 이벤트 처리기 실행 함수 (이벤트 이름, 이벤트 객체)
+  const executeToolEvent = (eventName, event) => {
+    const tool = tools[toolState.currentTool];
+    if (tool && tool[eventName]) {
+      tool[eventName](event);
+    }
+  };
+  
+  // 줌 이벤트 핸들러 수정
+  const handleZoom = (event) => {
+    viewModule?.zoomCanvas(event);
+    updateVisualElements();
+  };
+
+  // 리턴
+  return {
+    walls,
+    roomId,
+    fetchWalls,
+
+    executeToolEvent,
+    initializeCanvas,
+    zoomCanvas: handleZoom,
+    handleKeyDown,
+    
+    toggleLengthLabels,
+
+    viewbox: computed(() => viewModule?.viewbox),
+  };
+    
+});
