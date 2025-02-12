@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { reactive } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
+import defaultProfileImage from "@/assets/gagunokugaLogo.png";
 
 export const useLoginStore = defineStore("loginStore", () => {
   const baseURL = import.meta.env.VITE_API_URL;
@@ -38,8 +39,7 @@ export const useLoginStore = defineStore("loginStore", () => {
         state.token = response.data.accessToken;
         localStorage.setItem("accessToken", state.token);
         axios.defaults.headers.common["Authorization"] = `Bearer ${state.token}`;
-        // 로그인 후 사용자 정보 바로 불러오기
-        await fetchUserInfo();  // 여기서 사용자 정보를 불러옴
+
         await router.push("/");
       } else {
         alert("로그인 실패: 서버에서 토큰이 반환되지 않았습니다.");
@@ -115,7 +115,7 @@ export const useLoginStore = defineStore("loginStore", () => {
       console.log(response.data);
       if (response.data) {
         state.nickname = response.data.nickname;
-        state.profileImage = response.data.profileImageUrl || "@/assets/gagunokuga_logo_mark.svg";
+        state.profileImage = response.data.profileImageUrl || defaultProfileImage;
         state.provider = response.data.provider;
       }
     } catch (error) {
