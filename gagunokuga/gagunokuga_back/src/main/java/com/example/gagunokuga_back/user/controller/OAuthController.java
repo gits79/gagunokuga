@@ -3,6 +3,7 @@ package com.example.gagunokuga_back.user.controller;
 import com.example.gagunokuga_back.user.dto.login.TokenResponseDto;
 import com.example.gagunokuga_back.user.oauth.KakaoOauthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +21,14 @@ import java.net.URI;
 public class OAuthController {
 
     private final KakaoOauthService oauthService;
+    @Value("${DOMAIN_FRONT}")
+    private String domain_front;
 
     @GetMapping("/kakao")
     public ResponseEntity<String> startkakao() {
         String kakaoAuthUrl = oauthService.getKakaoAuthUrl();
         return ResponseEntity.ok(kakaoAuthUrl);
     }
-
 
 
     //카카오 인증 후 콜백
@@ -47,7 +49,7 @@ public class OAuthController {
 
             // URL 구조 수정: #/oauth/success 뒤에 쿼리 파라미터가 오도록 변경
             String redirectUrl = UriComponentsBuilder
-                    .fromUriString("http://localhost:5173/oauth/success") // 기본 URL
+                    .fromUriString("http://" + domain_front + "/oauth/success") // 기본 URL
                     .build()
                     .toUriString()
                     + "?accessToken=" + tokenResponseDto.getAccessToken()   // 해시 뒤에 쿼리 파라미터 추가

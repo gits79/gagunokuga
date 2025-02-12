@@ -7,10 +7,12 @@ public class UserResponseDto {
     private String email;
     private String nickname;
     private String profileImageUrl;
+    private String provider;
 
-    public UserResponseDto(String email, String nickname, String profileImageUrl) {
+    public UserResponseDto(String email, String nickname, String profileImageUrl, String provider) {
         this.email = email;
         this.nickname = nickname;
         this.profileImageUrl = profileImageUrl;
+        this.provider = provider;
     }
 }

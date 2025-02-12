@@ -1,11 +1,14 @@
 <script setup>
 import TheHeader from "@/components/the-header/TheHeader.vue";
-import TheFooter from "@/components/the-footer/TheFooter.vue";
+import { useRoute } from 'vue-router';
 import "@/styles/global.css";
 import { useLoginStore } from "@/views/login/login";
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from "axios";
 
 const loginStore = useLoginStore();
+// 조건에 따라 헤더 출현 여부 조정.(index.js)
+const route = useRoute();
 
 onMounted(() => {
   // 로컬스토리지에서 토큰을 확인하고 store 상태 복원
@@ -28,7 +31,8 @@ onMounted(() => {
 
 <template>
   <div >
-    <TheHeader />
+    <!-- 현재 라우터의 meta에 showHeader가 true일 경우에만 TheHeader 표시 -->
+    <TheHeader v-if="route.meta.showHeader" />
     <router-view />
   </div>
 </template>
