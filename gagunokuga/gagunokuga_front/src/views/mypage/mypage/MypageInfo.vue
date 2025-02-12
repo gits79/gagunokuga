@@ -5,9 +5,9 @@
 
     <!-- 버튼들 -->
     <div class="action-buttons">
-      <button @click="updateProfileImage" class="edit-btn">프로필 수정</button>
-      <button @click="goToInfoEdit" class="info-edit-btn">정보 수정</button>
-      <button @click="deleteUser" class="delete-btn">탈퇴</button>
+      <button @click="updateProfileImage" class="blue-btn">프로필 수정</button>
+      <button @click="goToInfoEdit" class="blue-btn">정보 수정</button>
+      <button @click="deleteUser" class="red-btn">탈퇴</button>
     </div>
   </div>
 </template>
