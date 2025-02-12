@@ -4,25 +4,31 @@ header {
   align-items: center;
   padding: 30px 130px;
   background-color: #fff;
-  /* border-bottom: 1px solid #ddd; */
 }
 
 .logo-link {
   padding-left: 16px;
+  height: 42px;
+  display: flex;
+  align-items: center;
 }
 
 .logo {
-  height: 42px; /* 60px에서 42px로 수정 */
+  height: 42px;
 }
 
 nav ul {
   display: flex;
-  list-style: none; /* 리스트 앞 점 제거 */
+  list-style: none;
   padding-right: 16px;
+  height: 42px;
+  align-items: center;
 }
 
 nav ul li {
-  margin-left: 20px; /* 항목 간 간격 조절 */
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
 }
 
 nav ul li a {
@@ -32,28 +38,26 @@ nav ul li a {
 }
 
 nav ul li:last-child a {
-  color: #EF5C4E; /* 룸목록만 빨간색 */
+  color: #EF5C4E;
 }
 
-
-/* 프로필 이미지 */
 .profile {
   display: flex;
+  align-items: center;
   gap: 10px;
+  height: 50px; /* 프로필 컨테이너 높이 증가 */
 }
 
 .profile-img {
-  width: 50px;
-  height: 50px;
-  border-radius: 20%;
-  object-fit: cover;  /* 이미지 비율을 유지하면서 가운데를 잘라냄 */
+  width: 45px; /* 프로필 이미지 크기 증가 */
+  height: 45px; /* 프로필 이미지 크기 증가 */
+  border-radius: 40%;
+  object-fit: cover;
 }
 
 .nickname {
   font-size: 16px;
   font-weight: bold;
-  color: #2e1614; /* 따뜻한 포인트 컬러 */
-  font-family: "Noto Sans KR", sans-serif; /* 부드러운 한글 폰트 */
+  color: #2e1614;
+  font-family: "Noto Sans KR", sans-serif;
 }
-
-
