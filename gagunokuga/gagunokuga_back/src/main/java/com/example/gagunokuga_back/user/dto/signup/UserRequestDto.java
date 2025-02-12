@@ -10,5 +10,6 @@ public class UserRequestDto {
     private String password;
     private String nickname;
     private String authcode;
+    private String profileImageUrl;
 
 }

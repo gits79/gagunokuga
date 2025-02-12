@@ -1,10 +1,12 @@
 import { defineStore } from "pinia";
 import { reactive, computed, watch } from "vue";
+import { useRouter } from 'vue-router';
 import axios from "axios";  // axios는 API 호출을 위해 추가됨
 
 export const useSignupStore = defineStore("signupStore", () => {
   // 회원가입 관련 상태
-  const baseURL = import.meta.env.VITE_API_URL
+  const baseURL = import.meta.env.VITE_API_URL;
+  const router = useRouter();
 
   const state = reactive({
     nickname: "",
@@ -25,6 +27,8 @@ export const useSignupStore = defineStore("signupStore", () => {
     isSubmitting: false,
   });
 
+
+  
   // 이메일 형식 확인
   // const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -139,17 +143,26 @@ export const useSignupStore = defineStore("signupStore", () => {
     }
   };
 
+    // DiceBear 아바타 URL 생성 함수
+    const generateAvatarUrl = (nickname) => {
+      return `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(nickname)}`;
+    };
+
   // 회원가입 처리
   const signup = async () => {
     state.isSubmitting = true;
     try {
+      const profileImageUrl = generateAvatarUrl(state.nickname);
+
       const response = await axios.post(`${baseURL}/api/users`, {
         email: state.email,
         nickname: state.nickname,
         password: state.password,
+        profileImageUrl: profileImageUrl
       });
       if (response.status === 201) {
         alert("회원가입 성공");
+        router.push("/login");
       }
     } catch (error) {
       alert("회원가입에 실패했습니다.");
