@@ -123,6 +123,17 @@ export const useLoginStore = defineStore("loginStore", () => {
     }
   };
 
+  // 로그아웃 메서드
+  const logout = () => {
+    state.token = "";
+    state.nickname = "";
+    state.profileImage = "";
+    state.provider = "";
+    state.password = "";
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+  };
+
   return {
     login,
     state,
@@ -130,5 +141,6 @@ export const useLoginStore = defineStore("loginStore", () => {
     handleLoginSuccess,
     passwordReset,
     fetchUserInfo,
+    logout,
   };
 });

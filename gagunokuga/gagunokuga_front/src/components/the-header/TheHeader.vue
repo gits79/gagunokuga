@@ -19,13 +19,8 @@ watchEffect(() => {
 
 // 로그아웃 처리
 const logout = () => {
-  loginStore.state.token = "";  // 토큰 초기화
-  localStorage.removeItem("accessToken");  // 로컬 스토리지에서 토큰 제거
-  localStorage.removeItem("refreshToken");
-  loginStore.state.nickname = ""; // 닉네임 초기화
-  loginStore.state.profileImage = ""; // 프로필 초기화
-  loginStore.state.password = ""; // 비밀번호 초기화
-  loginStore.state.provider = ""; // 이것도 초기화
+  loginStore.logout();  // loginStore의 logout 메서드 호출
+  loginStore.state.password = "";
 };
 </script>
 
@@ -52,7 +47,6 @@ const logout = () => {
 
         <li v-if="isLoggedIn" @click="logout"><router-link to="/login">로그아웃</router-link></li>
         <li v-if="isLoggedIn && !isProvided"><router-link to="/pwdcheck">마이페이지</router-link></li>
-        <li v-if="isLoggedIn"><router-link to="/article">게시판</router-link></li>
         <li v-if="isLoggedIn"><router-link to="/room">마이홈</router-link></li>
 
       </ul>

@@ -79,8 +79,8 @@ public class RoomServiceImpl implements RoomService {
         if(room != null) {
             RoomUser roomUser = roomUserRepository.findByRoomAndUser(room, currentUser);
             if (roomUser != null && roomUser.getIsHost()) {
-                roomRepository.delete(room);
                 roomUserService.deleteRoomUsers(room);
+                roomRepository.delete(room);
             }
         }
     }
