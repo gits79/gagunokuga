@@ -1,41 +1,45 @@
-.container {
-    max-width: 500px;
-    margin: 50px auto;
+.my-page {
     padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
-.form-box {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+
+.user-info {
+    margin-bottom: 20px;
 }
-.input-box {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+
+.profile-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
 }
-.disabled {
-    background-color: #eee;
-}
-.btn {
-    background: #4285f4;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+
+.nickname, .email {
+    font-size: 18px;
     margin-top: 10px;
 }
-.btn:hover {
-    background: #357ae8;
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
-.delete {
-    background: #ef5c4e;
+
+.edit-btn, .delete-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
 }
-.delete:hover {
-    background: #d94a3c;
+
+.edit-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.delete-btn {
+    background-color: #EF5C4E;
+    color: white;
+    border: none;
+    border-radius: 5px;
 }
