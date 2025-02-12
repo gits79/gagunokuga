@@ -1,5 +1,6 @@
 package com.example.gagunokuga_back.user.service;
 
+import com.example.gagunokuga_back.image.service.ImageService;
 import com.example.gagunokuga_back.user.domain.User;
 import com.example.gagunokuga_back.user.dto.*;
 import com.example.gagunokuga_back.user.dto.login.UserResponseDto;
@@ -10,14 +11,18 @@ import com.example.gagunokuga_back.user.dto.user.UpdateRequestDto;
 import com.example.gagunokuga_back.user.email.EmailService;
 import com.example.gagunokuga_back.user.repository.UserRepository;
 import com.example.gagunokuga_back.user.security.CustomUserDetails;
+import io.jsonwebtoken.io.EncodingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.ott.InvalidOneTimeTokenException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -25,11 +30,13 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final ImageService imageService;
 
 
     //이메일 중복 체크
@@ -49,15 +56,14 @@ public class UserService {
     @Transactional
     public void signup(UserRequestDto requestDto) {
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
-        //String profileImg = api불러와서 해결하기
-        User user = new User(
+                User user = new User(
                 requestDto.getEmail(),
                 encodedPassword,
                 requestDto.getNickname()
         );
 
+        user.changeProfileImgUrl(requestDto.getProfileImageUrl());
         userRepository.save(user);
-//         return new UserResponseDto(user.getEmail(), user.getNickname(), user.getProfileImageUrl());
     }
 
     //비번 체크
@@ -77,9 +83,9 @@ public class UserService {
         return new UserResponseDto(user.getEmail(), user.getNickname(), user.getProfileImageUrl(), user.getProvider());
     }
 
-    //정보 수정
+    //정보(닉넴, 비번) 수정
     @Transactional
-    public User update(UpdateRequestDto request) {
+    public User updateBasicInfo(UpdateRequestDto request) {
         User user = getCurrentUser();
         if(request.getNickname()!=null && !request.getNickname().isBlank()) {
             if(userRepository.existsByNickname(request.getNickname())) {
@@ -90,14 +96,35 @@ public class UserService {
         if(request.getPassword()!=null && !request.getPassword().isBlank()) {
             user.changePassword(passwordEncoder.encode(request.getPassword()));
         }
-        if(request.getProfileImageUrl()!=null) {
-            user.changeProfileImgUrl(request.getProfileImageUrl());
-        }
+//        if(request.getProfileImageUrl()!=null) {
+//            user.changeProfileImgUrl(request.getProfileImageUrl());
+//        }
 
-        return user;
+        return userRepository.save(user);
 
     }
 
+    //이미지 수정
+    @Transactional
+    public User updateProfileImage(MultipartFile profileImage) {
+        User user = getCurrentUser();
+        if(user == null) {
+            throw new NoSuchElementException("User not found");
+        }
+
+        try {
+            if(user.getProfileImageUrl() != null) {
+                imageService.deleteImage(user.getProfileImageUrl());
+            }
+            String newImageUrl = imageService.uploadImage(profileImage);
+            user.changeProfileImgUrl(newImageUrl);
+            return userRepository.save(user);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to process image file",e);
+        }
+
+    }
 
     //삭제
     @Transactional
@@ -123,7 +150,6 @@ public class UserService {
             throw new InputMismatchException("Wrong password");
         }
     }
-
 
     //토큰으로 유저 확인
     public User getCurrentUser() {
@@ -154,6 +180,7 @@ public class UserService {
         }
         return userRepository.save(user);
     }
+
 
 
 }

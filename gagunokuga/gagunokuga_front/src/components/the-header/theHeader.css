@@ -12,7 +12,7 @@ header {
 }
 
 .logo {
-  height: 60px; /* 로고 크기 조절 */
+  height: 42px; /* 60px에서 42px로 수정 */
 }
 
 nav ul {
@@ -50,7 +50,10 @@ nav ul li:last-child a {
 }
 
 .nickname {
-  font-size: 16px;  /* 텍스트 크기 조정 */
-  font-family: Arial, sans-serif;  /* 원하는 폰트 설정 */
-  font-weight: bold;  /* 볼드체로 적용 */
+  font-size: 16px;
+  font-weight: bold;
+  color: #2e1614; /* 따뜻한 포인트 컬러 */
+  font-family: "Noto Sans KR", sans-serif; /* 부드러운 한글 폰트 */
 }
+
+
