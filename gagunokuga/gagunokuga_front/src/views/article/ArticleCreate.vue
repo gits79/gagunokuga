@@ -9,7 +9,7 @@
           placeholder="제목을 입력해주세요."
         />
         <p class="char-count">{{ title.length }} / 100</p>
-        <p v-if="showTitleError" class="error-text">필수 입력 항목입니다!</p>
+        <p v-if="showTitleError" class="error-text">필수 입력 항목입니다.</p>
       </div>
   
       <!-- 이미지 업로드 -->
@@ -30,6 +30,7 @@
         <p v-if="images.length === 0">
           <strong>드래그 앤 드롭이나 추가하기 버튼으로
           <br />사진을 업로드해주세요.</strong><br /><br />
+          <span class="small-text" style="color: red;">필수 입력 항목입니다.</span><br />
           <span class="small-text">*최대 5장 업로드 가능*</span><br /><br />
         </p>
         <div class="image-preview" v-if="images.length > 0">
