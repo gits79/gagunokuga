@@ -43,8 +43,6 @@ const router = createRouter({
     { path: "/oauth/success", name: "OAuthSuccess", component: OAuthSuccess, meta: { showHeader: false }, },
     { path: "/pwdcheck", name: "PasswordCheck", component: PwdCheck, meta: { showHeader: true }, },
     { path: "/mypage", name: "MyPage", component: MyPage, meta: { showHeader: true }, },
-    { path: "/article", name: "ArticleList", component: ArticleList, meta: { showHeader: true }, },
-    { path: "/article/:articleId", name: "ArticleDetail", component: ArticleDetail, meta: { showHeader: true }, },    // {
     //   path: '/oauth/callback',
     //   name: "OAuthCallback",
     //   component: OAuthCallback,
