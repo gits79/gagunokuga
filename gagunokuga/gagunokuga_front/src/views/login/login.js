@@ -19,6 +19,13 @@ export const useLoginStore = defineStore("loginStore", () => {
     showModal: false, // 모달 상태 추가
   });
 
+
+ // DiceBear 아바타 URL 생성 함수
+  const generateAvatarUrl = (nickname) => {
+    return `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(nickname)}`;
+  };
+
+
   // 로그인
   const login = async () => {
     const fullUrl = `${baseURL}/api/users/login`;
@@ -115,7 +122,7 @@ export const useLoginStore = defineStore("loginStore", () => {
       console.log(response.data);
       if (response.data) {
         state.nickname = response.data.nickname;
-        state.profileImage = response.data.profileImageUrl || defaultProfileImage;
+        state.profileImage = response.data.profileImageUrl || generateAvatarUrl(response.data.nickname);
         state.provider = response.data.provider;
       }
     } catch (error) {

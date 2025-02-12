@@ -3,9 +3,9 @@
     <!-- 첫 번째 줄 (2개 정사각형 박스) -->
     <div class="row">
       <div class="box"></div>
-      <router-link to="/room" class="box2">
+      <div class="box2">
         <img class="logo" src="@/assets/gagunokuga_logo_link.svg" alt="도면에디터 바로가기" />
-      </router-link>
+      </div>
     </div>
 
     <!-- 텍스트 -->

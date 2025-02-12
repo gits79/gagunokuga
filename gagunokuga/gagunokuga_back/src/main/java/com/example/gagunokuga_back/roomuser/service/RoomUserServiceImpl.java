@@ -12,6 +12,8 @@ import com.example.gagunokuga_back.user.domain.User;
 import com.example.gagunokuga_back.user.repository.UserRepository;
 import com.example.gagunokuga_back.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -90,8 +92,8 @@ public class RoomUserServiceImpl implements RoomUserService {
     }
 
     @Override
-    public List<Room> selectAllByUser(User user) {
-        return roomUserRepository.selectAllByUser(user);
+    public Page<Room> selectAllByUser(User user, Pageable pageable) {
+        return roomUserRepository.selectAllByUser(user, pageable);
     }
 
     @Override
