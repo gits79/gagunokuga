@@ -44,9 +44,12 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomListResponse getRoomList(int page) {
+        User user = userService.getCurrentUser();
+
         Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE);
-        Page<Room> rooms = roomRepository.findAll(pageable);
+        Page<Room> rooms = roomUserRepository.selectAllByUser(user, pageable);
         List<RoomResponse> roomList = new ArrayList<>();
+
         for (Room room : rooms.getContent()) {
             roomList.add(RoomResponse.builder()
                     .roomId(room.getId())
@@ -79,8 +82,9 @@ public class RoomServiceImpl implements RoomService {
         if(room != null) {
             RoomUser roomUser = roomUserRepository.findByRoomAndUser(room, currentUser);
             if (roomUser != null && roomUser.getIsHost()) {
-                roomRepository.delete(room);
                 roomUserService.deleteRoomUsers(room);
+                roomRepository.delete(room);
+
             }
         }
     }
