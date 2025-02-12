@@ -44,8 +44,10 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomListResponse getRoomList(int page) {
+        User user = userService.getCurrentUser(); // 현재 로그인 유저 정보
         Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE);
-        Page<Room> rooms = roomRepository.findAll(pageable);
+        // 현재 유저가 포함돤 방만 검색하는 JPQL 작성
+        Page<Room> rooms = roomRepository.findRoomsByUserId(user.getId(), pageable);
         List<RoomResponse> roomList = new ArrayList<>();
         for (Room room : rooms.getContent()) {
             roomList.add(RoomResponse.builder()
