@@ -47,7 +47,7 @@ public class RoomServiceImpl implements RoomService {
         User user = userService.getCurrentUser();
 
         Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE);
-        Page<Room> rooms = roomRepository.findRoomsByUserId(user.getId(), pageable);
+        Page<Room> rooms = roomUserRepository.selectAllByUser(user, pageable);
         List<RoomResponse> roomList = new ArrayList<>();
 
         for (Room room : rooms.getContent()) {
