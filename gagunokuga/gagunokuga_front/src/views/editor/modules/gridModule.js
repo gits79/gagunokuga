@@ -35,5 +35,16 @@ export const gridModule = {
         .stroke({ width: 50, color: "#f00" })
         .addClass("grid-line");
     });
+  },
+
+  // 그리드 표시/숨김 함수 추가
+  toggleGrid: (draw, show) => {
+    draw.find(".grid-line").forEach(line => {
+      if (show) {
+        line.show();
+      } else {
+        line.hide();
+      }
+    });
   }
 }; 

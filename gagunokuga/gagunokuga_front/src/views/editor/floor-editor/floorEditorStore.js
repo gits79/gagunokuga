@@ -10,6 +10,8 @@ import { createViewModule } from '@/views/editor/modules/viewModule';
 import { createToolModule } from '@/views/editor/modules/toolModule';
 import { createWallModule } from '@/views/editor/modules/wallModule';
 
+const showKeys = ref(true);
+
 export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   
   // 객체 선언
@@ -65,6 +67,9 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
 
   let viewModule = null;
   let wallModule = null;
+
+  // 상태에 showGrid 추가
+  const showGrid = ref(true);
 
   // 캔버스 초기화
   const initializeCanvas = (canvasElement) => {
@@ -1181,7 +1186,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   // 단축키 처리 함수
   const handleKeyDown = (event) => {
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
-    switch (event.key) {
+    switch (event.key.toLowerCase()) {
       case "Escape":
         if (toolState.currentTool === "wall") {
           wallControls.cancel();
@@ -1197,9 +1202,16 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       case "1": setCurrentTool("select"); break;
       case "2": setCurrentTool("wall"); break;
       case "3": setCurrentTool("rect"); break;
-      case "l": case "L": 
+      case "l":
         toggleLengthLabels();  // toolModule의 함수 사용
         updateVisualElements(); // 시각적 요소 업데이트 추가
+        break;
+      case "g": 
+        showGrid.value = !showGrid.value;
+        gridModule.toggleGrid(draw, showGrid.value);
+        break;
+      case "k": 
+        toggleKeys();  // 같은 스코프의 함수로 선언
         break;
       default:
         if (event.ctrlKey) {
@@ -1210,6 +1222,13 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
         }
         break;
     }
+  };
+
+  const toggleKeys = () => {
+    showKeys.value = !showKeys.value;
+    draw.find('.key').forEach(key => {
+      showKeys.value ? key.show() : key.hide();
+    });
   };
 
   // === 도구 이벤트 설정 === //
@@ -1315,6 +1334,13 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     updateSelectedWallThickness,
     deleteSelectedWall,
     viewbox: computed(() => viewModule?.viewbox),
+    showGrid,
+    toggleGrid: () => {
+      showGrid.value = !showGrid.value;
+      gridModule.toggleGrid(draw, showGrid.value);
+    },
+    showKeys,
+    toggleKeys,
   };
     
 });

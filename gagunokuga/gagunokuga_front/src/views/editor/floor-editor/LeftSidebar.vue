@@ -32,6 +32,16 @@
         길이표시 {{ store.toolState.showLengthLabels ? '끄기' : '켜기' }} [L]
       </button>
     </div>
+    <div>
+      <button @click="store.toggleGrid()">
+        그리드 {{ store.showGrid ? "ON" : "OFF" }} [G]
+      </button>
+    </div>
+    <div>
+      <button @click="store.toggleKeys()">
+        키포인트 {{ store.showKeys ? "ON" : "OFF" }} [K]
+      </button>
+    </div>
   </aside>
 </template>
 
