@@ -41,7 +41,7 @@ const logout = () => {
         <template v-if="isLoggedIn">
           <li class="profile">
             <img :src="profileImage" alt="프로필 이미지" class="profile-img" />
-            <span class="nickname">{{ nickname }}</span>
+            <span class="nickname">👋 안녕하세요, {{ nickname }} 님!</span>
           </li>
         </template>
 
