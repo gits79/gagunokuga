@@ -6,7 +6,7 @@ export const createToolModule = () => {
     wallThickness: 100,
     snapDistance: 100,
     showLengthLabels: localStorage.getItem('showLengthLabels') !== 'false',
-    isSpacePressed: false
+    isSpacePressed: false,
   });
 
   // 도구 상태 변경 함수들
@@ -27,10 +27,25 @@ export const createToolModule = () => {
     localStorage.setItem('showLengthLabels', toolState.showLengthLabels);
   };
 
-  // 스페이스바 상태 설정 함수 추가
+  // 스페이스바 상태 제어 함수
   const setSpacePressed = (pressed) => {
     toolState.isSpacePressed = pressed;
   };
+
+  // 키보드 이벤트 리스너 설정
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && !e.repeat) {
+      e.preventDefault();
+      setSpacePressed(true);
+    }
+  });
+
+  window.addEventListener('keyup', (e) => {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      setSpacePressed(false);
+    }
+  });
 
   // 도구별 이벤트 핸들러 생성 함수
   const createToolHandlers = ({ 
@@ -47,11 +62,15 @@ export const createToolModule = () => {
       },
       wall: {
         onClick: wallHandlers.onClick,
-        onMouseMove: wallHandlers.onMouseMove
+        onMouseDown: wallHandlers.onMouseDown,
+        onMouseMove: wallHandlers.onMouseMove,
+        onMouseUp: wallHandlers.onMouseUp
       },
       rect: {
         onClick: rectHandlers.onClick,
-        onMouseMove: rectHandlers.onMouseMove
+        onMouseDown: rectHandlers.onMouseDown,
+        onMouseMove: rectHandlers.onMouseMove,
+        onMouseUp: rectHandlers.onMouseUp
       }
     };
   };
@@ -63,6 +82,6 @@ export const createToolModule = () => {
     setSnapDistance,
     toggleLengthLabels,
     createToolHandlers,
-    setSpacePressed
+    setSpacePressed,
   };
 }; 

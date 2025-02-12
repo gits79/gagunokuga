@@ -41,6 +41,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
 
   let isMovingWall = false;
   let moveStartCoords = { x: 0, y: 0 };
+  let originalSnapDistance = null;
 
   const selection = reactive({ selectedWallId: null });
   
@@ -235,9 +236,11 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   const moveWallControls = {
     start: (event) => {
       if (!selection.selectedWallId) return;
-      saveState();
       isMovingWall = true;
       moveStartCoords = getSVGCoordinates(event);
+      // 벽 이동 시작할 때 스냅 거리를 25로 변경
+      originalSnapDistance = toolState.snapDistance;
+      toolState.snapDistance = 25;
     },
     move: (event) => {
       if (!isMovingWall || !selection.selectedWallId) return;
@@ -284,10 +287,11 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       moveStartCoords = currentCoords;
       updateVisualElements();
     },
-    stop: () => {
-      saveState();
+    end: () => {
       isMovingWall = false;
-      updateVisualElements();
+      moveStartCoords = null;
+      // 벽 이동이 끝나면 원래 스냅 거리로 복원
+      toolState.snapDistance = originalSnapDistance;
     },
   };
 
@@ -1292,7 +1296,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       },
       onMouseUp: () => {
         if (isMovingWall) {
-          moveWallControls.stop();
+          moveWallControls.end();
         } else {
           viewModule?.panControls.stop();
         }

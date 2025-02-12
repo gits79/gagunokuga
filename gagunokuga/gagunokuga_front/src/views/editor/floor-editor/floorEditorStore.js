@@ -313,9 +313,11 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
         .rect(0, 0)
         .fill('none')
         .stroke({ width: 1, color: '#999', dasharray: '5,5' });
+      
+      // 키 미리보기 추가
+      updatePreviewMarkers(rectTool.startPoint, rectTool.startPoint);
     },
     
-    // 미리보기 업데이트
     move: (coords) => {
       if (!rectTool.startPoint || !rectTool.preview || !isInBoundary(coords)) return;
       
@@ -325,15 +327,14 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
         y: snapToMillimeter(snappedEnd.y),
       };
       
+      // 기존 미리보기 업데이트
       const width = Math.abs(currentPoint.x - rectTool.startPoint.x);
       const height = Math.abs(currentPoint.y - rectTool.startPoint.y);
       const x = Math.min(rectTool.startPoint.x, currentPoint.x);
       const y = Math.min(rectTool.startPoint.y, currentPoint.y);
       
-      // 기존 텍스트와 미리보기 제거
       rectTool.preview.children().forEach(child => child.remove());
       
-      // 사각형 미리보기
       rectTool.preview
         .rect(width, height)
         .fill('none')
@@ -341,7 +342,6 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
         .x(x)
         .y(y);
       
-      // 네 개의 벽 미리보기
       [
         [x, y, x + width, y],
         [x + width, y, x + width, y + height],
@@ -353,18 +353,14 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
           .stroke({ width: toolState.wallThickness, color: '#999', opacity: 0.5 });
       });
       
-      // 가로/세로 길이 표시
+      // 길이 표시
       const fontSize = viewModule.viewbox.width * 0.02;
-      
-      // 가로 길이
       if (width > 1) {
         rectTool.preview
           .text(`${Math.round(width)}mm`)
           .font({ size: fontSize, anchor: 'middle' })
           .center(x + width/2, y - fontSize);
       }
-      
-      // 세로 길이
       if (height > 1) {
         rectTool.preview
           .text(`${Math.round(height)}mm`)
@@ -372,62 +368,58 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
           .center(x - fontSize * 2, y + height/2)
           .rotate(-90);
       }
+      
+      // 키 미리보기 업데이트
+      updatePreviewMarkers(rectTool.startPoint, currentPoint);
     },
     
-    // 사각형 생성
     finish: (coords) => {
-      if (!rectTool.startPoint || !isInBoundary(coords)) return;
+      if (!rectTool.startPoint || !rectTool.preview || !isInBoundary(coords)) return;
       
       const snappedEnd = getSnapPoint(coords, wallLayer.children());
-      const endPoint = {
+      const end = {
         x: snapToMillimeter(snappedEnd.x),
         y: snapToMillimeter(snappedEnd.y),
       };
       
-      // 좌상단, 우하단 좌표 계산
-      const x1 = Math.min(rectTool.startPoint.x, endPoint.x);
-      const y1 = Math.min(rectTool.startPoint.y, endPoint.y);
-      const x2 = Math.max(rectTool.startPoint.x, endPoint.x);
-      const y2 = Math.max(rectTool.startPoint.y, endPoint.y);
+      const width = Math.abs(end.x - rectTool.startPoint.x);
+      const height = Math.abs(end.y - rectTool.startPoint.y);
       
-      // 상태 저장은 한 번만 수행
+      if (width < 1 || height < 1) {
+        rectTool.cancel();
+        return;
+      }
+      
+      const x = Math.min(rectTool.startPoint.x, end.x);
+      const y = Math.min(rectTool.startPoint.y, end.y);
+      
       saveState();
       
-      // 4개의 벽을 생성하고 한번에 적용
-      const allChanges = {
-        wallsToRemove: [],
-        newWalls: []
-      };
-      
-      // 각 벽의 변경사항을 하나로 합침
+      // 사각형의 네 변을 벽으로 생성
       [
-        [{ x: x1, y: y1 }, { x: x2, y: y1 }], // 상단
-        [{ x: x2, y: y1 }, { x: x2, y: y2 }], // 우측
-        [{ x: x2, y: y2 }, { x: x1, y: y2 }], // 하단
-        [{ x: x1, y: y2 }, { x: x1, y: y1 }]  // 좌측
-      ].forEach(([start, end]) => {
-        const changes = wallCreationMethods.createWallWithIntersections(
-          start,
-          end,
+        [x, y, x + width, y],
+        [x + width, y, x + width, y + height],
+        [x + width, y + height, x, y + height],
+        [x, y + height, x, y]
+      ].forEach(([x1, y1, x2, y2]) => {
+        const wall = wallCreationMethods.createWall(
+          { x: x1, y: y1 },
+          { x: x2, y: y2 },
           toolState.wallThickness
         );
-        allChanges.wallsToRemove.push(...changes.wallsToRemove);
-        allChanges.newWalls.push(...changes.newWalls);
+        walls.push(wall);
+        wallCreationMethods.renderWall(wall);
       });
       
-      // 중복 제거
-      allChanges.wallsToRemove = [...new Set(allChanges.wallsToRemove)];
-      
-      // 모든 변경사항을 한번에 적용
-      wallCreationMethods.applyWallChanges(allChanges);
-      
-      rectTool.preview?.remove();
-      rectTool.preview = null;
-      rectTool.startPoint = null;
       updateVisualElements();
+      
+      if (rectTool.preview) {
+        rectTool.preview.remove();
+        rectTool.preview = null;
+      }
+      rectTool.startPoint = null;
     },
     
-    // 취소
     cancel: () => {
       if (rectTool.preview) {
         rectTool.preview.remove();
@@ -1187,19 +1179,47 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     wallLayer.front();
   };
 
-  // 미리보기 키 업데이트 함수
+  // 미리보기 키 업데이트 함수 수정
   const updatePreviewMarkers = (start, end) => {
-    wallPreviewGroup.find('.preview-key').forEach(el => el.remove());
+    const previewGroup = wallPreviewGroup || rectTool.preview;
+    if (!previewGroup) return;
+
+    // 기존 키포인트 제거
+    previewGroup.find('.preview-key').forEach(el => el.remove());
 
     const keySize = viewModule.viewbox.width * 0.02;
-    [start, end].forEach(({ x, y }) => {
-      wallPreviewGroup
-        .circle(keySize)
-        .fill("#DDDDDD")
-        .stroke({ color: "#000", width: keySize * 0.1 })
-        .center(x, y)
-        .addClass('preview-key');
-    });
+    
+    if (wallPreviewGroup) {
+      // 벽 도구일 경우 시작점과 끝점만 표시
+      [start, end].forEach(({ x, y }) => {
+        wallPreviewGroup
+          .circle(keySize)
+          .fill("#DDDDDD")
+          .stroke({ color: "#000", width: keySize * 0.1 })
+          .center(x, y)
+          .addClass('preview-key');
+      });
+    } else if (rectTool.preview) {
+      // 사각형 도구일 경우 네 꼭지점 모두 표시
+      const width = Math.abs(end.x - start.x);
+      const height = Math.abs(end.y - start.y);
+      const x = Math.min(start.x, end.x);
+      const y = Math.min(start.y, end.y);
+
+      [
+        { x, y },                    // 좌상단
+        { x: x + width, y },         // 우상단
+        { x: x + width, y: y + height }, // 우하단
+        { x, y: y + height }         // 좌하단
+      ].forEach(point => {
+        rectTool.preview
+          .circle(keySize)
+          .fill("#DDDDDD")
+          .stroke({ color: "#000", width: keySize * 0.1 })
+          .center(point.x, point.y)
+          .addClass('preview-key');
+      });
+    }
   };
 
   // == 유틸리티 함수들 == //
@@ -1303,15 +1323,63 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       }
     },
     wallHandlers: {
-      onClick: (event) => wallControls.onClick(getSVGCoordinates(event)),
-      onMouseMove: (event) => wallControls.preview(getSVGCoordinates(event))
+      onClick: (event) => {
+        if (!toolState.isSpacePressed) {
+          // 스페이스바가 떼진 상태에서만 벽 생성
+          wallControls.onClick(getSVGCoordinates(event));
+        }
+      },
+      onMouseDown: (event) => {
+        if (toolState.isSpacePressed) {
+          // 스페이스바가 눌린 상태면 패닝 시작
+          viewModule?.panControls.start(event);
+        }
+      },
+      onMouseMove: (event) => {
+        if (toolState.isSpacePressed) {
+          // 스페이스바가 눌린 상태면 패닝
+          viewModule?.panControls.move(event);
+        } else {
+          // 아니면 기존 벽 프리뷰
+          wallControls.preview(getSVGCoordinates(event));
+        }
+      },
+      onMouseUp: () => {
+        if (toolState.isSpacePressed) {
+          // 스페이스바가 눌린 상태면 패닝 종료
+          viewModule?.panControls.stop();
+        }
+      }
     },
     rectHandlers: {
       onClick: (event) => {
-        const coords = getSVGCoordinates(event);
-        !rectTool.startPoint ? rectTool.start(coords) : rectTool.finish(coords);
+        if (!toolState.isSpacePressed) {
+          // 스페이스바가 떼진 상태에서만 사각형 생성
+          const coords = getSVGCoordinates(event);
+          !rectTool.startPoint ? rectTool.start(coords) : rectTool.finish(coords);
+        }
       },
-      onMouseMove: (event) => rectTool.move(getSVGCoordinates(event))
+      onMouseDown: (event) => {
+        if (toolState.isSpacePressed) {
+          // 스페이스바가 눌린 상태면 패닝 시작
+          viewModule?.panControls.start(event);
+        }
+      },
+      onMouseMove: (event) => {
+        if (toolState.isSpacePressed) {
+          // 스페이스바가 눌린 상태면 패닝
+          viewModule?.panControls.move(event);
+        } else {
+          // 아니면 사각형 프리뷰
+          rectTool.move(getSVGCoordinates(event));
+        }
+      },
+      onMouseUp: () => {
+        if (toolState.isSpacePressed) {
+          // 스페이스바가 눌린 상태면 패닝 종료
+          viewModule?.panControls.stop();
+        }
+      }
     }
   });
 
