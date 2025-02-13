@@ -1,5 +1,5 @@
 /* 마이페이지 */
-/* 전체 컨테이너 수평 배치 및 50:50 비율 */
+/* 전체 컨테이너를 50:50 비율로 배치 */
 .content-wrapper {
     display: flex;
     width: 100%;
@@ -10,14 +10,14 @@
     background: linear-gradient(135deg, #f6f8ff 0%, #e9ecf9 100%);
 }
 
-/* 왼쪽 컨텐츠 정렬 */
+/* 프로필 변경 영역 */
 .profile-changer {
     display: flex;
     flex-direction: column; /* 요소들을 세로 정렬 */
     align-items: center; /* 가운데 정렬 */
-    padding: 20px;
-    width: 100%;
-    max-width: 400px;
+    justify-content: center; /* 내부 요소도 가운데 정렬 */
+    flex: 1; /* 50% 공간 차지 */
+    min-width: 400px; /* 최소 크기 설정 (너무 작아지는 것 방지) */
 }
 
 /* 사용자 이미지 스타일링 */
@@ -31,18 +31,20 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* 각각 50%씩 차지하도록 설정 */
-.user-info, .mypage-info {
-    flex: 1;
+/* 오른쪽 정보 영역 */
+.mypage-info {
+    flex: 1; /* 50% 공간 차지 */
     display: flex;
-    justify-content: center; /* 내부 요소 수평 정렬 */
-    align-items: center;     /* 내부 요소 수직 정렬 */
+    flex-direction: column;
+    justify-content: center; /* 내부 요소 수직 정렬 */
+    align-items: center; /* 내부 요소 수평 정렬 */
+    text-align: center;
 }
 
-/* 텍스트 정렬 */
-.mypage-info {
-    flex-direction: column;
-    text-align: center;
+/* 버튼 아이콘 */
+.btn-icon {
+    width: 20px;
+    height: 20px;
 }
 
 /* 마이페이지 - 정보 */
@@ -98,7 +100,7 @@ button {
 
 /* 남색 버튼 기본 색상 */
 .blue-btn {
-    background-color: #003366; /* 남색 */
+    background-color: #4f46e5; /* 남색 */
     color: white;
 }
 
@@ -165,7 +167,7 @@ button {
     padding: 10px 20px;
     font-size: 14px;
     border: none;
-    background-color: #3b5b91; /* 남색 */
+    background-color: #4f46e5; /* 남색 */
     color: white;
     border-radius: 5px;
     cursor: pointer;
@@ -173,7 +175,7 @@ button {
 }
 
 .btn:hover {
-    background-color: #2d4675; /* 버튼 hover 시 색상 */
+    background-color: #4338ca; /* 버튼 hover 시 색상 */
 }
 
 /* 닉네임 중복 확인 메시지 */
@@ -183,16 +185,28 @@ button {
     margin-top: 5px;
 }
 
-/* 닉네임 중복 확인 버튼과 메시지가 닉네임 입력창 바로 밑에 오도록 조정 */
-.form-box > label:nth-child(2) {
-    margin-bottom: 5px;
+/* 닉네임 중복 확인 버튼과 메시지를 수평 정렬 */
+.check-nickname {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 버튼과 메시지 사이 간격 */
 }
 
-.form-box > .btn {
-    align-self: flex-start; /* 버튼을 왼쪽으로 정렬 */
+/* 버튼 컨테이너를 수평 정렬 */
+.btn-box {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px; /* 버튼 사이 간격 */
 }
 
-/* 버튼들이 수평으로 배치되도록 하기 위해 */
-.form-box > button {
-    margin-top: 10px; /* 버튼과 이전 항목 사이에 여백 추가 */
+/* 버튼 크기 조정 */
+.btn-box button {
+    flex: 1; /* 버튼이 동일한 크기를 갖도록 설정 */
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-align: center;
 }
