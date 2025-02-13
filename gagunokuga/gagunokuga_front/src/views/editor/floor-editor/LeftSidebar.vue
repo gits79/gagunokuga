@@ -10,7 +10,7 @@
     </div>
 
     <router-link to="/room"><button>룸목록</button></router-link>
-    <button @click="handleSave">저장</button>
+    <button @click="handleSave">저장 [Ctrl + S]</button>
     <button 
       :class="{ 'tool-button': true, 'active': store.toolState.currentTool === 'select' }"
       @click="store.toolState.currentTool = 'select'">선택 툴 [1]</button>

@@ -1389,6 +1389,13 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   // 단축키 처리 함수
   const handleKeyDown = (event) => {
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+    
+    if (event.code === 'Space' && !event.repeat) {
+        event.preventDefault();
+        toolState.isSpacePressed = true;
+        document.body.style.cursor = 'grab';
+    }
+    
     switch (event.key.toLowerCase()) {
       case "[":
         if (toolState.currentTool === "eraser") {
@@ -1474,6 +1481,39 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
           }
         }
         break;
+    }
+    
+    if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+        event.preventDefault();
+        saveWalls();
+        return;
+    }
+
+    // Ctrl + '+' 또는 Ctrl + '-' 처리
+    if (event.ctrlKey || event.metaKey) {  // Windows의 Ctrl 또는 Mac의 Cmd
+        switch (event.key) {
+            case '+':
+            case '=':  // Shift 없이 '+' 누를 때
+                event.preventDefault();
+                viewModule?.zoomIn();
+                updateVisualElements();
+                return;
+            case '-':
+                event.preventDefault();
+                viewModule?.zoomOut();
+                updateVisualElements();
+                return;
+            // ... existing cases (z, y, s) ...
+        }
+    }
+  };
+
+  // 스페이스바를 뗄 때 커서를 원래대로
+  const handleKeyUp = (event) => {
+    if (event.code === 'Space') {
+        event.preventDefault();
+        toolState.isSpacePressed = false;
+        document.body.style.cursor = '';
     }
   };
 
@@ -1636,12 +1676,30 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   const executeToolEvent = (eventName, event) => {
     // mousemove 이벤트에서 좌표 업데이트
     if (eventName === 'onMouseMove') {
-      updateMousePosition(event);
+        updateMousePosition(event);
+    }
+
+    // 휠 클릭이나 스페이스바가 눌린 상태면 패닝 처리
+    if (event.button === 1 || toolState.isSpacePressed) {  // 1은 휠 클릭
+        switch(eventName) {
+            case 'onMouseDown':
+                document.body.style.cursor = 'grab';  // 휠 클릭 시 커서 변경
+                viewModule?.panControls.start(event);
+                return;
+            case 'onMouseMove':
+                viewModule?.panControls.move(event);
+                return;
+            case 'onMouseUp':
+                document.body.style.cursor = '';  // 휠 클릭 해제 시 원래 커서로
+                viewModule?.panControls.stop();
+                return;
+        }
     }
     
+    // 일반 도구 이벤트 처리
     const tool = tools[toolState.currentTool];
     if (tool && tool[eventName]) {
-      tool[eventName](event);
+        tool[eventName](event);
     }
   };
   
@@ -1741,6 +1799,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     initializeCanvas,
     zoomCanvas: handleZoom,
     handleKeyDown,
+    handleKeyUp,  // handleKeyUp 추가
     
     setWallThickness,
     setSnapDistance,
@@ -1771,5 +1830,4 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     cycleDisplayUnit,
     handleSVGMouseMove,
   };
-    
 });
