@@ -1,28 +1,52 @@
-div {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
+/* room 목록 컨테이너 */
 ul {
-    max-height: 500px;
-    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 1줄에 4개씩 배치 */
+    gap: 20px;
+    padding: 0;
+    list-style-type: none;
 }
 
 li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px;
-    border: 1px solid #ddd;
-    margin-bottom: 8px;
-    border-radius: 4px;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* 이미지 스타일 */
 img {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
+    width: 100px;
+    height: 100px;
+    height: auto;
     border-radius: 4px;
+    margin-bottom: 10px;
 }
 
+/* 버튼 그룹 스타일 */
+div {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
 
+/* 버튼 스타일 */
+button {
+    background-color: #ef5c4e; /* 빨간색 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #e04a3a; /* 호버 시 색상 */
+}
+
+button:active {
+    background-color: #c4392f; /* 클릭 시 색상 */
+}
