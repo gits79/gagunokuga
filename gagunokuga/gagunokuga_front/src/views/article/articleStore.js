@@ -57,6 +57,7 @@ export const useArticleStore = defineStore('articleStore', () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
+            alert('게시글이 수정되었습니다.');
             router.replace(`/article/${response.data.id}`);
             article.value = response.data;
             return article.value;

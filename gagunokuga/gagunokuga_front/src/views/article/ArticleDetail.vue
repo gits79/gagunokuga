@@ -33,7 +33,7 @@
       <!-- 작성자 정보 및 팔로우 버튼 -->
         <div class="author-section">
             <div class="author-info">
-                <img :src="store.article.profileImageUrl ? store.article.profileImageUrl : '/default_profile.png'" 
+                <img :src="store.article.profileImageUrl" 
                     class="author-image" 
                     alt="profile_image" />
                 <div class="author-details">
@@ -69,9 +69,7 @@ const loginStore = useLoginStore();
 const showMenu = ref(false);
 
 // 현재 로그인한 사용자 정보
-const currentUser = ref(loginStore.state.nickname);
-console.log(currentUser.value);
-console.log(loginStore.state.nickname);
+const currentUser = computed(() => loginStore.state.nickname);
 
 // 현재 게시글 작성자와 로그인한 사용자가 동일한지 확인
 const isAuthor = computed(() => store.article.nickname === currentUser.value);
@@ -91,7 +89,7 @@ const toggleMenu = () => {
 
 // 게시글 수정
 const editArticle = () => {
-  router.push(`/edit/${route.params.articleId}`);
+  router.push(`/article/${route.params.articleId}/edit`);
 };
 
 // 게시글 삭제
