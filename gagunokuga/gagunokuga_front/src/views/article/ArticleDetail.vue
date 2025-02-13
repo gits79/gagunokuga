@@ -58,19 +58,23 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useArticleStore } from './articleStore';
+import { useLoginStore } from '../login/login';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
 const store = useArticleStore();
+const loginStore = useLoginStore();
 
 const showMenu = ref(false);
 
-// 현재 로그인한 사용자 (임시 값, 실제 프로젝트에서는 API에서 받아와야 함)
-const currentUser = "user1";  // 예제: 현재 로그인된 사용자 닉네임
+// 현재 로그인한 사용자 정보
+const currentUser = ref(loginStore.state.nickname);
+console.log(currentUser.value);
+console.log(loginStore.state.nickname);
 
 // 현재 게시글 작성자와 로그인한 사용자가 동일한지 확인
-const isAuthor = computed(() => store.article.nickname === currentUser);
+const isAuthor = computed(() => store.article.nickname === currentUser.value);
 
 
 // 날짜 형식 변환 (YYYY.MM.DD)

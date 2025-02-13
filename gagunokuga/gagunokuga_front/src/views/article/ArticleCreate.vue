@@ -62,10 +62,10 @@
 <script setup>
   import { ref, watch, computed } from "vue";
   import { useArticleStore } from "./articleStore";
-  import { useRouter } from "vue-router";
+  import { useLoginStore } from "../login/login";
 
   const store = useArticleStore();
-  const router = useRouter();
+  const loginStore = useLoginStore();
 
   const title = ref("");
   const content = ref("");
@@ -142,7 +142,7 @@
       const articleData = {
           title: title.value,
           content: content.value,
-          nickname: "user1", // 일단 임의 유저 설정 ----> 수정 필요!!!
+          nickname: loginStore.state.nickname,
       };
   
       // JSON 데이터를 Blob으로 변환하여 추가
