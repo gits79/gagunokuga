@@ -1,16 +1,39 @@
 <template>
   <div class="info-container">
-    <p class="nickname">{{ nickname }}</p>
-    <p class="email">{{ email }}</p>
-
-    <!-- 버튼들 -->
+    <!-- 사용자 정보  -->
+    <div class="profile-info">
+      <h2 class="nickname">{{ nickname }}</h2>
+      <p class="email">{{ email }}</p>
+    </div>
+ 
+     <!-- 버튼 그룹  -->
     <div class="action-buttons">
-      <button @click="updateProfileImage" class="blue-btn">프로필 수정</button>
-      <button @click="goToInfoEdit" class="blue-btn">정보 수정</button>
-      <button @click="deleteUser" class="red-btn">탈퇴</button>
+      <button @click="updateProfileImage" class="blue-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+        프로필 수정
+      </button>
+      
+      <button @click="goToInfoEdit" class="blue-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+          <path d="M12 20h9"/>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+        </svg>
+        정보 수정
+      </button>
+      
+      <button @click="deleteUser" class="red-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+          <path d="M3 6h18"/>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+        탈퇴
+      </button>
     </div>
   </div>
-</template>
+ </template>
 
 <script setup>
 import { computed, onMounted  } from "vue";
