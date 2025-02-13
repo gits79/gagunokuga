@@ -35,6 +35,7 @@
     ></div>
 
     <RightSidebar />
+
   </div>
 </template>
 

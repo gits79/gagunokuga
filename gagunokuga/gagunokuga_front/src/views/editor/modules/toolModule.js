@@ -51,7 +51,8 @@ export const createToolModule = () => {
   const createToolHandlers = ({ 
     selectHandlers, 
     wallHandlers, 
-    rectHandlers 
+    rectHandlers,
+    eraserHandlers  // 지우개 핸들러 추가
   }) => {
     return {
       select: {
@@ -71,6 +72,12 @@ export const createToolModule = () => {
         onMouseDown: rectHandlers.onMouseDown,
         onMouseMove: rectHandlers.onMouseMove,
         onMouseUp: rectHandlers.onMouseUp
+      },
+      eraser: {  // 지우개 도구 추가
+        onClick: eraserHandlers.onClick,
+        onMouseDown: eraserHandlers.onMouseDown,
+        onMouseMove: eraserHandlers.onMouseMove,
+        onMouseUp: eraserHandlers.onMouseUp
       }
     };
   };
