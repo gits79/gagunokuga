@@ -3,7 +3,7 @@
   <div class="container">
     <div class="box">
       <h2>비밀번호 확인</h2>
-      <input v-model="password" type="password" placeholder="비밀번호 입력" class="input-box">
+      <input v-model="password" type="password" placeholder="비밀번호 입력" class="input-box" @keyup.enter="checkPassword">
       <button @click="checkPassword" class="btn">확인</button>
       <p v-if="error" class="error">{{ error }}</p>
     </div>
