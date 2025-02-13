@@ -605,8 +605,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   };
 
   // 가구 삭제 요청하기
-  const deleteFurniture = (furn) => {
-    const index = furn.attr('id').replace('furniture-', '');
+  const deleteFurniture = (index) => {
     const furniture = furnitureDataList.value[index];
     furniture.isDeleted = true;
     const furnitureEvent = {
@@ -648,7 +647,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     // const furn = draw.image(furniture.imageUrl);
     const furn = draw.image('../../../src/assets/furniture/sofa.svg');
     furn.size(furniture.width, furniture.height);
-    furn.transform({ rotate: furniture.rotation });
+    furn.transform({ rotate: furniture.rotation - Math.round(furn.transform('rotate')) }, true);
     furn.cx(furniture.xpos);
     furn.cy(furniture.ypos);
     furn.attr('id', `furniture-${furniture.index}`);
@@ -662,17 +661,17 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
       selectedFurniture.ypos = furn.cy();
     })
     furn.on('dragend', (e) => {
-      const { handler, box } = e.detail
       selectedFurniture.xpos = furn.cx();
       selectedFurniture.ypos = furn.cy();
-      handler.move(furn.cx(), furn.cy())
+      selectedFurniture.rotation = Math.round(furn.transform('rotate'))
       publishFurnitureUpdate({
         event: 'UPDATE',
-        furniture: selectedFurniture
+        furniture: {...selectedFurniture}
       });
     });
     furn.on('dblclick', (event) => {
-      deleteFurniture(furn);
+      const index = furn.attr('id').replace('furniture-', '');
+      deleteFurniture(index);
     });
     furnitureDataList.value[furniture.index] = furniture;
     furnitureObjects.value[furniture.index] = furn;
@@ -687,7 +686,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     const furn = furnitureObjects.value[furniture.index];
     if (furn) {
       furn.size(furniture.width, furniture.height);
-      furn.transform({ rotate: furniture.rotation });
+      furn.transform({ rotate: furniture.rotation - Math.round(furn.transform('rotate')) }, true);
       furn.cx(furniture.xpos);
       furn.cy(furniture.ypos);
     }
@@ -699,7 +698,16 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
       furn.draggable(false);
       furn.remove();
     }
+    furnitureDataList.value[furniture.index].isDeleted = true;
     furnitureObjects.value[furniture.index] = null;
+  }
+
+  const updateFurniture = (field, value) => {
+    selectedFurniture[field] = value;
+    publishFurnitureUpdate({
+      event: "UPDATE",
+      furniture: selectedFurniture,
+    })
   }
 
   return {
@@ -714,6 +722,8 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     deleteFurniture,
     fetchFurnitureList,
     dropFurniture,
+
+    updateFurniture,
     
     walls,
     roomId,
