@@ -22,7 +22,7 @@
           <div class="card-content">
             <h3 class="card-title">{{ article.title }}</h3>
             <div class="author-info">
-              <img :src="article.profileImageUrl ? article.profileImageUrl : '/default_profile.png'"
+              <img :src="article.profileImageUrl"
                 alt="profile_image" class="profile-image" />
               <span class="author-name">{{ article.nickname }}</span>
             </div>
