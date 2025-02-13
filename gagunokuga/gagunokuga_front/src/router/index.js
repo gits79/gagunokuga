@@ -38,6 +38,11 @@ const router = createRouter({
           path: "article/create",
           name: "ArticleCreate",
           component: ArticleCreate
+        },
+        {
+          path: "article/:articleId/edit",
+          name: "ArticleUpdate",
+          component: ArticleCreate
         }
       ],
       meta: { showHeader: true },
