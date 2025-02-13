@@ -62,10 +62,39 @@ export const useMypageStore = defineStore("userStore", () => {
         }
     };
 
+      // 프로필 이미지 수정
+      const updateProfileImage = async (file) => {
+        state.isLoading = true;
+        try {
+            const formData = new FormData();
+            formData.append("profileImage", file);
+
+            const response = await axios.put(
+                `${baseURL}/api/users/profile-image`,
+                formData,
+                {
+                    headers: {
+                        ...getHeaders(),
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+            await getUserInfo();
+            return response.data;
+        } catch (error) {
+            state.error = "프로필 이미지 수정 실패";
+            console.error(error);
+            throw error;
+        } finally {
+            state.isLoading = false;
+        }
+    };
+
     return {
         state,
         getUserInfo,
         checkNicknameAvailability,
         updateUserInfo,
+        updateProfileImage
     };
 });
