@@ -44,8 +44,7 @@ const goToEditor = (roomId) => {
 <template>
   <div>
     <div>
-      <h1>방 목록</h1>
-      <button @click="handleCreateRoom">방 생성</button>
+      <button class="create-room" @click="handleCreateRoom">방 생성</button>
     </div>
     
     <ul>
