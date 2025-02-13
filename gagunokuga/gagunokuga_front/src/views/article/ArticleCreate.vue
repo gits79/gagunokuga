@@ -54,24 +54,31 @@
   
       <!-- 버튼 -->
       <div class="button-group">
-        <button class="publish-btn" @click="uploadArticle" :disabled="!isFormValid">작성완료</button>
+        <button class="publish-btn" @click="uploadArticle" :disabled="!isFormValid">{{ isEditMode ? "수정완료" : "작성완료" }}</button>
       </div>
     </div>
 </template>
   
 <script setup>
-  import { ref, watch, computed } from "vue";
+  import { ref, watch, computed, onMounted } from "vue";
   import { useArticleStore } from "./articleStore";
-  import { useRouter } from "vue-router";
+  import { useLoginStore } from "../login/login";
+  import { useRoute } from "vue-router";
 
   const store = useArticleStore();
-  const router = useRouter();
+  const loginStore = useLoginStore();
+  const route = useRoute();
+
+  // 수정 모드 여부 확인
+  const isEditMode = computed(() => !!route.params.articleId);
 
   const title = ref("");
   const content = ref("");
   const fileInput = ref(null);
   const images = ref([]); // 이미지 리스트
   const showTitleError = ref(false);
+  const deleteList = ref([]); // 삭제할 이미지 리스트
+  const originalData = ref(null); // ✅ 기존 게시글 데이터 저장
   
   const triggerFileInput = () => {
     fileInput.value.click();
@@ -82,9 +89,48 @@
     showTitleError.value = newValue.trim() === "";
   });
 
+  // ✅ 기존 데이터와 현재 입력된 데이터를 비교하여 수정 여부 체크
+  const isModified = computed(() => {
+    if (!originalData.value) return false;
+
+    // 제목, 내용 비교
+    const isTitleChanged = title.value.trim() !== originalData.value.title.trim();
+    const isContentChanged = content.value.trim() !== originalData.value.content.trim();
+
+    // 이미지 비교
+    const isImagesChanged = 
+      images.value.length !== originalData.value.images.length ||
+      images.value.some((img, index) => img.url !== originalData.value.images[index]?.url) ||
+      deleteList.value.length > 0; // 삭제된 이미지가 있는 경우
+
+    return isTitleChanged || isContentChanged || isImagesChanged;
+  });
+
   // **작성완료 버튼 활성화 조건**
   const isFormValid = computed(() => {
-    return title.value.trim().length > 0 && images.value.length > 0;
+    return title.value.trim().length > 0 && images.value.length > 0 && (!isEditMode.value || isModified.value);
+  });
+
+  // 수정 모드라면 기존 게시글 데이터 불러오기
+  onMounted(async () => {
+    if (isEditMode.value) {
+      await store.getArticle(route.params.articleId);
+      title.value = store.article.title;
+      content.value = store.article.content;
+
+      // 기존 이미지 불러오기
+      images.value = store.article.articleImages.map(image => ({
+        file: null,  // 기존 이미지는 file 객체가 아님
+        url: image.imageUrl
+      }));
+
+      // ✅ 기존 게시글 데이터 저장
+      originalData.value = {
+        title: store.article.title,
+        content: store.article.content,
+        images: [...images.value], // 원본 이미지 저장
+      };
+    }
   });
 
   
@@ -101,6 +147,7 @@
       const reader = new FileReader();
       reader.onload = (e) => {
         images.value.push({ file, url: e.target.result });
+        console.log(images.value);
       };
       reader.readAsDataURL(file);
     });
@@ -127,11 +174,24 @@
   
   // 이미지 삭제 기능
   const removeImage = (index) => {
+    const removedImage = images.value[index];
+
+    // 수정 모드 && 기존 이미지일 때 삭제 리스트에 추가
+    if (isEditMode.value && removedImage.file === null) {
+       // 현재 삭제하려는 이미지의 URL과 동일한 원본 이미지 찾기
+      const originalImage = store.article.articleImages.find(img => img.imageUrl === removedImage.url);
+      
+      if(originalImage){
+        deleteList.value.push(originalImage.id);
+        console.log(deleteList.value);
+      }
+    }
+
     images.value.splice(index, 1);
   };
 
   // 작성완료 버튼 클릭 시 게시글 작성
-  const uploadArticle = () => {
+  const uploadArticle = async () => {
       const formData = new FormData();
 
       if(content.value.trim() === "") {
@@ -142,7 +202,7 @@
       const articleData = {
           title: title.value,
           content: content.value,
-          nickname: "user1", // 일단 임의 유저 설정 ----> 수정 필요!!!
+          nickname: loginStore.state.nickname,
       };
   
       // JSON 데이터를 Blob으로 변환하여 추가
@@ -150,16 +210,28 @@
       
       // 이미지 파일 추가
       images.value.forEach((image) => {
+        if(image.file){
           formData.append("images", image.file);
+        }
       });
+      
+      // 수정 모드일 때
+      if(isEditMode.value) {
+          // 삭제할 이미지 ID 추가
+          formData.append("deleteList", new Blob([JSON.stringify(deleteList.value)], { type: "application/json" }));
+          // 게시글 수정 API 호출
+          await store.updateArticle(route.params.articleId, formData);
+      } else {
+        // 새 게시글 작성 API 호출
+        await store.createArticle(formData);
 
-        // 게시글 작성 API 호출
-        store.createArticle(formData);
+      }
     };
     
 </script>
   
 <style scoped>
   @import "./articleCreate.css";
+
 </style>
   
