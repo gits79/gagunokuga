@@ -124,6 +124,7 @@ export const useLoginStore = defineStore("loginStore", () => {
         state.nickname = response.data.nickname;
         state.profileImage = response.data.profileImageUrl || generateAvatarUrl(response.data.nickname);
         state.provider = response.data.provider;
+        state.email = response.data.email;
       }
     } catch (error) {
       console.error("사용자 정보 불러오기 실패:", error);
