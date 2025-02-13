@@ -3,18 +3,32 @@
 .content-wrapper {
     display: flex;
     width: 100%;
-    height: 70vh; /* 화면 전체 높이 */
+    height: 84vh; /* 화면 전체 높이 */
     justify-content: center;
     align-items: center; /* 세로 중앙 정렬 */
     gap: 50px; /* 이미지와 텍스트 간 간격 */
+    background: linear-gradient(135deg, #f6f8ff 0%, #e9ecf9 100%);
+}
+
+/* 왼쪽 컨텐츠 정렬 */
+.profile-changer {
+    display: flex;
+    flex-direction: column; /* 요소들을 세로 정렬 */
+    align-items: center; /* 가운데 정렬 */
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
 }
 
 /* 사용자 이미지 스타일링 */
 .profile-image {
-    width: 400px;
-    height: 400px;
+    width: 320px;
+    height: 320px;
     border-radius: 50%;
     object-fit: cover;
+    background: white;
+    padding: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 /* 각각 50%씩 차지하도록 설정 */
@@ -45,11 +59,18 @@
 }
 
 /* 닉네임과 이메일의 텍스트 크기 설정 */
-.nickname, .email {
-    font-size: 1.5rem;
+.nickname {
+    font-size: 2.5rem;
     font-weight: bold;
     margin: 10px 0;
-    color: black; /* 텍스트 색상 지정 */
+    color: #1f2937;
+}
+
+.email {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin: 10px 0 30px 0;
+    color: #6b7280;
 }
 
 /* 버튼들을 수평으로 배치 */
@@ -62,13 +83,17 @@
 
 /* 공통 버튼 스타일 */
 button {
-    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 1rem;
-    font-weight: bold;
-    transition: background-color 0.3s;
+    font-weight: 600;
+    transition: all 0.2s;
 }
 
 /* 남색 버튼 기본 색상 */
@@ -85,13 +110,15 @@ button {
 
 /* 버튼 hover 효과 */
 .blue-btn:hover {
-    background-color: #00509e; /* 약간 밝은 남색으로 변경 */
+    background-color: #4338ca;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
 }
 
 .red-btn:hover {
-    background-color: #c0392b; /* 약간 밝은 빨간색으로 변경 */
+    background-color: #fecaca;
+    transform: translateY(-2px);
 }
-
 
 /* 마이페이지 - 수정 */
 
