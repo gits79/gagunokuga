@@ -48,6 +48,33 @@ export const useArticleStore = defineStore('articleStore', () => {
             console.error(error);
         }
     }
+
+    // 게시글 수정
+    const updateArticle = async (articleId, formData) => {
+        try {
+            const response = await axios.put(`${baseURL}/api/articles/${articleId}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            router.replace(`/article/${response.data.id}`);
+            article.value = response.data;
+            return article.value;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // 게시글 삭제
+    const deleteArticle = async (articleId) => {
+        try {
+            await axios.delete(`${baseURL}/api/articles/${articleId}`);
+            alert('게시글이 삭제되었습니다.');
+            router.replace('/'); // 메인 페이지로 이동
+        } catch (error) {
+            console.error(error);
+        }
+    }
   
 
   return {
@@ -56,6 +83,8 @@ export const useArticleStore = defineStore('articleStore', () => {
     getArticle,
     article,
     createArticle,
+    updateArticle,
+    deleteArticle,
     
   }
 })

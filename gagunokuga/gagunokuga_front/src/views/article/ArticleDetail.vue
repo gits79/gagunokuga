@@ -1,7 +1,5 @@
 <template>
     <div class="article-detail-container">
-      <!-- 제목 -->
-      <h1 class="article-title">{{ store.article.title }}</h1>
 
       <!-- 옵션 메뉴 (로그인한 사용자가 작성자일 경우) -->
       <div v-if="isAuthor" class="article-options">
@@ -11,6 +9,9 @@
           <button @click="deleteArticle" class="delete-button">삭제하기</button>
         </div>
       </div>
+      <!-- 제목 -->
+      <h1 class="article-title">{{ store.article.title }}</h1>
+
   
       <!-- 이미지 리스트 -->
       <div class="image-gallery">
@@ -82,6 +83,18 @@ const formattedDate = computed(() => {
 // 메뉴 토글
 const toggleMenu = () => {
   showMenu.value = !showMenu.value;
+};
+
+// 게시글 수정
+const editArticle = () => {
+  router.push(`/edit/${route.params.articleId}`);
+};
+
+// 게시글 삭제
+const deleteArticle = async () => {
+  if (confirm("정말 삭제하시겠습니까?")) {
+    await store.deleteArticle(route.params.articleId);
+  }
 };
 
 onMounted(() => {
