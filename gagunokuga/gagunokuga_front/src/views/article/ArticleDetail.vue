@@ -2,6 +2,15 @@
     <div class="article-detail-container">
       <!-- 제목 -->
       <h1 class="article-title">{{ store.article.title }}</h1>
+
+      <!-- 옵션 메뉴 (로그인한 사용자가 작성자일 경우) -->
+      <div v-if="isAuthor" class="article-options">
+        <button @click="toggleMenu" class="menu-button">⋯</button>
+        <div v-if="showMenu" class="menu-dropdown">
+          <button @click="editArticle">수정하기</button>
+          <button @click="deleteArticle" class="delete-button">삭제하기</button>
+        </div>
+      </div>
   
       <!-- 이미지 리스트 -->
       <div class="image-gallery">
@@ -46,12 +55,22 @@
   </template>
 
 <script setup>
-import { onMounted, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useArticleStore } from './articleStore';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
 const store = useArticleStore();
+
+const showMenu = ref(false);
+
+// 현재 로그인한 사용자 (임시 값, 실제 프로젝트에서는 API에서 받아와야 함)
+const currentUser = "user1";  // 예제: 현재 로그인된 사용자 닉네임
+
+// 현재 게시글 작성자와 로그인한 사용자가 동일한지 확인
+const isAuthor = computed(() => store.article.nickname === currentUser);
+
 
 // 날짜 형식 변환 (YYYY.MM.DD)
 const formattedDate = computed(() => {
@@ -59,6 +78,11 @@ const formattedDate = computed(() => {
   const date = new Date(store.article.createdAt);
   return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
 });
+
+// 메뉴 토글
+const toggleMenu = () => {
+  showMenu.value = !showMenu.value;
+};
 
 onMounted(() => {
     store.getArticle(route.params.articleId);

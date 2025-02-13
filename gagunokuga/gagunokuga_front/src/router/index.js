@@ -11,6 +11,7 @@ import PwdCheck from "../views/mypage/Passwordcheck.vue";
 import MyPage from "../views/mypage/Mypage.vue";
 import ArticleList from "../views/article/ArticleList.vue";
 import ArticleDetail from "../views/article/ArticleDetail.vue";
+import ArticleCreate from "../views/article/ArticleCreate.vue";
 import MypageInfo from "@/views/mypage/mypage/MypageInfo.vue";
 import MypageUpdate from "@/views/mypage/mypage/MypageUpdate.vue";
 
