@@ -28,4 +28,6 @@ public interface RoomUserRepository extends JpaRepository<RoomUser, Long> {
 
     @Query("SELECT r.room FROM RoomUser r WHERE r.user = :user AND r.isHost = false")
     List<Room> selectAllByUserAndIsHostIsFalse(@Param("user") User user);
+
+    void deleteAllByUser(User user);
 }

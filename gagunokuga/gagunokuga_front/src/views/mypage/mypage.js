@@ -19,7 +19,7 @@ export const useMypageStore = defineStore("userStore", () => {
         try {
             const response = await axios.get(`${baseURL}/api/users`);
             state.user = response.data;
-            return response.data; // ✅ 추가 (변경된 사용자 정보 반환)
+            return response.data; 
         } catch (error) {
             state.error = "사용자 정보 로딩 실패";
             console.error(error);
@@ -45,6 +45,11 @@ export const useMypageStore = defineStore("userStore", () => {
     const updateUserInfo = async (updatedData) => {
         state.isLoading = true;
         try {
+
+             // 빈 객체가 전송되는 것을 방지
+            if (Object.keys(updatedData).length === 0) {
+                throw new Error("수정할 내용이 없습니다.");
+            }
             await axios.put(`${baseURL}/api/users`, updatedData);
 
             // ✅ 업데이트 후 최신 데이터 가져오기

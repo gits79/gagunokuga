@@ -31,27 +31,31 @@ export default {
       newPassword: '',
       confirmPassword: '',
       isNicknameAvailable: null,
-      nicknameError: ''
+      nicknameError: '',
+      originalNickname:''
     };
   },
   computed: {
-    // Pinia store에서 사용자 정보를 가져옵니다.
     user() {
       const userStore = useMypageStore();
       return userStore.state.user;
+    },
+    isNicknameChanged() {
+      return this.originalNickname !== this.user.nickname;
     }
   },
   async created() {
     const userStore = useMypageStore();  // Pinia store 인스턴스 호출
     try {
       await userStore.getUserInfo();  // 사용자 정보 가져오기
+      this.originalNickname = userStore.state.user.nickname;
     } catch (error) {
       console.error(error.message);
     }
   },
   methods: {
     async checkNickname() {
-      const userStore = useMypageStore();  // Pinia store 인스턴스 호출
+      const userStore = useMypageStore(); 
       try {
         const isAvailable = await userStore.checkNicknameAvailability(this.user.nickname); // store 메서드 호출
         if (isAvailable) {
@@ -69,8 +73,9 @@ export default {
     },
 
     async updateUser() {
-      if (this.isNicknameAvailable === false) {
-        alert('닉네임을 먼저 확인해 주세요.');
+      // 닉네임이 변경되었고, 중복 확인을 하지 않은 경우에만 체크
+      if (this.isNicknameChanged && this.isNicknameAvailable !== true) {
+        alert('변경된 닉네임을 먼저 확인해 주세요.');
         return;
       }
 
@@ -80,9 +85,17 @@ export default {
       }
 
       const updatedData = {
-        nickname: this.user.nickname,
-        password: this.newPassword ? this.newPassword : undefined
+
       };
+       // 닉네임이 변경된 경우에만 nickname 포함
+    if (this.isNicknameChanged) {
+        updatedData.nickname = this.user.nickname;
+    }
+
+    // 비밀번호가 입력된 경우에만 password 포함
+    if (this.newPassword) {
+        updatedData.password = this.newPassword;
+    }
 
       try {
         const userStore = useMypageStore();
@@ -90,7 +103,6 @@ export default {
 
         await userStore.updateUserInfo(updatedData);
 
-        // 🔥 변경된 정보 불러와서 loginStore에도 반영
         await loginStore.fetchUserInfo(); // ✅ fetchUserInfo 호출해서 새 정보 반영
 
         alert('수정되었습니다.');
