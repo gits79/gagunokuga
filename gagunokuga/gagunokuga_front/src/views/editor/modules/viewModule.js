@@ -57,11 +57,46 @@ export const createViewModule = (draw) => {
     updateViewbox();
   };
 
+  // 줌 인/아웃 함수 추가
+  const zoomIn = () => {
+    const zoomFactor = 0.9;  // 10% 줌 인
+    const centerX = viewbox.x + viewbox.width / 2;
+    const centerY = viewbox.y + viewbox.height / 2;
+    
+    const newWidth = viewbox.width * zoomFactor;
+    const newHeight = viewbox.height * zoomFactor;
+    
+    viewbox.x = centerX - newWidth / 2;
+    viewbox.y = centerY - newHeight / 2;
+    viewbox.width = newWidth;
+    viewbox.height = newHeight;
+    
+    updateViewbox();
+  };
+
+  const zoomOut = () => {
+    const zoomFactor = 1.1;  // 10% 줌 아웃
+    const centerX = viewbox.x + viewbox.width / 2;
+    const centerY = viewbox.y + viewbox.height / 2;
+    
+    const newWidth = viewbox.width * zoomFactor;
+    const newHeight = viewbox.height * zoomFactor;
+    
+    viewbox.x = centerX - newWidth / 2;
+    viewbox.y = centerY - newHeight / 2;
+    viewbox.width = newWidth;
+    viewbox.height = newHeight;
+    
+    updateViewbox();
+  };
+
   return {
     viewbox,
     isPanning,
     panControls,
     zoomCanvas,
-    updateViewbox
+    updateViewbox,
+    zoomIn,    // 새로 추가된 함수들
+    zoomOut    // 새로 추가된 함수들
   };
 }; 

@@ -9,6 +9,13 @@ import { createHistoryModule } from '@/views/editor/modules/historyModule';
 import { createViewModule } from '@/views/editor/modules/viewModule';
 import { createToolModule } from '@/views/editor/modules/toolModule';
 import { createWallModule } from '@/views/editor/modules/wallModule';
+import { createFloodFillModule } from '@/views/editor/modules/floodFillModule';
+
+// 초기값을 쿠키에서 불러오기
+const showGrid = ref(localStorage.getItem('showGrid') !== 'false');  // 기본값 true
+const showKeys = ref(localStorage.getItem('showKeys') !== 'false');  // 기본값 true
+const showDimension = ref(localStorage.getItem('showDimension') !== 'false');  // 추가
+const displayUnit = ref(localStorage.getItem('displayUnit') || 'cm');  // 기본값 'cm'
 
 export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   
@@ -36,6 +43,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
 
   let isMovingWall = false;
   let moveStartCoords = { x: 0, y: 0 };
+  let originalSnapDistance = null;
 
   const selection = reactive({ selectedWallId: null });
   
@@ -66,18 +74,33 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   let viewModule = null;
   let wallModule = null;
 
+  let floodFillModule = null;
+
   // 캔버스 초기화
   const initializeCanvas = (canvasElement) => {
     draw = SVG().addTo(canvasElement).size("100%", "100%");
-    addGrid();
     
-    // view 모듈 생성
+    // 저장된 상태에 따라 그리드 표시
+    if (showGrid.value) {
+      addGrid();
+    }
+    
     viewModule = createViewModule(draw);
     draw.viewbox(viewModule.viewbox.x, viewModule.viewbox.y, 
                 viewModule.viewbox.width, viewModule.viewbox.height);
     
     wallLayer = draw.group().addClass("wall-layer");
     setWallLayer(wallLayer);
+
+    // 저장된 상태에 따라 키포인트 표시
+    if (!showKeys.value) {
+      draw.find('.key').forEach(key => key.hide());
+    }
+    
+    // wallModule의 walls를 직접 참조하도록 수정
+    // floodFillModule = createFloodFillModule(draw, walls);
+    // floodFillModule.findEnclosedSpaces();
+    // updateVisualElements();
   };
 
   // 서버에서 벽 데이터 불러오기
@@ -108,6 +131,10 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
           });
           updateVisualElements();
         }
+
+        // 벽 데이터 로드 완료 후 플러드필 실행
+        // floodFillModule?.findEnclosedSpaces();
+        // updateVisualElements();
       }
     } catch (error) {
       console.error("벽 데이터를 불러오는 중 오류 발생:", error);
@@ -179,7 +206,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
         const midY = (wallStart.y + end.y) / 2;
         const fontSize = viewModule.viewbox.width * 0.025;
         wallPreviewGroup
-          .text(`${length}mm`)
+          .text(formatLength(length))  // 기존 `${Math.round(length)}mm` 대신 formatLength 사용
           .font({ size: fontSize, anchor: 'middle' })
           .center(midX, midY)
           .addClass('preview-length');
@@ -222,9 +249,11 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   const moveWallControls = {
     start: (event) => {
       if (!selection.selectedWallId) return;
-      saveState();
       isMovingWall = true;
       moveStartCoords = getSVGCoordinates(event);
+      // 벽 이동 시작할 때 스냅 거리를 25로 변경
+      originalSnapDistance = toolState.snapDistance;
+      toolState.snapDistance = 25;
     },
     move: (event) => {
       if (!isMovingWall || !selection.selectedWallId) return;
@@ -250,31 +279,44 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       // 끝점에 대한 스냅 확인
       const snappedEnd = getSnapPointForMove(newEnd, walls, wall.id);
 
-      // 끝점이 스냅된 경우, 시작점을 재조정하여 길이와 각도 유지
+      // 경계 체크를 위한 임시 좌표
+      let tempX1, tempY1, tempX2, tempY2;
+
       if (snappedEnd.x !== newEnd.x || snappedEnd.y !== newEnd.y) {
-        wall.x2 = snappedEnd.x;
-        wall.y2 = snappedEnd.y;
-        wall.x1 = snappedEnd.x - originalLength * Math.cos(originalAngle);
-        wall.y1 = snappedEnd.y - originalLength * Math.sin(originalAngle);
+        tempX2 = snappedEnd.x;
+        tempY2 = snappedEnd.y;
+        tempX1 = snappedEnd.x - originalLength * Math.cos(originalAngle);
+        tempY1 = snappedEnd.y - originalLength * Math.sin(originalAngle);
       } else {
-        // 시작점이 스냅된 경우
-        wall.x1 = newStart.x;
-        wall.y1 = newStart.y;
-        wall.x2 = newEnd.x;
-        wall.y2 = newEnd.y;
+        tempX1 = newStart.x;
+        tempY1 = newStart.y;
+        tempX2 = newEnd.x;
+        tempY2 = newEnd.y;
       }
 
-      const wallElement = wallLayer.find(`[data-id='${wall.id}']`);
-      if (wallElement) {
-        wallElement.plot(wall.x1, wall.y1, wall.x2, wall.y2);
+      // 모든 점이 경계 내에 있는지 확인
+      if (isInBoundary({ x: tempX1, y: tempY1 }) && 
+          isInBoundary({ x: tempX2, y: tempY2 })) {
+        // 경계 내부에 있을 때만 벽 위치 업데이트
+        wall.x1 = tempX1;
+        wall.y1 = tempY1;
+        wall.x2 = tempX2;
+        wall.y2 = tempY2;
+
+        const wallElement = wallLayer.find(`[data-id='${wall.id}']`);
+        if (wallElement) {
+          wallElement.plot(wall.x1, wall.y1, wall.x2, wall.y2);
+        }
+        updateVisualElements();
       }
+      
       moveStartCoords = currentCoords;
-      updateVisualElements();
     },
-    stop: () => {
-      saveState();
+    end: () => {
       isMovingWall = false;
-      updateVisualElements();
+      moveStartCoords = null;
+      // 벽 이동이 끝나면 원래 스냅 거리로 복원
+      toolState.snapDistance = originalSnapDistance;
     },
   };
 
@@ -296,9 +338,11 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
         .rect(0, 0)
         .fill('none')
         .stroke({ width: 1, color: '#999', dasharray: '5,5' });
+      
+      // 키 미리보기 추가
+      updatePreviewMarkers(rectTool.startPoint, rectTool.startPoint);
     },
     
-    // 미리보기 업데이트
     move: (coords) => {
       if (!rectTool.startPoint || !rectTool.preview || !isInBoundary(coords)) return;
       
@@ -308,15 +352,14 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
         y: snapToMillimeter(snappedEnd.y),
       };
       
+      // 기존 미리보기 업데이트
       const width = Math.abs(currentPoint.x - rectTool.startPoint.x);
       const height = Math.abs(currentPoint.y - rectTool.startPoint.y);
       const x = Math.min(rectTool.startPoint.x, currentPoint.x);
       const y = Math.min(rectTool.startPoint.y, currentPoint.y);
       
-      // 기존 텍스트와 미리보기 제거
       rectTool.preview.children().forEach(child => child.remove());
       
-      // 사각형 미리보기
       rectTool.preview
         .rect(width, height)
         .fill('none')
@@ -324,7 +367,6 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
         .x(x)
         .y(y);
       
-      // 네 개의 벽 미리보기
       [
         [x, y, x + width, y],
         [x + width, y, x + width, y + height],
@@ -336,76 +378,178 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
           .stroke({ width: toolState.wallThickness, color: '#999', opacity: 0.5 });
       });
       
-      // 가로/세로 길이 표시
+      // 길이 표시
       const fontSize = viewModule.viewbox.width * 0.02;
-      
-      // 가로 길이
       if (width > 1) {
         rectTool.preview
-          .text(`${Math.round(width)}mm`)
+          .text(formatLength(width))
           .font({ size: fontSize, anchor: 'middle' })
           .center(x + width/2, y - fontSize);
       }
-      
-      // 세로 길이
       if (height > 1) {
         rectTool.preview
-          .text(`${Math.round(height)}mm`)
+          .text(formatLength(height))
           .font({ size: fontSize, anchor: 'middle' })
           .center(x - fontSize * 2, y + height/2)
           .rotate(-90);
       }
+      
+      // 키 미리보기 업데이트
+      updatePreviewMarkers(rectTool.startPoint, currentPoint);
     },
     
-    // 사각형 생성
     finish: (coords) => {
-      if (!rectTool.startPoint || !isInBoundary(coords)) return;
-      saveState();
+      if (!rectTool.startPoint || !rectTool.preview || !isInBoundary(coords)) return;
       
       const snappedEnd = getSnapPoint(coords, wallLayer.children());
-      const endPoint = {
+      const end = {
         x: snapToMillimeter(snappedEnd.x),
         y: snapToMillimeter(snappedEnd.y),
       };
       
-      // 좌상단, 우하단 좌표 계산
-      const x1 = Math.min(rectTool.startPoint.x, endPoint.x);
-      const y1 = Math.min(rectTool.startPoint.y, endPoint.y);
-      const x2 = Math.max(rectTool.startPoint.x, endPoint.x);
-      const y2 = Math.max(rectTool.startPoint.y, endPoint.y);
+      const width = Math.abs(end.x - rectTool.startPoint.x);
+      const height = Math.abs(end.y - rectTool.startPoint.y);
       
-      // 각 벽 순서대로 생성
-      const points = [
-        { start: { x: x1, y: y1 }, end: { x: x2, y: y1 } }, // 상단
-        { start: { x: x2, y: y1 }, end: { x: x2, y: y2 } }, // 우측
-        { start: { x: x2, y: y2 }, end: { x: x1, y: y2 } }, // 하단
-        { start: { x: x1, y: y2 }, end: { x: x1, y: y1 } }  // 좌측
-      ];
+      if (width < 1 || height < 1) {
+        rectTool.cancel();
+        return;
+      }
       
-      // 각 벽을 순차적으로 생성하여 교차점 처리
-      points.forEach(({start, end}) => {
+      const x = Math.min(rectTool.startPoint.x, end.x);
+      const y = Math.min(rectTool.startPoint.y, end.y);
+      
+      // 상태 저장은 한 번만
+      saveState();
+      
+      // 모든 변경사항을 한번에 모음
+      let allChanges = {
+        wallsToRemove: [],
+        newWalls: []
+      };
+      
+      // 사각형의 네 변을 벽으로 생성 (교차점 처리 포함)
+      [
+        [{ x, y }, { x: x + width, y }],
+        [{ x: x + width, y }, { x: x + width, y: y + height }],
+        [{ x: x + width, y: y + height }, { x, y: y + height }],
+        [{ x, y: y + height }, { x, y }]
+      ].forEach(([start, end]) => {
         const changes = wallCreationMethods.createWallWithIntersections(
           start,
           end,
           toolState.wallThickness
         );
-        wallCreationMethods.applyWallChanges(changes);
+        
+        // 변경사항 누적
+        allChanges.wallsToRemove.push(...changes.wallsToRemove);
+        allChanges.newWalls.push(...changes.newWalls);
       });
       
-      // 프리뷰 제거
-      rectTool.preview?.remove();
-      rectTool.preview = null;
-      rectTool.startPoint = null;
+      // 중복 제거
+      allChanges.wallsToRemove = [...new Set(allChanges.wallsToRemove)];
+      
+      // 모든 변경사항을 한번에 적용
+      wallCreationMethods.applyWallChanges(allChanges);
+      
       updateVisualElements();
+      
+      if (rectTool.preview) {
+        rectTool.preview.remove();
+        rectTool.preview = null;
+      }
+      rectTool.startPoint = null;
     },
     
-    // 취소
     cancel: () => {
       if (rectTool.preview) {
         rectTool.preview.remove();
         rectTool.preview = null;
       }
       rectTool.startPoint = null;
+    }
+  };
+
+  // 지우개 도구 객체 수정
+  const eraserTool = {
+    isErasing: false,
+    preview: null,
+    lastErasedWalls: new Set(),
+
+    // 프리뷰 생성 함수 분리
+    createPreview: () => {
+      if (!eraserTool.preview) {
+        eraserTool.preview = draw.circle(toolState.snapDistance * 2)
+          .fill('none')
+          .stroke({ color: '#000000', width: 3, dasharray: '5,5' })
+          .addClass('eraser-preview');
+      }
+    },
+
+    start: () => {
+      eraserTool.isErasing = true;
+      eraserTool.lastErasedWalls.clear();
+      eraserTool.createPreview();
+    },
+
+    move: (coords) => {
+      if (!eraserTool.preview) {
+        eraserTool.createPreview();
+      }
+      
+      eraserTool.preview.center(coords.x, coords.y);
+      
+      if (eraserTool.isErasing) {
+        // 드래그 중 벽 삭제 로직
+        const wallsToDelete = eraserTool.getWallsInRange(coords).filter(
+          wall => !eraserTool.lastErasedWalls.has(wall.id)
+        );
+        
+        if (wallsToDelete.length > 0) {
+          wallsToDelete.forEach(wall => {
+            eraserTool.lastErasedWalls.add(wall.id);
+            const wallElement = wallLayer.find(`[data-id='${wall.id}']`)[0];
+            if (wallElement) wallElement.remove();
+            
+            const index = walls.findIndex(w => w.id === wall.id);
+            if (index !== -1) walls.splice(index, 1);
+            
+            if (typeof wall.id === 'number') {
+              deletedWalls.push(wall.id);
+            }
+          });
+          
+          updateVisualElements();
+        }
+      }
+    },
+
+    stop: () => {
+      eraserTool.isErasing = false;
+      eraserTool.lastErasedWalls.clear();
+    },
+
+    cleanup: () => {
+      if (eraserTool.preview) {
+        eraserTool.preview.remove();
+        eraserTool.preview = null;
+      }
+    },
+
+    // getWallsInRange는 그대로 유지
+    getWallsInRange: (coords) => {
+      const range = toolState.snapDistance;
+      return walls.filter(wall => {
+        const projectedPoint = getClosestPointOnLine(
+          { x: wall.x1, y: wall.y1 },
+          { x: wall.x2, y: wall.y2 },
+          coords
+        );
+        const distance = Math.hypot(
+          projectedPoint.x - coords.x,
+          projectedPoint.y - coords.y
+        );
+        return distance < range;
+      });
     }
   };
 
@@ -416,6 +560,24 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     fillCornerSpaces();
     renderKeyPoints();
     renderLengthLabels();
+    
+    // 키포인트 표시 상태 적용
+    if (!showKeys.value) {
+      draw.find('.key').forEach(key => key.hide());
+    }
+
+    // 지우개 미리보기를 항상 최상단으로
+    if (eraserTool.preview) {
+      eraserTool.preview.front();
+    }
+
+    // 미리보기 그룹이 있다면 항상 wallLayer 위에 오도록 조정
+    if (wallPreviewGroup && wallPreviewGroup.node) {
+      wallLayer.after(wallPreviewGroup);
+    }
+    
+    // 넓이 텍스트만 front로 보내기
+    draw.find('.enclosed-space-text').forEach(text => text.front());
   };
 
   //  키 생성 함수
@@ -620,12 +782,12 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       );
       
       // 왼쪽 텍스트
-      const leftLabel = leftLabelGroup.text(`${leftLength}mm`)
+      const leftLabel = leftLabelGroup.text(formatLength(leftLength))
         .font({ size: fontSize, anchor: 'middle' })
         .center(midX - offset, midY)
         .rotate(90, midX - offset, midY);
       // 오른쪽 텍스트
-      const rightLabel = rightLabelGroup.text(`${rightLength}mm`)
+      const rightLabel = rightLabelGroup.text(formatLength(rightLength))
         .font({ size: fontSize, anchor: 'middle' })
         .center(midX + offset, midY)
         .rotate(90, midX + offset, midY);
@@ -681,11 +843,11 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       );
 
       // 상단 텍스트
-      const topLabel = topLabelGroup.text(`${upperLength}mm`)
+      const topLabel = topLabelGroup.text(formatLength(upperLength))
         .font({ size: fontSize, anchor: 'middle' })
         .center(midX, midY - offset);
       // 하단 텍스트
-      const bottomLabel = bottomLabelGroup.text(`${lowerLength}mm`)
+      const bottomLabel = bottomLabelGroup.text(formatLength(lowerLength))
         .font({ size: fontSize, anchor: 'middle' })
         .center(midX, midY + offset);
       // 상단 좌측 연결선
@@ -833,12 +995,16 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   const updateSelectedWallThickness = (newThickness) => {
     if (!selectedWall.value) return;
     saveState();
+    
     let updatedThickness = typeof newThickness === "string" && newThickness.includes("+")
       ? selectedWall.value.thickness + 10
       : typeof newThickness === "string" && newThickness.includes("-")
       ? selectedWall.value.thickness - 10
       : parseInt(newThickness);
-    if (isNaN(updatedThickness) || updatedThickness < 1) return;
+
+    // 최소 두께 제한 적용
+    if (isNaN(updatedThickness) || updatedThickness < 50) return;
+    
     selectedWall.value.thickness = updatedThickness;
     const wallElement = wallLayer.find(`[data-id='${selectedWall.value.id}']`);
     if (wallElement) {
@@ -1067,7 +1233,14 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
         const wallElement = wallLayer.find(`[data-id='${id}']`)[0];
         if (wallElement) wallElement.remove();
         const index = walls.findIndex(w => w.id === id);
-        if (index !== -1) walls.splice(index, 1);
+        if (index !== -1) {
+          const wall = walls[index];
+          // 서버에서 가져온 벽이면 deletedWalls에 추가
+          if (typeof wall.id === 'number') {
+            deletedWalls.push(wall.id);
+          }
+          walls.splice(index, 1);
+        }
       });
 
       // 새로운 벽 추가
@@ -1115,13 +1288,12 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   const fillCornerSpaces = () => {
     draw.find('.corner-space').forEach(space => space.remove());
     
-    // 벽들의 끝점을 Map으로 관리 (좌표를 키로 사용)
     const cornerMap = new Map();
     
-    wallLayer.children().forEach(wall => {
+    walls.forEach(wall => {
       const points = [
-        [wall.attr('x1'), wall.attr('y1')],
-        [wall.attr('x2'), wall.attr('y2')]
+        [wall.x1, wall.y1],
+        [wall.x2, wall.y2]
       ];
       
       points.forEach(([x, y]) => {
@@ -1140,17 +1312,15 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
         const [x, y] = key.split(',').map(Number);
         
         // 두 벽의 방향 확인 (수직/수평)
-        const isWallAVertical = Math.abs(wallA.attr('x1') - wallA.attr('x2')) < 1;
-        const isWallBVertical = Math.abs(wallB.attr('x1') - wallB.attr('x2')) < 1;
+        const isWallAVertical = Math.abs(wallA.x1 - wallA.x2) < 1;
+        const isWallBVertical = Math.abs(wallB.x1 - wallB.x2) < 1;
         
         if (isWallAVertical !== isWallBVertical) {
-          const thicknessA = wallA.attr('stroke-width');
-          const thicknessB = wallB.attr('stroke-width');
+          // 수직 벽과 수평 벽 구분
+          const verticalWall = isWallAVertical ? wallA : wallB;
+          const horizontalWall = isWallAVertical ? wallB : wallA;
           
-          const width = isWallAVertical ? thicknessA : thicknessB;
-          const height = isWallAVertical ? thicknessB : thicknessA;
-          
-          draw.rect(width, height)
+          draw.rect(verticalWall.thickness, horizontalWall.thickness)
             .center(x, y)
             .fill("#999")
             .addClass('corner-space');
@@ -1161,19 +1331,81 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     wallLayer.front();
   };
 
-  // 미리보기 키 업데이트 함수
+  // 미리보기 키 업데이트 함수 수정
   const updatePreviewMarkers = (start, end) => {
-    wallPreviewGroup.find('.preview-key').forEach(el => el.remove());
+    const previewGroup = wallPreviewGroup || rectTool.preview;
+    if (!previewGroup) return;
+
+    // 기존 키포인트 제거
+    previewGroup.find('.preview-key').forEach(el => el.remove());
 
     const keySize = viewModule.viewbox.width * 0.02;
-    [start, end].forEach(({ x, y }) => {
-      wallPreviewGroup
-        .circle(keySize)
-        .fill("#DDDDDD")
-        .stroke({ color: "#000", width: keySize * 0.1 })
-        .center(x, y)
-        .addClass('preview-key');
-    });
+    
+    const checkSnap = (point) => {
+      // 끝점 스냅 체크
+      const endPointSnap = walls.some(wall => {
+        return (Math.abs(wall.x1 - point.x) <= toolState.snapDistance && 
+                Math.abs(wall.y1 - point.y) <= toolState.snapDistance) ||
+               (Math.abs(wall.x2 - point.x) <= toolState.snapDistance && 
+                Math.abs(wall.y2 - point.y) <= toolState.snapDistance);
+      });
+
+      // 선분 위 스냅 체크
+      const lineSnap = walls.some(wall => {
+        const projectedPoint = getClosestPointOnLine(
+          { x: wall.x1, y: wall.y1 },
+          { x: wall.x2, y: wall.y2 },
+          point
+        );
+        const distance = Math.hypot(
+          projectedPoint.x - point.x,
+          projectedPoint.y - point.y
+        );
+        return distance <= toolState.snapDistance;
+      });
+
+      return endPointSnap || lineSnap;
+    };
+
+    const isSnappedStart = checkSnap(start);
+    const isSnappedEnd = checkSnap(end);
+    
+    if (wallPreviewGroup) {
+      // 벽 도구일 경우 시작점과 끝점만 표시
+      [
+        { point: start, isSnapped: isSnappedStart },
+        { point: end, isSnapped: isSnappedEnd }
+      ].forEach(({ point, isSnapped }) => {
+        wallPreviewGroup
+          .circle(keySize)
+          .fill(isSnapped ? "#FFD700" : "#DDDDDD")
+          .stroke({ color: "#000", width: keySize * 0.1 })
+          .center(point.x, point.y)
+          .addClass('preview-key');
+      });
+    } else if (rectTool.preview) {
+      // 사각형 도구일 경우 네 꼭지점 모두 표시하되, 실제 시작점과 끝점만 스냅 표시
+      const width = Math.abs(end.x - start.x);
+      const height = Math.abs(end.y - start.y);
+      const x = Math.min(start.x, end.x);
+      const y = Math.min(start.y, end.y);
+
+      [
+        { x: start.x, y: start.y, isStart: true },  // 실제 시작점
+        { x: end.x, y: end.y, isEnd: true },        // 실제 끝점
+        { x: end.x, y: start.y, isCorner: true },   // 나머지 모서리
+        { x: start.x, y: end.y, isCorner: true }    // 나머지 모서리
+      ].forEach(point => {
+        rectTool.preview
+          .circle(keySize)
+          .fill(point.isStart ? (isSnappedStart ? "#FFD700" : "#DDDDDD") :
+                point.isEnd ? (isSnappedEnd ? "#FFD700" : "#DDDDDD") :
+                "#DDDDDD")
+          .stroke({ color: "#000", width: keySize * 0.1 })
+          .center(point.x, point.y)
+          .addClass('preview-key');
+      });
+    }
   };
 
   // == 유틸리티 함수들 == //
@@ -1181,25 +1413,89 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   // 단축키 처리 함수
   const handleKeyDown = (event) => {
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
-    switch (event.key) {
-      case "Escape":
+    
+    if (event.code === 'Space' && !event.repeat) {
+        event.preventDefault();
+        toolState.isSpacePressed = true;
+        document.body.style.cursor = 'grab';
+    }
+    
+    switch (event.key.toLowerCase()) {
+      case "[":
+        if (toolState.currentTool === "eraser") {
+          const newSize = Math.max(25, toolState.snapDistance - 25);
+          setSnapDistance(newSize);
+          if (eraserTool.preview) {
+            eraserTool.preview.size(newSize * 2);
+          }
+        } else if (toolState.currentTool === "wall" || toolState.currentTool === "rect") {
+          const newThickness = Math.max(10, toolState.wallThickness - 10);
+          setWallThickness(newThickness);
+          // 미리보기 업데이트
+          if (wallPreview) {
+            wallPreview.stroke({ width: newThickness });
+          }
+          if (rectTool.preview) {
+            rectTool.preview.find('line').forEach(line => 
+              line.stroke({ width: newThickness })
+            );
+          }
+        }
+        break;
+      case "]":
+        if (toolState.currentTool === "eraser") {
+          const newSize = Math.min(500, toolState.snapDistance + 25);
+          setSnapDistance(newSize);
+          if (eraserTool.preview) {
+            eraserTool.preview.size(newSize * 2);
+          }
+        } else if (toolState.currentTool === "wall" || toolState.currentTool === "rect") {
+          const newThickness = Math.min(500, toolState.wallThickness + 10);
+          setWallThickness(newThickness);
+          // 미리보기 업데이트
+          if (wallPreview) {
+            wallPreview.stroke({ width: newThickness });
+          }
+          if (rectTool.preview) {
+            rectTool.preview.find('line').forEach(line => 
+              line.stroke({ width: newThickness })
+            );
+          }
+        }
+        break;
+      case "escape":
         if (toolState.currentTool === "wall") {
           wallControls.cancel();
         } else if (toolState.currentTool === "rect") {
           rectTool.cancel();
         }
         break;
-      case "Delete":
+      case "delete":
         if (selection.selectedWallId) {
           deleteSelectedWall();
         }
         break;
-      case "1": setCurrentTool("select"); break;
-      case "2": setCurrentTool("wall"); break;
-      case "3": setCurrentTool("rect"); break;
-      case "l": case "L": 
+      case "1": 
+        handleToolChange("select");
+        break;
+      case "2": 
+        handleToolChange("wall");
+        break;
+      case "3": 
+        handleToolChange("rect");
+        break;
+      case "4": 
+        handleToolChange("eraser");
+        break;
+      case "l":
         toggleLengthLabels();  // toolModule의 함수 사용
         updateVisualElements(); // 시각적 요소 업데이트 추가
+        break;
+      case "g": 
+        toggleGrid();
+        break;
+      case "k": 
+        toggleKeys();
         break;
       default:
         if (event.ctrlKey) {
@@ -1210,6 +1506,47 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
         }
         break;
     }
+    
+    if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+        event.preventDefault();
+        saveWalls();
+        return;
+    }
+
+    // Ctrl + '+' 또는 Ctrl + '-' 처리
+    if (event.ctrlKey || event.metaKey) {  // Windows의 Ctrl 또는 Mac의 Cmd
+        switch (event.key) {
+            case '+':
+            case '=':  // Shift 없이 '+' 누를 때
+                event.preventDefault();
+                viewModule?.zoomIn();
+                updateVisualElements();
+                return;
+            case '-':
+                event.preventDefault();
+                viewModule?.zoomOut();
+                updateVisualElements();
+                return;
+            // ... existing cases (z, y, s) ...
+        }
+    }
+  };
+
+  // 스페이스바를 뗄 때 커서를 원래대로
+  const handleKeyUp = (event) => {
+    if (event.code === 'Space') {
+        event.preventDefault();
+        toolState.isSpacePressed = false;
+        document.body.style.cursor = '';
+    }
+  };
+
+  const toggleKeys = () => {
+    showKeys.value = !showKeys.value;
+    draw.find('.key').forEach(key => {
+      showKeys.value ? key.show() : key.hide();
+    });
+    localStorage.setItem('showKeys', showKeys.value);
   };
 
   // === 도구 이벤트 설정 === //
@@ -1244,30 +1581,149 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       },
       onMouseUp: () => {
         if (isMovingWall) {
-          moveWallControls.stop();
+          moveWallControls.end();
         } else {
           viewModule?.panControls.stop();
         }
       }
     },
     wallHandlers: {
-      onClick: (event) => wallControls.onClick(getSVGCoordinates(event)),
-      onMouseMove: (event) => wallControls.preview(getSVGCoordinates(event))
+      onClick: (event) => {
+        if (!toolState.isSpacePressed) {
+          // 스페이스바가 떼진 상태에서만 벽 생성
+          wallControls.onClick(getSVGCoordinates(event));
+        }
+      },
+      onMouseDown: (event) => {
+        if (toolState.isSpacePressed) {
+          // 스페이스바가 눌린 상태면 패닝 시작
+          viewModule?.panControls.start(event);
+        }
+      },
+      onMouseMove: (event) => {
+        if (toolState.isSpacePressed) {
+          // 스페이스바가 눌린 상태면 패닝
+          viewModule?.panControls.move(event);
+        } else {
+          // 아니면 기존 벽 프리뷰
+          wallControls.preview(getSVGCoordinates(event));
+        }
+      },
+      onMouseUp: () => {
+        if (toolState.isSpacePressed) {
+          // 스페이스바가 눌린 상태면 패닝 종료
+          viewModule?.panControls.stop();
+        }
+      }
     },
     rectHandlers: {
       onClick: (event) => {
-        const coords = getSVGCoordinates(event);
-        !rectTool.startPoint ? rectTool.start(coords) : rectTool.finish(coords);
+        if (!toolState.isSpacePressed) {
+          // 스페이스바가 떼진 상태에서만 사각형 생성
+          const coords = getSVGCoordinates(event);
+          !rectTool.startPoint ? rectTool.start(coords) : rectTool.finish(coords);
+        }
       },
-      onMouseMove: (event) => rectTool.move(getSVGCoordinates(event))
+      onMouseDown: (event) => {
+        if (toolState.isSpacePressed) {
+          // 스페이스바가 눌린 상태면 패닝 시작
+          viewModule?.panControls.start(event);
+        }
+      },
+      onMouseMove: (event) => {
+        if (toolState.isSpacePressed) {
+          // 스페이스바가 눌린 상태면 패닝
+          viewModule?.panControls.move(event);
+        } else {
+          // 아니면 사각형 프리뷰
+          rectTool.move(getSVGCoordinates(event));
+        }
+      },
+      onMouseUp: () => {
+        if (toolState.isSpacePressed) {
+          // 스페이스바가 눌린 상태면 패닝 종료
+          viewModule?.panControls.stop();
+        }
+      }
+    },
+    eraserHandlers: {
+      onClick: (event) => {
+        if (toolState.isSpacePressed) return;
+        
+        const coords = getSVGCoordinates(event);
+        const wallsToDelete = eraserTool.getWallsInRange(coords);
+        
+        if (wallsToDelete.length > 0) {
+          saveState();
+          wallsToDelete.forEach(wall => {
+            const wallElement = wallLayer.find(`[data-id='${wall.id}']`)[0];
+            if (wallElement) wallElement.remove();
+            
+            const index = walls.findIndex(w => w.id === wall.id);
+            if (index !== -1) walls.splice(index, 1);
+            
+            if (typeof wall.id === 'number') {
+              deletedWalls.push(wall.id);
+            }
+          });
+          
+          updateVisualElements();
+        }
+      },
+      onMouseDown: (event) => {
+        if (toolState.isSpacePressed) {
+          viewModule?.panControls.start(event);
+        } else {
+          saveState();
+          eraserTool.start();
+        }
+      },
+      onMouseMove: (event) => {
+        if (toolState.isSpacePressed) {
+          viewModule?.panControls.move(event);
+          eraserTool.cleanup();  // 스페이스바 누르면 프리뷰 제거
+        } else {
+          eraserTool.move(getSVGCoordinates(event));
+        }
+      },
+      onMouseUp: () => {
+        if (toolState.isSpacePressed) {
+          viewModule?.panControls.stop();
+        } else {
+          eraserTool.stop();
+        }
+      }
     }
   });
 
   // 이벤트 처리기 실행 함수 (이벤트 이름, 이벤트 객체)
   const executeToolEvent = (eventName, event) => {
+    // mousemove 이벤트에서 좌표 업데이트
+    if (eventName === 'onMouseMove') {
+        updateMousePosition(event);
+    }
+
+    // 휠 클릭이나 스페이스바가 눌린 상태면 패닝 처리
+    if (event.button === 1 || toolState.isSpacePressed) {  // 1은 휠 클릭
+        switch(eventName) {
+            case 'onMouseDown':
+                document.body.style.cursor = 'grab';  // 휠 클릭 시 커서 변경
+                viewModule?.panControls.start(event);
+                return;
+            case 'onMouseMove':
+                viewModule?.panControls.move(event);
+                return;
+            case 'onMouseUp':
+                document.body.style.cursor = '';  // 휠 클릭 해제 시 원래 커서로
+                viewModule?.panControls.stop();
+                return;
+        }
+    }
+    
+    // 일반 도구 이벤트 처리
     const tool = tools[toolState.currentTool];
     if (tool && tool[eventName]) {
-      tool[eventName](event);
+        tool[eventName](event);
     }
   };
   
@@ -1284,6 +1740,77 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     updateVisualElements();
   };
 
+  // toggleGrid 함수 수정
+  const toggleGrid = () => {
+    showGrid.value = !showGrid.value;
+    if (showGrid.value) {
+      addGrid();  // 그리드 켤 때는 다시 렌더링
+    } else {
+      gridModule.toggleGrid(draw, false);  // 끌 때는 숨기기만
+    }
+    localStorage.setItem('showGrid', showGrid.value);
+  };
+
+  // setCurrentTool 호출 시 이전 도구 정리 및 새 도구 초기화
+  const handleToolChange = (newTool) => {
+    // 이전 도구 정리
+    switch (toolState.currentTool) {
+      case 'wall':
+        wallControls.cancel();
+        break;
+      case 'rect':
+        rectTool.cancel();
+        break;
+      case 'eraser':
+        eraserTool.cleanup();  // 지우개 미리보기 제거
+        eraserTool.stop();
+        break;
+    }
+
+    // 새 도구로 변경
+    setCurrentTool(newTool);
+
+    // 새 도구가 지우개면 프리뷰 생성
+    if (newTool === 'eraser') {
+      eraserTool.createPreview();
+    }
+  };
+
+  const mousePosition = ref({ x: 0, y: 0 });
+  
+  const formatLength = (value) => {
+    switch (displayUnit.value) {
+      case 'cm':
+        return `${(value / 10).toFixed(1)}cm`;
+      case 'm':
+        return `${(value / 1000).toFixed(2)}m`;
+      default: // mm
+        return `${Math.round(value)}mm`;
+    }
+  };
+
+  const cycleDisplayUnit = () => {
+    const units = ['mm', 'cm', 'm'];
+    const currentIndex = units.indexOf(displayUnit.value);
+    displayUnit.value = units[(currentIndex + 1) % units.length];
+    localStorage.setItem('displayUnit', displayUnit.value);  // 단위 변경 시 저장
+    updateVisualElements();  // 단위 변경 시 시각적 요소들 업데이트
+  };
+
+  const updateMousePosition = (event) => {
+    const coords = getSVGCoordinates(event);
+    mousePosition.value = {
+      x: Math.round(coords.x),
+      y: Math.round(coords.y)
+    };
+  };
+
+  // SVG 이벤트 핸들러에 마우스 좌표 업데이트 추가
+  const handleSVGMouseMove = (event) => {
+    updateMousePosition(event);
+    executeToolEvent('onMouseMove', event);
+  };
+
   // 리턴
   return {
     walls,
@@ -1296,6 +1823,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     initializeCanvas,
     zoomCanvas: handleZoom,
     handleKeyDown,
+    handleKeyUp,  // handleKeyUp 추가
     
     setWallThickness,
     setSnapDistance,
@@ -1315,6 +1843,15 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     updateSelectedWallThickness,
     deleteSelectedWall,
     viewbox: computed(() => viewModule?.viewbox),
+    showGrid,
+    toggleGrid,
+    showKeys,
+    toggleKeys,
+    showDimension,
+    mousePosition,
+    displayUnit,
+    formatLength,
+    cycleDisplayUnit,
+    handleSVGMouseMove,
   };
-    
 });
