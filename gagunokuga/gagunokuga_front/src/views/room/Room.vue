@@ -42,11 +42,11 @@ const goToEditor = (roomId) => {
 </script>
 
 <template>
-  <div>
+  <div v-if="store.rooms.length > 0">
     <div>
       <button class="create-room" @click="handleCreateRoom">방 생성</button>
     </div>
-    
+
     <ul>
       <li v-for="room in store.rooms" :key="room.roomId">
         <img :src="room.thumbnailUrl || defaultThumbnail" alt="방 썸네일" />
@@ -59,6 +59,12 @@ const goToEditor = (roomId) => {
       </li>
     </ul>
   </div>
+  <div v-else class="no-room-container">
+    <p class="no-room">현재 생성된 방이 없습니다. 방을 생성해 주세요.</p>
+    <button class="first-room" @click="handleCreateRoom">방 생성</button>
+  </div>
+
+
 </template>
 
 <style scoped>
