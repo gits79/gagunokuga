@@ -35,7 +35,7 @@ export const useArticleStore = defineStore('articleStore', () => {
     // 게시글 작성
     const createArticle = async (formData) => {
         try {
-            const response = await axios.post(`${baseURL}/articles`, formData, {
+            const response = await axios.post(`${baseURL}/api/articles`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

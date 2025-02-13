@@ -20,7 +20,6 @@ watchEffect(() => {
 // 로그아웃 처리
 const logout = () => {
   loginStore.logout();  // loginStore의 logout 메서드 호출
-  loginStore.state.password = "";
 };
 </script>
 
