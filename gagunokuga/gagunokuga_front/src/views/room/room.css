@@ -1,19 +1,24 @@
 /* room 목록 컨테이너 */
 ul {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 1줄에 4개씩 배치 */
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
-    padding: 0;
-    list-style-type: none;
+    padding: 20px;
+    list-style: none;
 }
 
 li {
-    background-color: #f8f8f8;
-    border-radius: 8px;
-    overflow: hidden;
+    width: 300px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #ddd;
+    border-radius: 10px;
     padding: 10px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    background: #fff;
 }
 
 /* 이미지 스타일 */
@@ -32,21 +37,57 @@ div {
     gap: 10px;
 }
 
-/* 버튼 스타일 */
+/* 기본 버튼 스타일 */
 button {
-    background-color: #ef5c4e; /* 빨간색 */
+    background-color: #EF5C4E;
     color: white;
     border: none;
-    border-radius: 4px;
-    padding: 8px 12px;
+    padding: 10px 15px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    border-radius: 5px;
+    font-size: 14px;
 }
 
 button:hover {
-    background-color: #e04a3a; /* 호버 시 색상 */
+    opacity: 0.8;
 }
 
-button:active {
-    background-color: #c4392f; /* 클릭 시 색상 */
+/* 방 생성 버튼 (화면 오른쪽 아래 고정) */
+button.create-room {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    background-color: #EF5C4E;
+    color: white;
+    font-size: 16px;
+    padding: 12px 20px;
+    border-radius: 50px;
+}
+
+/* 이미지 스타일 */
+li img {
+    width: 280px;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+/* 제목 스타일 (줄바꿈 가능하도록 수정) */
+li span {
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    max-height: 80px; /* 여러 줄 표시를 위한 충분한 높이 설정 */
+    line-height: 1.4;
+}
+
+/* 버튼 컨테이너 스타일 */
+li div {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
