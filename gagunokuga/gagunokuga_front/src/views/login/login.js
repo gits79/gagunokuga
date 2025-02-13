@@ -151,4 +151,4 @@ export const useLoginStore = defineStore("loginStore", () => {
     fetchUserInfo,
     logout,
   };
-});
+}, {persist: true});
