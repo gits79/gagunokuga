@@ -37,8 +37,6 @@ const logout = () => {
           </li>
         </template>
 
-        <li><router-link to="/">홈</router-link></li>
-
         <!-- 로그인 상태일 때 로그인/회원가입 숨기고, 로그아웃 보여주기 -->
         <li v-if="!isLoggedIn"><router-link to="/login">로그인</router-link></li>
 
