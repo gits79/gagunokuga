@@ -130,7 +130,13 @@ onUnmounted(() => {
     </div>
 
     <div class="chat-input">
-      <input v-model="messageInput" type="text" placeholder="메시지 입력" class="input-field message-input" />
+      <input 
+        v-model="messageInput" 
+        type="text" 
+        placeholder="메시지 입력" 
+        class="input-field message-input" 
+        @keyup.enter="sendChatMessage" 
+      />
       <button @click="sendChatMessage" class="send-button">전송</button>
     </div>
   </div>
