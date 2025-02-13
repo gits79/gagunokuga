@@ -1,9 +1,11 @@
 import { reactive } from 'vue';
 
 export const createToolModule = () => {
+  const MIN_THICKNESS = 50;  // 최소 두께 상수 추가
+
   const toolState = reactive({
     currentTool: "select",
-    wallThickness: 100,
+    wallThickness: Math.max(100, MIN_THICKNESS),  // 초기값도 최소값 체크
     snapDistance: 100,
     showLengthLabels: localStorage.getItem('showLengthLabels') !== 'false',
     isSpacePressed: false,
@@ -15,7 +17,8 @@ export const createToolModule = () => {
   };
 
   const setWallThickness = (thickness) => {
-    toolState.wallThickness = thickness;
+    // 최소 두께 제한 적용
+    toolState.wallThickness = Math.max(thickness, MIN_THICKNESS);
   };
 
   const setSnapDistance = (distance) => {
@@ -90,5 +93,6 @@ export const createToolModule = () => {
     toggleLengthLabels,
     createToolHandlers,
     setSpacePressed,
+    MIN_THICKNESS,  // 외부에서도 사용할 수 있도록 export
   };
 }; 

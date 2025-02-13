@@ -9,11 +9,13 @@ import { createHistoryModule } from '@/views/editor/modules/historyModule';
 import { createViewModule } from '@/views/editor/modules/viewModule';
 import { createToolModule } from '@/views/editor/modules/toolModule';
 import { createWallModule } from '@/views/editor/modules/wallModule';
+import { createFloodFillModule } from '@/views/editor/modules/floodFillModule';
 
 // 초기값을 쿠키에서 불러오기
 const showGrid = ref(localStorage.getItem('showGrid') !== 'false');  // 기본값 true
 const showKeys = ref(localStorage.getItem('showKeys') !== 'false');  // 기본값 true
 const showDimension = ref(localStorage.getItem('showDimension') !== 'false');  // 추가
+const displayUnit = ref(localStorage.getItem('displayUnit') || 'cm');  // 기본값 'cm'
 
 export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   
@@ -72,6 +74,8 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   let viewModule = null;
   let wallModule = null;
 
+  let floodFillModule = null;
+
   // 캔버스 초기화
   const initializeCanvas = (canvasElement) => {
     draw = SVG().addTo(canvasElement).size("100%", "100%");
@@ -92,6 +96,11 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     if (!showKeys.value) {
       draw.find('.key').forEach(key => key.hide());
     }
+    
+    // wallModule의 walls를 직접 참조하도록 수정
+    // floodFillModule = createFloodFillModule(draw, walls);
+    // floodFillModule.findEnclosedSpaces();
+    // updateVisualElements();
   };
 
   // 서버에서 벽 데이터 불러오기
@@ -122,6 +131,10 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
           });
           updateVisualElements();
         }
+
+        // 벽 데이터 로드 완료 후 플러드필 실행
+        // floodFillModule?.findEnclosedSpaces();
+        // updateVisualElements();
       }
     } catch (error) {
       console.error("벽 데이터를 불러오는 중 오류 발생:", error);
@@ -562,6 +575,9 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     if (wallPreviewGroup && wallPreviewGroup.node) {
       wallLayer.after(wallPreviewGroup);
     }
+    
+    // 넓이 텍스트만 front로 보내기
+    draw.find('.enclosed-space-text').forEach(text => text.front());
   };
 
   //  키 생성 함수
@@ -979,12 +995,16 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   const updateSelectedWallThickness = (newThickness) => {
     if (!selectedWall.value) return;
     saveState();
+    
     let updatedThickness = typeof newThickness === "string" && newThickness.includes("+")
       ? selectedWall.value.thickness + 10
       : typeof newThickness === "string" && newThickness.includes("-")
       ? selectedWall.value.thickness - 10
       : parseInt(newThickness);
-    if (isNaN(updatedThickness) || updatedThickness < 1) return;
+
+    // 최소 두께 제한 적용
+    if (isNaN(updatedThickness) || updatedThickness < 50) return;
+    
     selectedWall.value.thickness = updatedThickness;
     const wallElement = wallLayer.find(`[data-id='${selectedWall.value.id}']`);
     if (wallElement) {
@@ -1296,7 +1316,11 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
         const isWallBVertical = Math.abs(wallB.x1 - wallB.x2) < 1;
         
         if (isWallAVertical !== isWallBVertical) {
-          draw.rect(wallA.thickness, wallB.thickness)
+          // 수직 벽과 수평 벽 구분
+          const verticalWall = isWallAVertical ? wallA : wallB;
+          const horizontalWall = isWallAVertical ? wallB : wallA;
+          
+          draw.rect(verticalWall.thickness, horizontalWall.thickness)
             .center(x, y)
             .fill("#999")
             .addClass('corner-space');
@@ -1753,7 +1777,6 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   };
 
   const mousePosition = ref({ x: 0, y: 0 });
-  const displayUnit = ref('cm');  // 초기값을 'cm'로 설정
   
   const formatLength = (value) => {
     switch (displayUnit.value) {
@@ -1770,6 +1793,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     const units = ['mm', 'cm', 'm'];
     const currentIndex = units.indexOf(displayUnit.value);
     displayUnit.value = units[(currentIndex + 1) % units.length];
+    localStorage.setItem('displayUnit', displayUnit.value);  // 단위 변경 시 저장
     updateVisualElements();  // 단위 변경 시 시각적 요소들 업데이트
   };
 
