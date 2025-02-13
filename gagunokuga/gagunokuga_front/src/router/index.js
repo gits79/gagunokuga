@@ -11,9 +11,8 @@ import PwdCheck from "../views/mypage/Passwordcheck.vue";
 import MyPage from "../views/mypage/Mypage.vue";
 import ArticleList from "../views/article/ArticleList.vue";
 import ArticleDetail from "../views/article/ArticleDetail.vue";
-import ArticleCreate from "../views/article/ArticleCreate.vue";
-
-
+import MypageInfo from "@/views/mypage/mypage/MypageInfo.vue";
+import MypageUpdate from "@/views/mypage/mypage/MypageUpdate.vue";
 
 
 const router = createRouter({
@@ -25,7 +24,7 @@ const router = createRouter({
       component: Home,
       children: [
         {
-          path: "",
+          path: "/article",
           name: "ArticleList",
           component: ArticleList
         },
@@ -50,9 +49,26 @@ const router = createRouter({
     { path: "/signup", name: "SignUp", component: SignUp, meta: { showHeader: true }, },
     { path: "/oauth/success", name: "OAuthSuccess", component: OAuthSuccess, meta: { showHeader: false }, },
     { path: "/pwdcheck", name: "PasswordCheck", component: PwdCheck, meta: { showHeader: true }, },
-    { path: "/mypage", name: "MyPage", component: MyPage, meta: { showHeader: true }, },
-
-    // {
+    {
+      path: "/mypage",
+      name: "MyPage",
+      component: MyPage,
+      redirect: "/mypage/info",  // 기본 경로를 /mypage/info로 설정
+      children: [
+        {
+          path: "info",
+          name: "MypageInfo",
+          component: MypageInfo
+        },
+        {
+          path: "update",
+          name: "MypageUpdate",
+          component: MypageUpdate,
+          meta: { showHeader: true },
+        },
+      ],
+      meta: { showHeader: true },
+    },
     //   path: '/oauth/callback',
     //   name: "OAuthCallback",
     //   component: OAuthCallback,
