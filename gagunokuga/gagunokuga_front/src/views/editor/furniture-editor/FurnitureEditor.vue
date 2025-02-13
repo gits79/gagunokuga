@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, onMounted } from "vue";
+  import { ref, onMounted, onBeforeUnmount } from "vue";
   import { useRoute } from 'vue-router';
   import { useFurnitureEditorStore } from "./furnitureEditorStore";
   import LeftSidebar from "./LeftSidebar.vue";
@@ -9,28 +9,22 @@
   const canvas = ref(null);
   const route = useRoute();
 
-  const onDrop = (event) => {
+  const onDrop = (event) => { // 가구 생성 시 이벤트 전달
     event.preventDefault();
-    store.createImage(event);
-    const furnitureId = event.dataTransfer.getData('furnitureId');
-    const rect = canvas.value.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    logDroppedFurniture(x, y, furnitureId);
+    store.dropFurniture(event);
   };
 
-  const onDragOver = (event) => {
-    event.preventDefault();
-  };
-
-  const logDroppedFurniture = (x, y, id) => {
-    console.log('Dropped furniture:', { x, y, id });
-  };
-
-  onMounted(() => {
-    store.fetchWalls(route.params.roomId);
+  onMounted(async () => {
+    await store.initializeWebSocket(route.params.roomId); // WebSocket 연결 초기화
+    store.subscribeToRoom(); // 구독
+    store.fetchWalls();
+    store.fetchFurnitureList();
     store.initializeCanvas(canvas.value);
     window.addEventListener('keydown', store.handleKeyDown);
+  });
+
+  onBeforeUnmount(() => {
+    store.unsubscribeFromRoom(); // 구독 해제 및 연결 종료
   });
 </script>
 
@@ -46,7 +40,7 @@
       @click="store.executeToolEvent('onClick', $event)"
       @wheel.prevent="store.zoomCanvas"
       @drop="onDrop"
-      @dragover="onDragOver"
+      @dragover="$event.preventDefault()"
     >
     <!-- <svg :viewBox="`${store.viewBox.x} ${store.viewBox.y} ${store.viewBox.width} ${store.viewBox.height}`" class="w-full h-full">
         <rect width="800" height="600" fill="#f3f4f6" />
