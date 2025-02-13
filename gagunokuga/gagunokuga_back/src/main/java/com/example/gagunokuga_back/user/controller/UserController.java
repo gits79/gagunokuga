@@ -64,7 +64,7 @@ public class UserController {
     //탈퇴
     @DeleteMapping
     public ResponseEntity<Void> deleteUser() {
-        userService.delete();
+        userService.deleteUser();
         return ResponseEntity.ok().build();
     }
 }
