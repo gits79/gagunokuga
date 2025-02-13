@@ -119,7 +119,7 @@ export const useLoginStore = defineStore("loginStore", () => {
       const response = await axios.get(`${baseURL}/api/users`, {
         headers: { Authorization: `Bearer ${state.token}` },
       });
-      console.log(response.data);
+      //console.log(response.data);
       if (response.data) {
         state.nickname = response.data.nickname;
         state.profileImage = response.data.profileImageUrl || generateAvatarUrl(response.data.nickname);
@@ -130,6 +130,17 @@ export const useLoginStore = defineStore("loginStore", () => {
     }
   };
 
+  // 로그아웃 메서드
+  const logout = () => {
+    state.token = "";
+    state.nickname = "";
+    state.profileImage = "";
+    state.provider = "";
+    state.password = "";
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+  };
+
   return {
     login,
     state,
@@ -137,5 +148,6 @@ export const useLoginStore = defineStore("loginStore", () => {
     handleLoginSuccess,
     passwordReset,
     fetchUserInfo,
+    logout,
   };
 });

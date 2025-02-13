@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import axios, { Axios } from 'axios'
+import router from '../../router';
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -10,7 +11,7 @@ export const useArticleStore = defineStore('articleStore', () => {
     const articleList = ref([]);
     const getArticleList = async () => {
         try {
-            const response = await axios.get(`${baseURL}/articles`);
+            const response = await axios.get(`${baseURL}/api/articles`);
             articleList.value = response.data;
             return articleList.value;
         } catch (error) {
@@ -22,10 +23,27 @@ export const useArticleStore = defineStore('articleStore', () => {
     const article = ref({});
     const getArticle = async (articleId) => {
         try {
-            const response = await axios.get(`${baseURL}/articles/${articleId}`);
+            const response = await axios.get(`${baseURL}/api/articles/${articleId}`);
             console.log(response.data);
             article.value = response.data;
             return article.value;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // 게시글 작성
+    const createArticle = async (formData) => {
+        try {
+            const response = await axios.post(`${baseURL}/api/articles`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            router.replace(`/article/${response.data.id}`);
+            article.value = response.data;
+            return article.value;
+        
         } catch (error) {
             console.error(error);
         }
@@ -36,7 +54,8 @@ export const useArticleStore = defineStore('articleStore', () => {
     articleList,
     getArticleList,
     getArticle,
-    article
+    article,
+    createArticle,
     
   }
 })

@@ -1,6 +1,11 @@
 package com.example.gagunokuga_back.user.service;
 
 import com.example.gagunokuga_back.image.service.ImageService;
+import com.example.gagunokuga_back.room.domain.Room;
+import com.example.gagunokuga_back.room.repository.RoomRepository;
+import com.example.gagunokuga_back.room.service.RoomService;
+import com.example.gagunokuga_back.roomuser.repository.RoomUserRepository;
+import com.example.gagunokuga_back.roomuser.service.RoomUserService;
 import com.example.gagunokuga_back.user.domain.User;
 import com.example.gagunokuga_back.user.dto.*;
 import com.example.gagunokuga_back.user.dto.login.UserResponseDto;
@@ -24,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -37,6 +43,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final ImageService imageService;
+    private final RoomUserRepository roomUserRepository;
+    private final RoomRepository roomRepository;
 
 
     //이메일 중복 체크
@@ -128,8 +136,23 @@ public class UserService {
 
     //삭제
     @Transactional
-    public void delete() {
+    public void deleteUser() {
         User user = getCurrentUser();
+
+        if(user.getProfileImageUrl() != null) {
+            imageService.deleteImage(user.getProfileImageUrl());
+        }
+        // 호스트인 방 찾아서 삭제
+        List<Room> ownedRooms = roomUserRepository.selectAllByUserAndIsHostIsTrue(user);
+        for(Room room : ownedRooms) {
+            roomUserRepository.deleteAllByRoom(room);
+            roomRepository.delete(room);
+        }
+
+        // 사용자의 모든 RoomUser 관계 삭제
+        roomUserRepository.deleteAllByUser(user);
+
+        // 사용자 삭제
         userRepository.delete(user);
     }
 
