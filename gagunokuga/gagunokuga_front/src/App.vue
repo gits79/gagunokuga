@@ -1,7 +1,5 @@
 <script setup>
 import TheHeader from "@/components/the-header/TheHeader.vue";
-import TheFooter from "@/components/the-footer/TheFooter.vue";
-import Chat from "@/views/chat/Chat.vue";
 import { useRoute } from 'vue-router';
 import "@/styles/global.css";
 import { useLoginStore } from "@/views/login/login";
@@ -32,62 +30,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="app-container">
+  <div >
+    <!-- 현재 라우터의 meta에 showHeader가 true일 경우에만 TheHeader 표시 -->
     <TheHeader v-if="route.meta.showHeader" />
-    <div class="main-content">
-      <router-view />
-      <!-- 채팅 테스트용 -->
-      <!-- <Chat /> -->
-      
-    </div>
-    <TheFooter />
+    <router-view />
   </div>
 </template>
 
 
 <style scoped>
-.app-container {
-  position: relative;
-  min-height: 100vh;
-}
-
-.main-content {
-  display: flex;
-  min-height: calc(100vh - 120px);
-}
-
-.chat-sidebar {
-  position: fixed;
-  right: 0;
-  top: 80px;
-  width: 300px;
-  height: calc(100vh - 120px);
-  background: white;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  border-radius: 10px 0 0 0;
-}
-
-.chat-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  border-bottom: 1px solid #eee;
-  background-color: #EF5C4E;
-  color: white;
-  border-radius: 10px 0 0 0;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: white;
-}
-
-.close-button:hover {
-  opacity: 0.8;
-}
 </style>
