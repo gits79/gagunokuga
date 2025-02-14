@@ -17,8 +17,9 @@ const toggleModal = () => {
 </script>
 
 <template>
- <div class="login-container">
-   <h2>로그인</h2>
+  <div class="login-container">
+    <div class="login-box">
+      <h2>로그인</h2>
    <form @submit.prevent="loginStore.login">
      <div class="form-group">
        <label for="email">이메일</label>
@@ -42,6 +43,7 @@ const toggleModal = () => {
      /
      <router-link to="/signup" class="link">회원가입</router-link>
    </div>
+ </div>
  </div>
   <!-- 모달 창 -->
   <div v-if="loginStore.state.showModal" class="modal-overlay" @click.self="toggleModal">

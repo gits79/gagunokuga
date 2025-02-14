@@ -1,12 +1,22 @@
 /* 기본적인 폼 레이아웃 */
-form {
+/* 전체 컨테이너 */
+.signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: rgb(246, 248, 255);
+    padding: 20px;
+}
+
+.signup-box {
     width: 100%;
-    max-width: 350px;
-    margin: 1rem auto;
-    padding: 2rem;
+    max-width: 420px;  /* 450px에서 420px로 수정 */
     background: white;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    padding: 2rem;
 }
 
 h1 {
@@ -51,17 +61,20 @@ input:focus {
 button {
     padding: 0.5rem 0.8rem;
     font-size: 0.85rem;
-    background-color: #003366;
+    background-color: #4338ca;
     color: white;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
     font-weight: 500;
+    width: auto;  /* width를 auto로 설정 */
+    min-width: 90px;  /* 최소 너비 설정 */
+    align-self: flex-start;  /* 버튼을 왼쪽으로 정렬 */
 }
 
 button:hover {
-    background-color: #4338ca;
+    background-color: #003366;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
 }

@@ -5,7 +5,8 @@
 </script>
 
 <template>
-  <div>
+   <div class="signup-container">
+    <div class="signup-box">
     <h1>회원가입</h1>
     <form @submit.prevent="store.signup">
       <div class="form-group">
@@ -96,6 +97,7 @@
         "
       >회원가입</button>
     </form>
+  </div>
   </div>
 </template>
 
