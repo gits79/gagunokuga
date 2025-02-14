@@ -51,7 +51,8 @@ const router = createRouter({
     {
       path: "/test",
       name: "Test",
-      component: Test
+      component: Test,
+      meta: { showHeader: true },
     },
     
     { path: "/login", name: "Login", component: Login, meta: { showHeader: true }, },
