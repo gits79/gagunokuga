@@ -4,45 +4,284 @@
     width: 100%;
     overflow: hidden; /* 스크롤 제거 */
   }
-  
-  .sidebar {
-    width: 200px;
-    height: 100%;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border: 1px solid #000
-  }
-  
-  button {
-    padding: 10px;
-    cursor: pointer;
-  }
-  
-  .tool-button {
-    transition: all 0.2s ease;
-    border: 2px solid transparent;
-  }
-  
-  .tool-button.active {
-    background-color: #4a90e2;
-    color: white;
-    border: 2px solid #2171c7;
-    font-weight: bold;
-  }
-  
-  .sidebar button:hover {
-    background-color: #DDDDDD;
-  }
-  
-  .sidebar button.active:hover {
-    background-color: #357abd;
-  }
-  
-  .canvas {
-    flex: 1;
-    user-select: none; /* 기본 드래그 선택 방지 */
-    -webkit-user-drag: none; /* 브라우저 기본 드래그 방지 */
-  }
-  
+
+.sidebar-right {
+  width: 200px;
+  height: 100%;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #000;
+  background: #EF5C4E;
+}
+
+.sidebar-left {
+  width: 200px;
+  height: 100%;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #000;
+  background: #4f46e5;
+  justify-content: flex-start; /* 위쪽에 정렬 */
+}
+
+.head-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.body-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-grow: 1; /* body-left가 가능한 공간을 모두 차지하도록 설정 */
+}
+
+.tail-left {
+  margin-top: auto; /* tail-left는 맨 아래로 고정 */
+}
+
+button {
+  cursor: pointer;
+}
+
+.tool-button {
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.tool-button.active {
+  color: white;
+  font-weight: bold;
+}
+
+.sidebar button:hover {
+  background-color: #DDDDDD;
+}
+
+.sidebar button.active:hover {
+  background-color: #357abd;
+}
+
+.canvas {
+  flex: 1;
+  user-select: none; /* 기본 드래그 선택 방지 */
+  -webkit-user-drag: none; /* 브라우저 기본 드래그 방지 */
+}
+
+
+/* 기능성 버튼 */
+
+.controller {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.button-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.tool-button {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  background: #7498c0;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  overflow: visible; /* clip-path 밖의 요소가 보이도록 */
+}
+/* 텍스트를 온전하게 표시 */
+.tool-button span {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  text-align: center;
+  white-space: nowrap;
+  z-index: 2; /* clip-path보다 앞에 배치 */
+}
+
+.tool-button:hover {
+  transform: scale(1.1); /* 약간 커지는 효과 */
+}
+.tool-button.active {
+  background: #ff5722;
+  transform: scale(1.1); /* 약간 커지는 효과 */
+}
+.tool-button.save {
+  width: 60px;
+  height: 60px;
+  background: #ff5722;
+  z-index: 10;
+}
+.tool-button.select {
+  clip-path: polygon(50% 50%, 100% 50%, 100% 0, 50% 0);
+} /* 오른쪽 위 */
+
+.tool-button.wall {
+  clip-path: polygon(50% 50%, 50% 0, 0 0, 0 50%);
+
+} /* 왼쪽 위 */
+
+.tool-button.rect {
+  clip-path: polygon(50% 50%, 100% 50%, 100% 100%, 50% 100%);
+} /* 오른쪽 아래 */
+
+.tool-button.eraser {
+  clip-path: polygon(50% 50%, 50% 100%, 0 100%, 0 50%);
+} /* 왼쪽 아래 */
+
+/* 텍스트의 표시를 위해 위치이동을 시킴 */
+.tool-text {
+  position: absolute;
+  width: 100px;
+  text-align: center;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  z-index: 10; /* clip-path보다 앞에 위치 */
+}
+.tool-button.select .tool-text {
+  top: 20px; /* 버튼 위쪽으로 이동 */
+  left: 40px;
+}
+.tool-button.wall .tool-text {
+  top: 20px; /* 버튼 위쪽으로 이동 */
+  right: 40px;
+}
+.tool-button.rect .tool-text {
+  bottom: 20px; /* 버튼 아래쪽으로 이동 */
+  left: 40px;
+}
+.tool-button.eraser .tool-text {
+  bottom: 20px; /* 버튼 아래쪽으로 이동 */
+  right: 40px;
+}
+
+/* 아이콘 */
+.tool-icon {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  color: white; /* 아이콘 색상 */
+}
+.tool-button.active .tool-icon {
+  color: #ff5722; /* 활성화된 아이콘 색상 변경 */
+}
+
+
+/* 뒤로 앞으로 버튼 */
+.xy {
+  display: flex;
+  gap: 10px; /* 버튼 간 간격 */
+}
+
+.btn-xy {
+  background-color: #a4c8f0; /* 연파랑 */
+  border: none;
+  padding: 10px;
+  width: 120px;
+  height: 60px;
+  font-size: 16px;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.btn-xy:hover {
+  background-color: #8ab6e8;
+}
+
+.btn-xy:disabled {
+  background-color: #d3d3d3;
+  cursor: not-allowed;
+}
+
+.button-link button {
+  width: 100%; /* 버튼도 가로 꽉 차게 */
+  background-color: black; /* 검정색 배경 */
+  color: white; /* 텍스트 색상 흰색 */
+  border: none; /* 기본 border 제거 */
+  padding: 12px 20px; /* 적당한 세로 크기와 패딩 */
+  font-size: 16px; /* 글자 크기 */
+  font-weight: bold; /* 텍스트 굵게 */
+  text-align: center; /* 텍스트 중앙 정렬 */
+  cursor: pointer; /* 마우스 포인터 변경 */
+  border-radius: 5px; /* 둥근 모서리 */
+  transition: background-color 0.3s ease; /* 배경 색상 전환 효과 */
+}
+
+.button-link button:hover {
+  background-color: #333; /* hover 시 배경 색상 변경 */
+}
+
+/* 크기 조정 관련 스타일 */
+.scale-changer {
+  width: 100%;
+  height: 80px; /* 높이를 적당히 크게 설정 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px;
+}
+
+.scale-info {
+  display: flex;
+  align-items: center; /* 텍스트와 입력창 수평 배치 */
+}
+
+.scale-info label {
+  font-size: 16px;
+  color: #eeeeee; /* 텍스트 색상 */
+  font-family: 'Arial', sans-serif; /* 폰트 설정 */
+}
+
+.scale-info input {
+  width: 100%;
+  padding: 2px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.plus-minus {
+  display: flex;
+  width: 100%;
+}
+
+.pm-btn {
+  width: 48%; /* 버튼 너비를 48%로 설정하여 2개가 100%를 차지하도록 */
+  height: 20px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f4f4f4;
+  cursor: pointer;
+  text-align: center;
+}
+
+.pm-btn:hover {
+  background-color: #ef5c4e; /* hover 시 버튼 색상 변경 */
+  color: white;
+}
