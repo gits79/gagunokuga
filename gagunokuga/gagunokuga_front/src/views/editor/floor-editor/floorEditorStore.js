@@ -1697,6 +1697,16 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
 
   // 이벤트 처리기 실행 함수 (이벤트 이름, 이벤트 객체)
   const executeToolEvent = (eventName, event) => {
+    // 우클릭 시 현재 도구의 작업 취소
+    if (event.button === 2) {  // 2는 우클릭
+        if (toolState.currentTool === 'wall') {
+            wallControls.cancel();  
+        } else if (toolState.currentTool === 'rect') {
+            rectTool.cancel();
+        }
+        return;
+    }
+
     // mousemove 이벤트에서 좌표 업데이트
     if (eventName === 'onMouseMove') {
         updateMousePosition(event);
