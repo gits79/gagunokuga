@@ -17,31 +17,32 @@ const toggleModal = () => {
 </script>
 
 <template>
-  <div class="login-container">
-    <h2>로그인</h2>
-    <form @submit.prevent="loginStore.login">
-      <div class="form-group">
-        <label for="email">이메일</label>
-        <input v-model="loginStore.state.email" type="email" id="email" required placeholder="이메일을 입력하세요" />
-      </div>
-      <div class="form-group">
-        <label for="password">비밀번호</label>
-        <input v-model="loginStore.state.password" type="password" id="password" required placeholder="비밀번호를 입력하세요" />
-      </div>
-      <button type="submit">로그인</button>
-    </form>
-    <div class="kakao-login">
-      <button @click.prevent="handleKakaoLogin">
-        <img src="@/assets/login/kakaoLogin.png" alt="카카오 로그인" />
-      </button>
-    </div>
-    <div class="links">
-      <button @click="toggleModal" class="link">비밀번호 찾기</button>
-      /
-      <router-link to="/signup" class="link">회원가입</router-link>
-    </div>
-  </div>
-
+ <div class="login-container">
+   <h2>로그인</h2>
+   <form @submit.prevent="loginStore.login">
+     <div class="form-group">
+       <label for="email">이메일</label>
+       <input v-model="loginStore.state.email" type="email" id="email" required placeholder="이메일을 입력하세요" />
+     </div>
+     <div class="form-group">
+       <label for="password">비밀번호</label>
+       <input v-model="loginStore.state.password" type="password" id="password" required placeholder="비밀번호를 입력하세요" />
+     </div>
+     <div class="button-container">
+       <button type="submit">로그인</button>
+       <div class="kakao-login">
+         <button @click.prevent="handleKakaoLogin">
+           <img src="@/assets/login/kakaoLogin.png" alt="카카오 로그인" />
+         </button>
+       </div>
+     </div>
+   </form>
+   <div class="links">
+     <button @click="toggleModal" class="link">비밀번호 찾기</button>
+     /
+     <router-link to="/signup" class="link">회원가입</router-link>
+   </div>
+ </div>
   <!-- 모달 창 -->
   <div v-if="loginStore.state.showModal" class="modal-overlay" @click.self="toggleModal">
     <div class="modal">
