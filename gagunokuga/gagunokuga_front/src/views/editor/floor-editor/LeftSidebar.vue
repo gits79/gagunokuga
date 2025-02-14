@@ -63,7 +63,7 @@
       <button @click="store.redo" :disabled="!store.canRedo">앞으로 [Ctrl + Y]</button>
     </div>
     <div>
-      <button @click="store.toggleLengthLabels">
+      <button @click="store.toggleLengthLabels()">
         길이표시 {{ store.toolState.showLengthLabels ? '끄기' : '켜기' }} [L]
       </button>
       <button @click="store.toggleGrid()">
@@ -82,6 +82,11 @@
 
     const handleSave = () => {
     store.saveWalls();
+    };
+
+    const handleToggleLengthLabels = () => {
+      store.toggleLengthLabels();
+      store.updateVisualElements();
     };
 </script>
 

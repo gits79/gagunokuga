@@ -37,7 +37,6 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     setCurrentTool,
     setWallThickness,
     setSnapDistance,
-    toggleLengthLabels,
     createToolHandlers 
   } = createToolModule();
 
@@ -1737,6 +1736,12 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   // 줌 이벤트 핸들러 수정
   const handleZoom = (event) => {
     viewModule?.zoomCanvas(event);
+    updateVisualElements();
+  };
+
+  const toggleLengthLabels = () => {
+    toolState.showLengthLabels = !toolState.showLengthLabels;
+    localStorage.setItem('showLengthLabels', toolState.showLengthLabels);
     updateVisualElements();
   };
 
