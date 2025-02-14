@@ -1,0 +1,32 @@
+.sidebar-right {
+    width: 200px;
+    height: 100%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid #000;
+    background: #EF5C4E;
+}
+
+.tail-right {
+    margin-top: auto; /* tail-right를 아래로 밀어넣기 */
+}
+
+.btn-right {
+    width: 100%;
+    padding: 10px;
+    background-color: #ffe4c5;
+    border: 1px solid #ffe4c5;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 16px;
+    margin-top: 10px; /* 버튼과 위의 요소 간 간격 */
+}
+
+.btn-right:hover {
+    background-color: #ccb192;
+    border: 1px solid #ccb192;
+    color: black;
+}

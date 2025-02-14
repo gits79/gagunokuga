@@ -159,14 +159,14 @@ button {
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
  }
- 
+
  /* 입력 폼 컨테이너 */
  .form-box {
     display: flex;
     flex-direction: column;
     gap: 1rem;
  }
- 
+
  /* 라벨 스타일링 */
  .form-box label {
     font-size: 0.9rem;
@@ -174,7 +174,7 @@ button {
     color: #1f2937;
     margin-bottom: 0.2rem;
  }
- 
+
  /* 입력창 스타일링 */
  .input-box {
     padding: 0.6rem 0.8rem;
@@ -185,13 +185,13 @@ button {
     box-sizing: border-box;
     transition: all 0.2s ease;
  }
- 
+
  .input-box:focus {
     outline: none;
     border-color: #003366;
     box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
  }
- 
+
  /* 비활성화된 입력창 */
  .input-box.disabled {
     background-color: #f3f4f6;
@@ -199,7 +199,7 @@ button {
     color: #6b7280;
     cursor: not-allowed;
  }
- 
+
  /* 닉네임 중복 확인 버튼 */
  .btn {
     padding: 0.5rem 0.8rem;
@@ -214,13 +214,13 @@ button {
     font-weight: 500;
     margin-top: 0.3rem;
  }
- 
+
  .btn:hover {
     background-color: #4338ca;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
  }
- 
+
  /* 하단 버튼 컨테이너 */
  .form-box > .blue-btn,
  .form-box > .red-btn {
@@ -229,30 +229,30 @@ button {
     width: 100%;
     margin-top: 0.5rem;
  }
- 
+
  /* 에러 메시지 */
  .error-message {
     font-size: 0.8rem;
     margin-top: -0.3rem;
     color: #e74c3c;
  }
- 
+
  /* 성공 메시지 스타일 */
  .error-message:not([style*="color: red"]) {
     color: #2ecc71;
  }
- 
+
  /* 수정/취소 버튼 간격 */
  .form-box > .blue-btn {
     margin-top: 1.5rem;
  }
- 
+
  .form-box > .red-btn {
     margin-top: 0.75rem;
     background-color: #f3f4f6;
     color: #4b5563;
  }
- 
+
  .form-box > .red-btn:hover {
     background-color: #e5e7eb;
     color: #1f2937;
