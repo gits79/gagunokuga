@@ -4,15 +4,13 @@ import com.example.gagunokuga_back.article.domain.Article;
 import com.example.gagunokuga_back.common.BaseTimeEntity;
 import com.example.gagunokuga_back.user.domain.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Builder
 @Getter
 @AllArgsConstructor
+@ToString
 @NoArgsConstructor
 @Table(name = "comments")
 public class Comment extends BaseTimeEntity {

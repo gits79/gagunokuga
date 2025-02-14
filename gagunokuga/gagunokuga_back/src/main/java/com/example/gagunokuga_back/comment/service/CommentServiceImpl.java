@@ -36,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentListResponse getCommentList(Long articleId, int page) {
         Article article = articleRepository.findById(articleId).orElseThrow((
                 () -> new IllegalArgumentException("게시글이 없습니다.")));
-        Pageable pageable = PageRequest.of(page - 1, 10);
+        Pageable pageable = PageRequest.of(page - 1, 20);
         Page<Comment> comments = commentRepository.findByArticleId(articleId, pageable);
         List<CommentResponse> commentList = new ArrayList<>();
 
@@ -55,10 +55,8 @@ public class CommentServiceImpl implements CommentService {
     public CommentResponse createComment(Long articleId, CommentRequest request) {
         Article article = articleRepository.findById(articleId).orElseThrow((
                 () -> new IllegalArgumentException("게시글이 없습니다.")));
-        User user = userRepository.findById(request.getUserId()).orElseThrow(
-                () -> new IllegalArgumentException("사용자가 없습니다."));
-
-        Comment comment = request.toEntity(article, user);
+        User currentUser = userService.getCurrentUser();
+        Comment comment = request.toEntity(article, currentUser);
         commentRepository.save(comment);
 
         return CommentResponse.fromEntity(comment);
@@ -70,8 +68,8 @@ public class CommentServiceImpl implements CommentService {
                 () -> new IllegalArgumentException("게시글이 없습니다.")));
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new IllegalArgumentException("해당 댓글이 없습니다."));
-
-        if(!comment.getUser().getId().equals(request.getUserId())) {
+        User currentUser = userService.getCurrentUser();
+        if(!comment.getUser().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("해당 댓글의 작성자가 아닙니다");
         }
 

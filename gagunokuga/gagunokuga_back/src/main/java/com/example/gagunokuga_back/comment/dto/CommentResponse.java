@@ -17,6 +17,7 @@ public class CommentResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String nickname;
+    private String profileImageUrl;
     private Long articleId;
     private Long userId;
 
@@ -25,6 +26,8 @@ public class CommentResponse {
         return CommentResponse.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
+                .nickname(comment.getUser().getNickname())
+                .profileImageUrl(comment.getUser().getProfileImageUrl())
                 .articleId(comment.getArticle().getId())
                 .userId(comment.getUser().getId())
                 .createdAt(comment.getCreatedAt())
