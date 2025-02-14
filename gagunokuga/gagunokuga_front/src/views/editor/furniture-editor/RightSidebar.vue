@@ -60,6 +60,9 @@
       <label for="layer">레이어</label>
       <input type="number" v-model="store.selectedFurniture.layer" @input="store.updateFurniture('layer', store.selectedFurniture.layer)">
     </div>
+    <div class="form-group">
+        <button @click="store.deleteFurniture(store.selectedFurniture.index)" class="btn-delete">삭제</button>
+    </div>
   </div>
   </aside>
 </template>

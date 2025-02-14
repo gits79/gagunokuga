@@ -16,10 +16,10 @@
 
   onMounted(async () => {
     await store.initializeWebSocket(route.params.roomId); // WebSocket 연결 초기화
-    store.subscribeToRoom(); // 구독
-    store.fetchWalls();
+    await store.subscribeToRoom(); // 구독
+    await store.initializeCanvas(canvas.value);
+    await store.fetchWalls();
     store.fetchFurnitureList();
-    store.initializeCanvas(canvas.value);
     window.addEventListener('keydown', store.handleKeyDown);
   });
 

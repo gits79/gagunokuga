@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { SVG, Rect, Image } from "@svgdotjs/svg.js";
+import { SVG } from "@svgdotjs/svg.js";
 import '@svgdotjs/svg.draggable.js';
 import { reactive, computed, watch, ref } from "vue";
 import apiClient from "@/api/axiosInstance";
@@ -77,6 +77,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
             wallCreationMethods.renderWall(wall); // 새로운 벽 렌더링
           });
           updateVisualElements();
+          fillCornerSpaces();
         }
       }
     } catch (error) {
@@ -88,7 +89,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
 
   // 화면갱신
   const updateVisualElements = () => {
-    fillCornerSpaces();
+    // fillCornerSpaces();
     renderKeyPoints();
     renderLengthLabels();
   };
@@ -466,7 +467,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
       }
     });
 
-    wallLayer.front();
+    // wallLayer.front();
   };
 
   // == 유틸리티 함수들 == //
@@ -478,6 +479,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
       case "Escape":
         break;
       case "Delete":
+        deleteFurniture(selectedFurniture.index);
         break;
       case "1": break;
       case "2": break;
@@ -594,6 +596,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   const dropFurniture = (event) => {
     const furnitureId = event.dataTransfer.getData('furnitureId');
     const {x, y} = coordinateUtils.roundPoint(getSVGCoordinates(event));
+    console.log(x,y,furnitureId,roomId.value,"testtestestestses")
     createNewFurniture(furnitureId, x, y);
   };
   const createNewFurniture = async (furnitureId, x, y) => {
@@ -606,6 +609,10 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
 
   // 가구 삭제 요청하기
   const deleteFurniture = (index) => {
+    if(index === null) {
+      console.log("delete error: 선택된 가구 없음");
+      return;
+    }
     const furniture = furnitureDataList.value[index];
     furniture.isDeleted = true;
     const furnitureEvent = {
@@ -617,6 +624,8 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
 
   // 입장 시 가구 배치 정보 리스트로 불러오기
   const fetchFurnitureList = async () => {
+    furnitureObjects.value = [];
+    furnitureDataList.value = [];
     try {
       const response = await apiClient.get(`/api/rooms/${roomId.value}/furnitures/fetch`);
       response.data.furnitureList.forEach(furnitureEvent => {
@@ -644,37 +653,42 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     if (furniture.isDeleted === true) {
       return;
     }
-    // const furn = draw.image(furniture.imageUrl);
-    const furn = draw.image('../../../src/assets/furniture/sofa.svg');
-    furn.size(furniture.width, furniture.height);
-    furn.transform({ rotate: furniture.rotation - Math.round(furn.transform('rotate')) }, true);
+    const furn = draw.image(furniture.imageUrl);
+    // const furn = draw.image('../../../src/assets/furniture/sofa.svg');
+    furn.attr('preserveAspectRatio', 'none'); // 종횡비 해제
+    furn.size(furniture.width, furniture.height);   // 가로, 세로
+    furn.transform({ rotate: furniture.rotation - Math.round(furn.transform('rotate')) }, true);  // 회전값
     furn.cx(furniture.xpos);
     furn.cy(furniture.ypos);
     furn.attr('id', `furniture-${furniture.index}`);
+    furn.attr('z-index', furniture.layer);
 
     furn.draggable();
     furn.on('dragstart', (e) => {
+      furn.front();
       Object.assign(selectedFurniture, furniture); // 선택된 가구 정보 저장
     });
     furn.on('dragmove', (e) => {
-      selectedFurniture.xpos = furn.cx();
-      selectedFurniture.ypos = furn.cy();
+      updateSelectedValues(furn);
     })
     furn.on('dragend', (e) => {
-      selectedFurniture.xpos = furn.cx();
-      selectedFurniture.ypos = furn.cy();
-      selectedFurniture.rotation = Math.round(furn.transform('rotate'))
+      updateSelectedValues(furn);
       publishFurnitureUpdate({
         event: 'UPDATE',
         furniture: {...selectedFurniture}
       });
     });
-    furn.on('dblclick', (event) => {
-      const index = furn.attr('id').replace('furniture-', '');
-      deleteFurniture(index);
-    });
     furnitureDataList.value[furniture.index] = furniture;
     furnitureObjects.value[furniture.index] = furn;
+  }
+
+  const updateSelectedValues = (furn) => {
+    selectedFurniture.xpos = furn.cx();
+    selectedFurniture.ypos = furn.cy();
+    selectedFurniture.width = furn.width();
+    selectedFurniture.height = furn.height();
+    selectedFurniture.rotation = Math.round(furn.transform('rotate'))
+    selectedFurniture.layer = furn.attr('z-index');
   }
 
   // 가구 재렌더링
@@ -713,9 +727,9 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   return {
     //----- 웹소켓 관련 -----
     stompClient,
-    initializeWebSocket,
-    subscribeToRoom,
-    unsubscribeFromRoom,
+    initializeWebSocket,    // 웹소켓 초기화 및 roomId 초기화화
+    subscribeToRoom,        // 채널 구독
+    unsubscribeFromRoom,    // 채널 구독 해제
     publishFurnitureUpdate,
     //----------------------
     selectedFurniture,
