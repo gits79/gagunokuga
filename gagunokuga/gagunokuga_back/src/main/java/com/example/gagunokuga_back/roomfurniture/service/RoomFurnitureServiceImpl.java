@@ -32,18 +32,19 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
 
     @Override
     public FurnitureEventDto createRoomFurniture(Long roomId, Long furnitureId, Integer xpos, Integer ypos) {  // 방에 배치된 가구 하나 생성
-        Long index = redisTemplate.opsForValue().increment("room:" + roomId + ":furniture:index", 1);
+        String key = "room:" + roomId + ":furniture:index";
+        redisTemplate.opsForValue().setIfAbsent(key, -1L);
         RoomFurniture roomFurniture = new RoomFurniture(
                 roomRepository.getReferenceById(roomId),
                 furnitureRepository.getReferenceById(furnitureId),
                 xpos, ypos);
 
-        RoomFurnitureDto roomFurnitureDto = roomFurnitureMapper.toRoomFurnitureDto(roomFurniture, index);
+        RoomFurnitureDto roomFurnitureDto = roomFurnitureMapper.toRoomFurnitureDto(
+                roomFurniture,
+                redisTemplate.opsForValue().increment(key, 1L));
         FurnitureEventDto furnitureEventDto = FurnitureEventDto.builder()
                 .event(FurnitureEventDto.Event.CREATE)
                 .furniture(roomFurnitureDto).build();
-
-        System.out.println("index: " + index);
 
         this.store(roomId, roomFurnitureDto);
         return furnitureEventDto;
@@ -82,14 +83,13 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
 
     @Override
     public void loadAll(Long roomId) { // DB -> Redis
-        redisTemplate.opsForValue().set("room:" + roomId + ":furniture:index", 0L);
-        Long index = 0L;
+        redisTemplate.opsForValue().set("room:" + roomId + ":furniture:index", -1L);
         for (RoomFurniture roomFurniture : roomFurnitureRepository.findAllByRoom_Id(roomId)) {
-            RoomFurnitureDto roomFurnitureDto = roomFurnitureMapper.toRoomFurnitureDto(roomFurniture, index);
+            RoomFurnitureDto roomFurnitureDto = roomFurnitureMapper.toRoomFurnitureDto(
+                    roomFurniture,
+                    redisTemplate.opsForValue().increment("room:" + roomId + ":furniture:index", 1));
             this.store(roomId, roomFurnitureDto);
-            index = redisTemplate.opsForValue().increment("room:" + roomId + ":furniture:index", 1);
         }
-        System.out.println("생성 된 index: " + index);
     }
 
     @Override

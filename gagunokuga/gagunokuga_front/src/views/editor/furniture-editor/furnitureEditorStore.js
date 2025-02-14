@@ -1,19 +1,20 @@
 import { defineStore } from "pinia";
 import { SVG } from "@svgdotjs/svg.js";
+import '@svgdotjs/svg.draggable.js';
 import { reactive, computed, watch, ref } from "vue";
-import axios from "axios";
-import { svgUtils } from '@/views/editor/modules/utilsModule';
+import apiClient from "@/api/axiosInstance";
+import { subscribe, unsubscribe, publish } from '@/utils/stompClient';
+import { svgUtils, coordinateUtils } from '@/views/editor/modules/utilsModule';
 import { gridModule } from '@/views/editor/modules/gridModule';
 import { createViewModule } from '@/views/editor/modules/viewModule';
 import { createToolModule } from '@/views/editor/modules/toolModule';
 import { createWallModule } from '@/views/editor/modules/wallModule';
+import { get } from "lodash";
 
 export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () => {
   
   // 객체 선언
   let draw = null; // SVG 객체
-
-  const baseURL = import.meta.env.VITE_API_URL
 
   let wallLayer = null;
 
@@ -23,7 +24,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   const { 
     toolState, 
     toggleLengthLabels,
-    createToolHandlers 
+    createToolHandlers
   } = createToolModule();
 
   const selection = reactive({ selectedWallId: null });
@@ -51,10 +52,9 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   };
 
   // 서버에서 벽 데이터 불러오기
-  const fetchWalls = async (id) => {
+  const fetchWalls = async () => {
     try {
-      roomId.value = id;
-      const response = await axios.get(`${baseURL}/api/rooms/${id}/walls`);
+      const response = await apiClient.get(`/api/rooms/${roomId.value}/walls`);
       
       if (response.data && response.data.walls) {
         // 삭제되지 않은 벽만 필터링하여 저장
@@ -77,6 +77,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
             wallCreationMethods.renderWall(wall); // 새로운 벽 렌더링
           });
           updateVisualElements();
+          fillCornerSpaces();
         }
       }
     } catch (error) {
@@ -88,7 +89,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
 
   // 화면갱신
   const updateVisualElements = () => {
-    fillCornerSpaces();
+    // fillCornerSpaces();
     renderKeyPoints();
     renderLengthLabels();
   };
@@ -466,7 +467,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
       }
     });
 
-    wallLayer.front();
+    // wallLayer.front();
   };
 
   // == 유틸리티 함수들 == //
@@ -478,6 +479,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
       case "Escape":
         break;
       case "Delete":
+        deleteFurniture(selectedFurniture.index);
         break;
       case "1": break;
       case "2": break;
@@ -523,7 +525,8 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
         !rectTool.startPoint ? rectTool.start(coords) : rectTool.finish(coords);
       },
       onMouseMove: (event) => rectTool.move(getSVGCoordinates(event))
-    }
+    },
+    eraserHandlers: {}
   });
 
   // 이벤트 처리기 실행 함수 (이벤트 이름, 이벤트 객체)
@@ -540,8 +543,203 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     updateVisualElements();
   };
 
-  // 리턴
+  // -------------- 웹소켓 연결 및 구독 ---------------
+  const stompClient = ref(null);
+
+  const initializeWebSocket = (id) => {
+    roomId.value = id;
+    if (!stompClient.value) {
+      stompClient.value = true; // WebSocket 초기화 로직 (필요하면 연결 설정)
+    }
+  };
+
+  const subscribeToRoom = () => {
+    const subPath = `/sub/rooms/${roomId.value}`; // 동적으로 subPath 생성
+    subscribe(subPath, receiveFurnitureEvent); // subscribe 호출
+  }
+
+  const unsubscribeFromRoom = () => {
+    const subPath = `/sub/rooms/${roomId.value}`;
+    unsubscribe(subPath); // 구독 해제
+  }
+
+  const publishFurnitureUpdate = (data) => {
+    const pubPath = `/pub/rooms/${roomId.value}`; // pubPath 정의
+    publish(pubPath, data); // publish 호출
+  }
+  
+
+  // --------------- 가구 요청 및 업데이트 관련 ----------------
+
+  const furnitureObjects = ref([]) // 가구 객체 목록
+  const furnitureDataList = ref([]) // 가구 데이터 목록
+  const selectedFurniture = reactive({ 
+    id: null,
+    furnitureId: null,
+    furnitureName: null,
+    imageUri: null,
+    roomId: null,
+
+    xpos: null,
+    ypos: null,
+    width: null,
+    height: null,
+    rotation: null,
+
+    layer: null,
+    collapse: false,
+    holderName: null,
+    isDeleted: false,
+    index: null
+  })
+
+  // 서버에 새 가구 요청하기기
+  const dropFurniture = (event) => {
+    const furnitureId = event.dataTransfer.getData('furnitureId');
+    const {x, y} = coordinateUtils.roundPoint(getSVGCoordinates(event));
+    console.log(x,y,furnitureId,roomId.value,"testtestestestses")
+    createNewFurniture(furnitureId, x, y);
+  };
+  const createNewFurniture = async (furnitureId, x, y) => {
+    try {
+      const response = await apiClient.get(`/api/rooms/${roomId.value}/furnitures/${furnitureId}?xpos=${x}&ypos=${y}`);
+    } catch (error) {
+      console.error("가구 생성 중 오류 발생:", error);
+    }
+  };
+
+  // 가구 삭제 요청하기
+  const deleteFurniture = (index) => {
+    if(index === null) {
+      console.log("delete error: 선택된 가구 없음");
+      return;
+    }
+    const furniture = furnitureDataList.value[index];
+    furniture.isDeleted = true;
+    const furnitureEvent = {
+      event: 'DELETE',
+      furniture: furniture
+    }
+    publishFurnitureUpdate(furnitureEvent);
+  };
+
+  // 입장 시 가구 배치 정보 리스트로 불러오기
+  const fetchFurnitureList = async () => {
+    furnitureObjects.value = [];
+    furnitureDataList.value = [];
+    try {
+      const response = await apiClient.get(`/api/rooms/${roomId.value}/furnitures/fetch`);
+      response.data.furnitureList.forEach(furnitureEvent => {
+        receiveFurnitureEvent(furnitureEvent);
+      });
+    } catch (error) {
+      console.error("가구 데이터를 불러오는 중 오류 발생:", error);
+    }
+  };
+
+  // 가구 이벤트를 받는 함수
+  const receiveFurnitureEvent = (furnitureEvent) => {
+    const {event, furniture} = furnitureEvent;
+    if (event === 'CREATE') {
+      drawFurniture(furniture);
+    } else if (event === 'UPDATE') {
+      redrawFurniture(furniture);
+    } else if (event === 'DELETE') {
+      eraseFurniture(furniture);
+    }
+  };
+
+  // 가구 렌더링
+  const drawFurniture = (furniture) => {
+    if (furniture.isDeleted === true) {
+      return;
+    }
+    const furn = draw.image(furniture.imageUrl);
+    // const furn = draw.image('../../../src/assets/furniture/sofa.svg');
+    furn.attr('preserveAspectRatio', 'none'); // 종횡비 해제
+    furn.size(furniture.width, furniture.height);   // 가로, 세로
+    furn.transform({ rotate: furniture.rotation - Math.round(furn.transform('rotate')) }, true);  // 회전값
+    furn.cx(furniture.xpos);
+    furn.cy(furniture.ypos);
+    furn.attr('id', `furniture-${furniture.index}`);
+    furn.attr('z-index', furniture.layer);
+
+    furn.draggable();
+    furn.on('dragstart', (e) => {
+      furn.front();
+      Object.assign(selectedFurniture, furniture); // 선택된 가구 정보 저장
+    });
+    furn.on('dragmove', (e) => {
+      updateSelectedValues(furn);
+    })
+    furn.on('dragend', (e) => {
+      updateSelectedValues(furn);
+      publishFurnitureUpdate({
+        event: 'UPDATE',
+        furniture: {...selectedFurniture}
+      });
+    });
+    furnitureDataList.value[furniture.index] = furniture;
+    furnitureObjects.value[furniture.index] = furn;
+  }
+
+  const updateSelectedValues = (furn) => {
+    selectedFurniture.xpos = furn.cx();
+    selectedFurniture.ypos = furn.cy();
+    selectedFurniture.width = furn.width();
+    selectedFurniture.height = furn.height();
+    selectedFurniture.rotation = Math.round(furn.transform('rotate'))
+    selectedFurniture.layer = furn.attr('z-index');
+  }
+
+  // 가구 재렌더링
+  const redrawFurniture = (furniture) => {
+    furnitureDataList.value[furniture.index] = furniture;
+    if (furniture.index === selectedFurniture.index) {
+      Object.assign(selectedFurniture, furniture);
+    }
+    const furn = furnitureObjects.value[furniture.index];
+    if (furn) {
+      furn.size(furniture.width, furniture.height);
+      furn.transform({ rotate: furniture.rotation - Math.round(furn.transform('rotate')) }, true);
+      furn.cx(furniture.xpos);
+      furn.cy(furniture.ypos);
+    }
+  }
+  // 가구 지우기
+  const eraseFurniture = (furniture) => {
+    const furn = furnitureObjects.value[furniture.index];
+    if (furn) {
+      furn.draggable(false);
+      furn.remove();
+    }
+    furnitureDataList.value[furniture.index].isDeleted = true;
+    furnitureObjects.value[furniture.index] = null;
+  }
+
+  const updateFurniture = (field, value) => {
+    selectedFurniture[field] = value;
+    publishFurnitureUpdate({
+      event: "UPDATE",
+      furniture: selectedFurniture,
+    })
+  }
+
   return {
+    //----- 웹소켓 관련 -----
+    stompClient,
+    initializeWebSocket,    // 웹소켓 초기화 및 roomId 초기화화
+    subscribeToRoom,        // 채널 구독
+    unsubscribeFromRoom,    // 채널 구독 해제
+    publishFurnitureUpdate,
+    //----------------------
+    selectedFurniture,
+    deleteFurniture,
+    fetchFurnitureList,
+    dropFurniture,
+
+    updateFurniture,
+    
     walls,
     roomId,
     fetchWalls,
