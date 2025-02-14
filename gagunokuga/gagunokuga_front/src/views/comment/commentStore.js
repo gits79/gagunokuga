@@ -7,22 +7,22 @@ const baseURL = import.meta.env.VITE_API_URL;
 export const useCommentStore = defineStore("commentStore", () => {
   const comments = ref([]);
 
-  // ✅ 댓글 목록 가져오기
+  //  댓글 목록 가져오기
   const fetchComments = async (articleId) => {
     try {
       const response = await axios.get(`${baseURL}/api/articles/${articleId}/comments`);
-      console.log("✅ API 응답 데이터:", response.data);
+      console.log(" API 응답 데이터:", response.data);
 
-      // ✅ Vue의 반응성을 유지하기 위해 새로운 배열을 할당
+      //  Vue의 반응성을 유지하기 위해 새로운 배열을 할당
       comments.value = [...response.data.comments];
 
-      console.log("✅ comments.value 업데이트됨:", comments.value);
+      console.log(" comments.value 업데이트됨:", comments.value);
     } catch (error) {
       console.error("❌ 댓글을 불러오는 중 오류 발생:", error);
     }
   };
 
-  // ✅ 댓글 작성하기
+  //  댓글 작성하기
   const createComment = async (articleId, content) => {
     try {
       const token = localStorage.getItem('accessToken');
@@ -40,14 +40,14 @@ export const useCommentStore = defineStore("commentStore", () => {
         profileImageUrl: response.data.profileImageUrl
       });
 
-      console.log("✅ 댓글 작성 완료:", response.data);
+      console.log(" 댓글 작성 완료:", response.data);
     } catch (error) {
-      console.error("❌ 댓글 작성 중 오류 발생:", error);
+      console.error(" 댓글 작성 중 오류 발생:", error);
       throw error;
     }
   };
 
-  // ✅ 댓글 수정하기
+  //  댓글 수정하기
   const updateComment = async (articleId, commentId, updatedContent) => {
     try {
       const token = localStorage.getItem('accessToken');
@@ -57,20 +57,20 @@ export const useCommentStore = defineStore("commentStore", () => {
         { headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } }
       );
 
-      // ✅ 수정된 댓글을 comments 배열에서 업데이트
+      //  수정된 댓글을 comments 배열에서 업데이트
       const commentIndex = comments.value.findIndex(comment => comment.id === commentId);
       if (commentIndex !== -1) {
         comments.value[commentIndex].content = updatedContent;
       }
 
-      console.log("✅ 댓글 수정 완료:", response.data);
+      console.log(" 댓글 수정 완료:", response.data);
     } catch (error) {
-      console.error("❌ 댓글 수정 중 오류 발생:", error);
+      console.error(" 댓글 수정 중 오류 발생:", error);
       throw error;
     }
   };
 
-  // ✅ 댓글 삭제하기
+  //  댓글 삭제하기
   const deleteComment = async (articleId, commentId) => {
     try {
       const token = localStorage.getItem('accessToken');
@@ -79,9 +79,9 @@ export const useCommentStore = defineStore("commentStore", () => {
       });
 
       comments.value = comments.value.filter(comment => comment.id !== commentId);
-      console.log(`✅ 댓글 삭제 완료 (ID: ${commentId})`);
+      console.log(` 댓글 삭제 완료 (ID: ${commentId})`);
     } catch (error) {
-      console.error("❌ 댓글 삭제 중 오류 발생:", error);
+      console.error(" 댓글 삭제 중 오류 발생:", error);
     }
   };
 
@@ -89,7 +89,7 @@ export const useCommentStore = defineStore("commentStore", () => {
     comments,
     fetchComments,
     createComment,
-    updateComment, // ✅ 댓글 수정 기능 추가
+    updateComment, //  댓글 수정 기능 추가
     deleteComment
   };
 });
