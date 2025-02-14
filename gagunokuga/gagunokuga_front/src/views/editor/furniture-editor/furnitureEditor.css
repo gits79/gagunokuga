@@ -45,7 +45,7 @@ button {
 .furniture-image {
   width: 100px;
   height: 100px;
-  object-fit: cover;
+  object-fit: contain;
   /* background-color: #000; */
 }
 
