@@ -38,6 +38,9 @@
         <button @click="store.setWallThickness(store.toolState.wallThickness - 10)">- ( [ )</button>
         <button @click="store.setWallThickness(store.toolState.wallThickness + 10)">+ ( ] )</button>
       </div>
+      <button @click="handleCancel">
+        그리기 취소 [ESC]
+      </button>
     </div>
 
     <!-- 지우개 도구 선택시 보이는 인터페이스 -->
@@ -82,6 +85,14 @@
 
     const handleSave = () => {
     store.saveWalls();
+    };
+
+    const handleCancel = () => {
+      if (store.toolState.currentTool === 'wall') {
+        store.wallControls.cancel();
+      } else if (store.toolState.currentTool === 'rect') {
+        store.rectTool.cancel();
+      }
     };
 
     const handleToggleLengthLabels = () => {
