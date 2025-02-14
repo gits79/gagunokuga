@@ -24,7 +24,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   const { 
     toolState, 
     toggleLengthLabels,
-    createToolHandlers 
+    createToolHandlers
   } = createToolModule();
 
   const selection = reactive({ selectedWallId: null });
@@ -525,7 +525,8 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
         !rectTool.startPoint ? rectTool.start(coords) : rectTool.finish(coords);
       },
       onMouseMove: (event) => rectTool.move(getSVGCoordinates(event))
-    }
+    },
+    eraserHandlers: {}
   });
 
   // 이벤트 처리기 실행 함수 (이벤트 이름, 이벤트 객체)
