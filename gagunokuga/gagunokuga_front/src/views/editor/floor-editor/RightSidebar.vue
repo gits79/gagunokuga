@@ -48,7 +48,7 @@
 
       <!-- 벽 삭제 버튼 -->
       <div>
-        <button @click="store.deleteSelectedWall" class="delete-button">벽 삭제 [Delete]</button>
+        <button @click="store.deleteSelectedWall" class="btn-right">벽 삭제 [Delete]</button>
       </div>
     </div>
 
@@ -57,14 +57,14 @@
     </div>
 
     <!-- 기존 버튼들 -->
-    <div>
-      <button @click="store.toggleLengthLabels()">
+    <div class="tail-right">
+      <button @click="store.toggleLengthLabels()" class="btn-right">
         길이표시 {{ store.toolState.showLengthLabels ? '끄기' : '켜기' }} [L]
       </button>
-      <button @click="store.toggleGrid()">
+      <button @click="store.toggleGrid()" class="btn-right">
         그리드 {{ store.showGrid ? "ON" : "OFF" }} [G]
       </button>
-      <button @click="store.toggleKeys()">
+      <button @click="store.toggleKeys()" class="btn-right">
         키포인트 {{ store.showKeys ? "ON" : "OFF" }} [K]
       </button>
     </div>
@@ -82,4 +82,5 @@
 
 <style scoped>
     @import "./floorEditor.css";
+    @import "./rightSidebar.css";
 </style> 

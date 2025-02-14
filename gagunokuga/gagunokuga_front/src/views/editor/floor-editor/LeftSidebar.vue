@@ -58,7 +58,7 @@
           <button class="pm-btn" @click="store.setWallThickness(store.toolState.wallThickness - 10)">- ( [ )</button>
           <button class="pm-btn" @click="store.setWallThickness(store.toolState.wallThickness + 10)">+ ( ] )</button>
         </div>
-        <button @click="handleCancel">
+        <button @click="handleCancel" class="btn-left">
           그리기 취소 [ESC]
         </button>
       </div>
@@ -88,7 +88,7 @@
     <div class="tail-left">
       X: {{ store.formatLength(store.mousePosition.x) }}
       Y: {{ store.formatLength(store.mousePosition.y) }}
-      <button @click="store.cycleDisplayUnit">
+      <button @click="store.cycleDisplayUnit" class="btn-left">
         단위: {{ store.displayUnit }}
       </button>
     </div>
@@ -119,4 +119,5 @@
 
 <style scoped>
     @import "./floorEditor.css";
+    @import "./leftSidebar.css";
 </style> 
