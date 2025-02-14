@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, onMounted } from "vue";
+  import { ref, onMounted, onBeforeUnmount } from "vue";
   import { useRoute } from 'vue-router';
   import { useFurnitureEditorStore } from "./furnitureEditorStore";
   import LeftSidebar from "./LeftSidebar.vue";
@@ -9,10 +9,22 @@
   const canvas = ref(null);
   const route = useRoute();
 
-  onMounted(() => {
-    store.fetchWalls(route.params.roomId);
-    store.initializeCanvas(canvas.value);
+  const onDrop = (event) => { // 가구 생성 시 이벤트 전달
+    event.preventDefault();
+    store.dropFurniture(event);
+  };
+
+  onMounted(async () => {
+    await store.initializeWebSocket(route.params.roomId); // WebSocket 연결 초기화
+    await store.subscribeToRoom(); // 구독
+    await store.initializeCanvas(canvas.value);
+    await store.fetchWalls();
+    store.fetchFurnitureList();
     window.addEventListener('keydown', store.handleKeyDown);
+  });
+
+  onBeforeUnmount(() => {
+    store.unsubscribeFromRoom(); // 구독 해제 및 연결 종료
   });
 </script>
 
@@ -27,7 +39,13 @@
       @mouseup="store.executeToolEvent('onMouseUp', $event)"
       @click="store.executeToolEvent('onClick', $event)"
       @wheel.prevent="store.zoomCanvas"
-    ></div>
+      @drop="onDrop"
+      @dragover="$event.preventDefault()"
+    >
+    <!-- <svg :viewBox="`${store.viewBox.x} ${store.viewBox.y} ${store.viewBox.width} ${store.viewBox.height}`" class="w-full h-full">
+        <rect width="800" height="600" fill="#f3f4f6" />
+      </svg> -->
+  </div>
     <RightSidebar />
   </div>
 </template>
