@@ -14,6 +14,7 @@ import ArticleDetail from "../views/article/ArticleDetail.vue";
 import ArticleCreate from "@/views/article/ArticleCreate.vue";
 import MypageInfo from "@/views/mypage/mypage/MypageInfo.vue";
 import MypageUpdate from "@/views/mypage/mypage/MypageUpdate.vue";
+import Test from "@/views/article/Test.vue";
 
 
 const router = createRouter({
@@ -43,8 +44,14 @@ const router = createRouter({
           path: "article/:articleId/edit",
           name: "ArticleUpdate",
           component: ArticleCreate
-        }
+        },
       ],
+      meta: { showHeader: true },
+    },
+    {
+      path: "/test",
+      name: "Test",
+      component: Test,
       meta: { showHeader: true },
     },
     
