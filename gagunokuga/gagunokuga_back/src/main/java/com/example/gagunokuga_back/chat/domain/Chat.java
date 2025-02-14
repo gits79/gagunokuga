@@ -1,5 +1,6 @@
 package com.example.gagunokuga_back.chat.domain;
 
+import com.example.gagunokuga_back.common.BaseTimeEntity;
 import com.example.gagunokuga_back.room.domain.Room;
 import com.example.gagunokuga_back.user.domain.User;
 import jakarta.persistence.*;
@@ -12,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "messages")
-public class Chat {
+public class Chat extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
