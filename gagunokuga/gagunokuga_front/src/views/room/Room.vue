@@ -42,6 +42,9 @@ const goToEditor = (roomId) => {
 </script>
 
 <template>
+   <div class="room-list-container">
+    <h1 class="room-title">나만의 공간 관리하기</h1>
+    <p class="room-subtitle">공간의 영감을 기록하고 관리해보세요</p>
   <div v-if="store.rooms.length > 0">
     <div>
       <!-- 좌우대칭 좀 맞추겠다고 해놓은거... -->
@@ -65,7 +68,7 @@ const goToEditor = (roomId) => {
     <p class="no-room">현재 생성된 방이 없습니다. 방을 생성해 주세요.</p>
     <button class="first-room" @click="handleCreateRoom">방 생성</button>
   </div>
-
+</div>
 
 </template>
 
