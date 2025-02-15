@@ -1,98 +1,17 @@
 <template>
   <div id="fullpage">
     <!-- 1번째 페이지 -->
-    <section class="section page blue">
-      <div class="content" v-bind:class="{ 'fade-in': showFirst }">
-        <h1 class="title">
-          모두의 생각이 모여<br/>
-          완성되는 우리집
-        </h1>
+    <section v-for="(section, index) in sections" :key="index" class="section page blue">
+      <div v-for="(content, i) in section.contents" :key="i"
+      class="content" v-bind:class="{ 'fade-in': visibleSections[index][i] }">
+      <component :is="content.type" class="title" v-if="content.type === 'h1' || content.type === 'h2'">
+          {{ content.text }}
+        </component>
+        <p class="subtitle" v-else-if="content.type === 'p'">{{ content.text }}</p>
+        <button class="download-btn" v-else-if="content.type === 'button'" @click="content.action">
+          {{ content.text }}
+        </button>
       </div>
-      <div class="content" v-bind:class="{ 'fade-in': showSecond }">
-        <p  class="subtitle">
-          공간을 넘어 마음을 모아 사랑하는 이들과 함께<br/>실시간으로 아이디어를 나누고 가구 배치를 완성해보세요
-        </p>
-      </div>
-      <div class="content" v-bind:class="{ 'fade-in': showThird }">
-        <button class="download-btn">에디터 바로가기</button>
-      </div>
-    </section>
-
-    <!-- 2번째 페이지 -->
-    <section class="section page blue second-section">
-      <div class="content" v-bind:class="{ 'fade-in': showFourth }">
-        <h2 class="title">
-          간편하고 정확한 도면설계부터 가구배치
-        </h2>
-      </div>
-      <div class="content" v-bind:class="{ 'fade-in': showFifth }">
-        <p class="subtitle">
-          제공되는 기본 레이아웃으로 쉽게 시작하고, <br/>
-          직관적인 도구로 정확하게 공간을 설계하세요. <br/>
-          간단한 드래그로 가구를 배치하고 조정할 수 있습니다.
-        </p>
-      </div>
-      <div class="content" v-bind:class="{ 'fade-in': showSixth }">
-        <button class="download-btn" @click="goToEditor">시작하기</button>
-      </div>
-      <div>
-        <Transition name="bounce" v-show="showImage">
-          <img src="/gagunokuga_logo_mark.svg" alt="가구놓구가 로고" class="main-image" />
-        </Transition>
-      </div>
-    </section>
-
-    <!-- 3번째 페이지 -->
-    <section class="section page blue">
-      <span class="title">
-        떨어져 있어도 함께 만드는 우리 집
-        -- 실시간 동시 편집으로 함께 가구를 배치하고
-    -- 채팅으로 즉각적인 피드백을 주고받으세요
-        </span>
-    </section>
-
-    <!-- 4번째 페이지 -->
-     <section class="section page blue fourth-section">
-      <div class="community-section">
-      <div class="content-wrapper">
-        <!-- 왼쪽 콘텐츠 (카드 모음) -->
-        <div class="cards-content">
-          <div class="card-grid">
-            <div class="community-card">
-              <img src="../../assets/gagunokugaLogo.png" alt="인테리어 예시" class="card-image">
-              <div class="card-info">
-                <span class="category">집들이</span>
-                <h3>모던한 24평 아파트의 변신</h3>
-              </div>
-            </div>
-            <div class="community-card">
-              <img src="../../assets/gagunokugaLogo.png" alt="인테리어 예시" class="card-image">
-              <div class="card-info">
-                <span class="category">노하우</span>
-                <h3>좁은 공간 활용하기</h3>
-              </div>
-            </div>
-            <div class="community-card">
-              <img src="../../assets/gagunokugaLogo.png" alt="인테리어 예시" class="card-image">
-              <div class="card-info">
-                <span class="category">시공후기</span>
-                <h3>15년된 주택 리모델링</h3>
-              </div>
-            </div>
-          </div>
-        </div>
-  
-        <!-- 오른쪽 텍스트 영역 -->
-        <div class="text-content" v-bind:class="{ 'fade-in': isVisible }">
-          <h2 class="title">공간의 영감을 나누는 커뮤니티</h2>
-          <p class="subtitle">
-            나만의 특별한 공간을 공유하고 <br/>
-            다양한 아이디어로 영감을 채워보세요
-          </p>
-          <button class="community-button" @click="goToCommunity">커뮤니티 둘러보기</button>
-        </div>
-      </div>
-    </div>
     </section>
   </div>
 </template>
@@ -100,18 +19,41 @@
 <script setup>
 import { ref, onMounted, Transition} from 'vue';
 import { useRouter } from 'vue-router';
-import fullpage from 'fullpage.js';
-
-const showFirst = ref(false);
-const showSecond = ref(false);
-const showThird = ref(false);
-const showFourth = ref(false);
-const showFifth = ref(false);
-const showSixth = ref(false);
-
-const showImage = ref(false);
+import fullpage from 'fullpage.js'
 
 const router = useRouter();
+
+const sections = ref([
+  {
+    contents: [
+      {type: 'h1', text: '모두의 생각이 모여\n완성되는 우리집'},
+      {type: 'p', text: '공간을 넘어 마음을 모아 사랑하는 이들과 함께\n실시간으로 아이디어를 나누고 가구 배치를 완성해보세요'},
+      {type: 'button', text: '에디터 바로가기', action: () => router.push('/room')}
+    ]
+  },
+  {
+    contents : [
+      {type: 'h2', text: '간편하고 정확한 도면설계부터 가구배치'},
+      {type: 'p', text: '제공되는 기본 레이아웃으로 쉽게 시작하고,\n직관적인 도구로 정확하게 공간을 설계하세요.\n간단한 드래그로 가구를 배치하고 조정할 수 있습니다.'},
+      {type: 'button', text: '시작하기', action: () => router.push('/room')}
+    ],
+  },
+  {
+    contents: [
+      {type: 'h1', text: '떨어져 있어도 함께 만드는 우리 집\n-- 실시간 동시 편집으로 함께 가구를 배치하고\n-- 채팅으로 즉각적인 피드백을 주고받으세요'}
+    ]
+  },
+  {
+    contents: [
+      {type: 'h2', text: '공간의 영감을 나누는 커뮤니티'},
+      {type: 'p', text: '나만의 특별한 공간을 공유하고\n다양한 아이디어로 영감을 채워보세요'},
+      {type: 'button', text: '커뮤니티 둘러보기', action: () => router.push('/community')}
+    ]
+  }
+]);
+
+const visibleSections = ref(sections.value.map(() => Array(3).fill(false)));
+
 
 onMounted(() => {
   new fullpage('#fullpage', {
@@ -120,40 +62,23 @@ onMounted(() => {
     scrollHorizontally: true,
     scrollBar: false,
     scrollingSpeed: 1500,
-  });
-
-  setTimeout(() => {
-    showFirst.value = true;
-    setTimeout(() => {
-      showSecond.value = true;
-      setTimeout(() => {
-        showThird.value = true;
-      }, 500);
-    }, 500);
-  }, 500);
-
-  // 2번째 페이지 진입 시
-  const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-      showImage.value = true;
-      setTimeout(() => {
-        showFourth.value = true;
+  
+    afterLoad: (origin, destination) => {
+      const index = destination.index;
+      if (!visibleSections.value[index].some(v => v)) { // 한 번만 실행되도록 체크
         setTimeout(() => {
-          showFifth.value = true;
+          visibleSections.value[index][0] = true;
           setTimeout(() => {
-            showSixth.value = true;
+            visibleSections.value[index][1] = true;
+            setTimeout(() => {
+              visibleSections.value[index][2] = true;
+            }, 500);
           }, 500);
         }, 500);
-      }, 500);
+      }
     }
   });
-  observer.observe(document.querySelector('.second-section'));
 });
-
-const goToEditor = () => {
-  router.push('/room');
-};
-
 </script>
 
   
