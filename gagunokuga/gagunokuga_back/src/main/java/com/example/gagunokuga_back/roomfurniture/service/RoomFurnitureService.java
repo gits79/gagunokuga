@@ -13,4 +13,5 @@ public interface RoomFurnitureService {
     public void loadAll(Long roomId);
     public List<RoomFurnitureDto> fetchAll(Long roomId);
     public void store(Long roomId, RoomFurnitureDto roomFurnitureDto);
+    public void delete(Long roomId, RoomFurnitureDto roomFurnitureDto);
 }
