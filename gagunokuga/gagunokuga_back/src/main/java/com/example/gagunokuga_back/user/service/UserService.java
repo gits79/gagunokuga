@@ -5,7 +5,6 @@ import com.example.gagunokuga_back.room.domain.Room;
 import com.example.gagunokuga_back.room.repository.RoomRepository;
 import com.example.gagunokuga_back.room.service.RoomService;
 import com.example.gagunokuga_back.roomuser.repository.RoomUserRepository;
-
 import com.example.gagunokuga_back.roomuser.service.RoomUserService;
 import com.example.gagunokuga_back.user.domain.User;
 import com.example.gagunokuga_back.user.dto.*;
@@ -154,7 +153,6 @@ public class UserService {
         roomUserRepository.deleteAllByUser(user);
 
         // 사용자 삭제
-
         userRepository.delete(user);
     }
 
