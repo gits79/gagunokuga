@@ -66,6 +66,9 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
     @Override
     public void saveAll(Long roomId) { // Redis -> DB
         redisTemplate.delete("room:" + roomId + ":furniture:index");
+        List<RoomFurniture> toSave = new ArrayList<>();
+        List<RoomFurniture> toDelete = new ArrayList<>();
+
         for (RoomFurnitureDto roomFurnitureDto : this.fetchAll(roomId)) {
             Long furnitureId = roomFurnitureDto.getFurnitureId();
             RoomFurniture roomFurniture = roomFurnitureMapper.toRoomFurniture(
@@ -74,11 +77,13 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
                     furnitureRepository.getReferenceById(furnitureId)
             );
             if (roomFurnitureDto.getIsDeleted() != null && roomFurnitureDto.getIsDeleted()) {
-                roomFurnitureRepository.delete(roomFurniture);
+                toDelete.add(roomFurniture);
             } else {
-                roomFurnitureRepository.save(roomFurniture);
+                toSave.add(roomFurniture);
             }
         }
+        roomFurnitureRepository.saveAll(toSave);
+        roomFurnitureRepository.deleteAll(toDelete);
     }
 
     @Override
