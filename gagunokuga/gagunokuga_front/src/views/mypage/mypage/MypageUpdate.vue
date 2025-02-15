@@ -6,17 +6,20 @@
 
       <label>닉네임</label>
       <input v-model="user.nickname" class="input-box" />
-      <button @click="checkNickname" class="btn">닉네임 중복 확인</button>
-      <p v-if="nicknameError" class="error-message">{{ nicknameError }}</p>
-
+      <div class="check-nickname">
+        <button @click="checkNickname" class="blue-btn">닉네임 중복 확인</button>
+        <p v-if="nicknameError" class="error-message">{{ nicknameError }}</p>
+      </div>
       <label>새 비밀번호</label>
       <input v-model="newPassword" type="password" class="input-box" />
 
       <label>비밀번호 확인</label>
       <input v-model="confirmPassword" type="password" class="input-box" />
 
-      <button @click="updateUser" class="blue-btn">수정</button>
-      <button @click="cancelEdit" class="red-btn">취소</button>
+      <div class="btn-box">
+        <button @click="updateUser" class="blue-btn">수정</button>
+        <button @click="cancelEdit" class="red-btn">취소</button>
+      </div>
     </div>
   </div>
 </template>
