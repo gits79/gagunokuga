@@ -11,7 +11,7 @@ export const useArticleStore = defineStore('articleStore', () => {
     const articleList = ref([]);
     const getArticleList = async () => {
         try {
-            const response = await axios.get(`${baseURL}/articles`);
+            const response = await axios.get(`${baseURL}/api/articles`);
             articleList.value = response.data;
             return articleList.value;
         } catch (error) {
@@ -23,7 +23,8 @@ export const useArticleStore = defineStore('articleStore', () => {
     const article = ref({});
     const getArticle = async (articleId) => {
         try {
-            const response = await axios.get(`${baseURL}/articles/${articleId}`);
+            const response = await axios.get(`${baseURL}/api/articles/${articleId}`);
+            console.log(response.data);
             article.value = response.data;
             return article.value;
         } catch (error) {
@@ -34,7 +35,7 @@ export const useArticleStore = defineStore('articleStore', () => {
     // 게시글 작성
     const createArticle = async (formData) => {
         try {
-            const response = await axios.post(`${baseURL}/articles`, formData, {
+            const response = await axios.post(`${baseURL}/api/articles`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -47,6 +48,34 @@ export const useArticleStore = defineStore('articleStore', () => {
             console.error(error);
         }
     }
+
+    // 게시글 수정
+    const updateArticle = async (articleId, formData) => {
+        try {
+            const response = await axios.put(`${baseURL}/api/articles/${articleId}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            alert('게시글이 수정되었습니다.');
+            router.replace(`/article/${response.data.id}`);
+            article.value = response.data;
+            return article.value;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // 게시글 삭제
+    const deleteArticle = async (articleId) => {
+        try {
+            await axios.delete(`${baseURL}/api/articles/${articleId}`);
+            alert('게시글이 삭제되었습니다.');
+            router.replace('/'); // 메인 페이지로 이동
+        } catch (error) {
+            console.error(error);
+        }
+    }
   
 
   return {
@@ -55,6 +84,8 @@ export const useArticleStore = defineStore('articleStore', () => {
     getArticle,
     article,
     createArticle,
+    updateArticle,
+    deleteArticle,
     
   }
 })

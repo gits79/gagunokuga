@@ -38,6 +38,7 @@ public class ChatServiceImpl implements ChatService {
                             .roomId(chat.getRoom().getId())
                             .nickname(chat.getUser().getNickname())
                             .profileImageUrl(chat.getUser().getProfileImageUrl())
+                            .createdAt(chat.getCreatedAt())
                             .build());
         }
 

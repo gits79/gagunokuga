@@ -19,13 +19,7 @@ watchEffect(() => {
 
 // 로그아웃 처리
 const logout = () => {
-  loginStore.state.token = "";  // 토큰 초기화
-  localStorage.removeItem("accessToken");  // 로컬 스토리지에서 토큰 제거
-  localStorage.removeItem("refreshToken");
-  loginStore.state.nickname = ""; // 닉네임 초기화
-  loginStore.state.profileImage = ""; // 프로필 초기화
-  loginStore.state.password = ""; // 비밀번호 초기화
-  loginStore.state.provider = ""; // 이것도 초기화
+  loginStore.logout();  // loginStore의 logout 메서드 호출
 };
 </script>
 

@@ -2,8 +2,8 @@ package com.example.gagunokuga_back.user.service;
 
 import com.example.gagunokuga_back.image.service.ImageService;
 import com.example.gagunokuga_back.room.domain.Room;
-import com.example.gagunokuga_back.room.service.RoomService;
-import com.example.gagunokuga_back.roomuser.service.RoomUserService;
+import com.example.gagunokuga_back.room.repository.RoomRepository;
+import com.example.gagunokuga_back.roomuser.repository.RoomUserRepository;
 import com.example.gagunokuga_back.user.domain.User;
 import com.example.gagunokuga_back.user.dto.*;
 import com.example.gagunokuga_back.user.dto.login.UserResponseDto;
@@ -41,8 +41,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final ImageService imageService;
-    private final RoomUserService roomUserService;
-    private final RoomService roomService;
+    private final RoomUserRepository roomUserRepository;
+    private final RoomRepository roomRepository;
 
 
     //이메일 중복 체크
@@ -140,10 +140,17 @@ public class UserService {
         if(user.getProfileImageUrl() != null) {
             imageService.deleteImage(user.getProfileImageUrl());
         }
-        List<Room> ownedRooms = roomUserService.getOwnedRooms(); //호스트인 유저 갖고옴
+        // 호스트인 방 찾아서 삭제
+        List<Room> ownedRooms = roomUserRepository.selectAllByUserAndIsHostIsTrue(user);
         for(Room room : ownedRooms) {
-            roomService.deleteRoom(room.getId());
+            roomUserRepository.deleteAllByRoom(room);
+            roomRepository.delete(room);
         }
+
+        // 사용자의 모든 RoomUser 관계 삭제
+        roomUserRepository.deleteAllByUser(user);
+
+        // 사용자 삭제
         userRepository.delete(user);
     }
 
