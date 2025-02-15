@@ -26,5 +26,6 @@ public interface RoomFurnitureMapper {
     @Mapping(source = "roomFurniture.furniture.furnitureName", target = "furnitureName")
     @Mapping(source = "roomFurniture.furniture.imageUrl", target = "imageUrl")
     @Mapping(source = "roomFurniture.room.id", target = "roomId")
+    @Mapping(target = "isDeleted", expression = "java(false)")
     RoomFurnitureDto toRoomFurnitureDto(RoomFurniture roomFurniture, Long index);
 }
