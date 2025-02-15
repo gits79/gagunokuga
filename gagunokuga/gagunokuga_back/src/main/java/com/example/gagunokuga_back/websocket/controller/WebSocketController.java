@@ -13,7 +13,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 @RequiredArgsConstructor
 public class WebSocketController {
-    private final RoomFurnitureService roomFurnitureService;
+    private final WebSocketService webSocketService;
     private final SimpMessageSendingOperations template;
 
     @MessageMapping("/rooms/{roomId}")
@@ -22,7 +22,6 @@ public class WebSocketController {
             FurnitureEventDto furnitureEventDto) {
         System.out.println(furnitureEventDto);
         template.convertAndSend("/sub/rooms/" + roomId, furnitureEventDto);
-        roomFurnitureService.store(roomId, furnitureEventDto.getFurniture());
         return ResponseEntity.ok().build();
     }
 }

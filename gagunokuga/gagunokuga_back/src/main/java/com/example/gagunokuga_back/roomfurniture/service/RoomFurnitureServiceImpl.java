@@ -106,4 +106,9 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
         redisTemplate.opsForHash().put("room:" + roomId + ":furniture", roomFurnitureDto.getIndex().toString(), roomFurnitureDto);
     }
 
+    @Override
+    public void delete(Long roomId, RoomFurnitureDto roomFurnitureDto) { // 삭제 된 가구 Redis 에서도 지우기
+        redisTemplate.opsForHash().delete("room:" + roomId + ":furniture", roomFurnitureDto.getIndex().toString());
+    }
+
 }
