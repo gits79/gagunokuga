@@ -1,13 +1,14 @@
 package com.example.gagunokuga_back.websocket.service;
 
 import com.example.gagunokuga_back.roomfurniture.service.RoomFurnitureService;
+import com.example.gagunokuga_back.websocket.dto.FurnitureEventDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class WebSocketSubscriberService {
+public class WebSocketService {
 
     private final RedisTemplate<String, String> redisTemplate;  // sessionId:roomId, roomId:subCount 형식으로 저장
     private final RoomFurnitureService roomFurnitureService;
@@ -45,6 +46,14 @@ public class WebSocketSubscriberService {
         System.out.println("Channel " + roomId + " has " + subscriberCount + " subscribers.");
         if (subscriberCount == 0) { // 룸에서 마지막 구독자 연결 해제 시 캐싱 된 데이터를 DB 저장
             roomFurnitureService.saveAll(Long.parseLong(roomId));
+        }
+    }
+
+    public void receiveFurnitureEvent(Long roomId, FurnitureEventDto furnitureEventDto) {
+        if (furnitureEventDto.getEvent().equals(FurnitureEventDto.Event.DELETE)) {
+            roomFurnitureService.delete(roomId, furnitureEventDto.getFurniture());
+        } else {
+            roomFurnitureService.store(roomId, furnitureEventDto.getFurniture());
         }
     }
 }
