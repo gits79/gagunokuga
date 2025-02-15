@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @ToString
@@ -13,5 +15,5 @@ public class ChatResponse {
     private Long roomId;
     private String nickname;
     private String profileImageUrl;
-
+    private LocalDateTime createdAt;
 }

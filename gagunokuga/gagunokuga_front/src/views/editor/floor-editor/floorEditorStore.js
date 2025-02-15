@@ -11,6 +11,9 @@ import { createToolModule } from '@/views/editor/modules/toolModule';
 import { createWallModule } from '@/views/editor/modules/wallModule';
 import { createFloodFillModule } from '@/views/editor/modules/floodFillModule';
 
+// 파일 상단에 상수 선언
+const WALL_COLOR = '#421';
+
 // 초기값을 쿠키에서 불러오기
 const showGrid = ref(localStorage.getItem('showGrid') !== 'false');  // 기본값 true
 const showKeys = ref(localStorage.getItem('showKeys') !== 'false');  // 기본값 true
@@ -37,7 +40,6 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     setCurrentTool,
     setWallThickness,
     setSnapDistance,
-    toggleLengthLabels,
     createToolHandlers 
   } = createToolModule();
 
@@ -190,7 +192,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       wallPreviewGroup = draw.group().addClass('wall-preview-group');
       wallPreview = wallPreviewGroup
         .line(wallStart.x, wallStart.y, wallStart.x, wallStart.y)
-        .stroke({ width: toolState.wallThickness, color: "#999", dasharray: "5,5" });
+        .stroke({ width: toolState.wallThickness, color: WALL_COLOR, dasharray: "5,5" });
         updatePreviewMarkers(wallStart, wallStart);
     },
     preview: (coords) => {
@@ -337,7 +339,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       rectTool.preview
         .rect(0, 0)
         .fill('none')
-        .stroke({ width: 1, color: '#999', dasharray: '5,5' });
+        .stroke({ width: 1, color: WALL_COLOR, dasharray: '5,5' });
       
       // 키 미리보기 추가
       updatePreviewMarkers(rectTool.startPoint, rectTool.startPoint);
@@ -363,7 +365,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       rectTool.preview
         .rect(width, height)
         .fill('none')
-        .stroke({ width: 1, color: '#999', dasharray: '5,5' })
+        .stroke({ width: 1, color: WALL_COLOR, dasharray: '5,5' })
         .x(x)
         .y(y);
       
@@ -375,7 +377,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       ].forEach(([x1, y1, x2, y2]) => {
         rectTool.preview
           .line(x1, y1, x2, y2)
-          .stroke({ width: toolState.wallThickness, color: '#999', opacity: 0.5 });
+          .stroke({ width: toolState.wallThickness, color: WALL_COLOR, opacity: 0.5 });
       });
       
       // 길이 표시
@@ -977,7 +979,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
           });
         } else {
           wall.stroke({ 
-            color: "#999", 
+            color: WALL_COLOR, 
             width: wallData.thickness 
           });
         }
@@ -1116,7 +1118,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     // 벽 렌더링
     renderWall: (wall) => {
       const element = wallLayer.line(wall.x1, wall.y1, wall.x2, wall.y2)
-        .stroke({ width: wall.thickness, color: "#999" })
+        .stroke({ width: wall.thickness, color: WALL_COLOR })
         .data('id', wall.id);
       return element;
     },
@@ -1322,7 +1324,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
           
           draw.rect(verticalWall.thickness, horizontalWall.thickness)
             .center(x, y)
-            .fill("#999")
+            .fill(WALL_COLOR)
             .addClass('corner-space');
         }
       }
@@ -1698,6 +1700,16 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
 
   // 이벤트 처리기 실행 함수 (이벤트 이름, 이벤트 객체)
   const executeToolEvent = (eventName, event) => {
+    // 우클릭 시 현재 도구의 작업 취소
+    if (event.button === 2) {  // 2는 우클릭
+        if (toolState.currentTool === 'wall') {
+            wallControls.cancel();  
+        } else if (toolState.currentTool === 'rect') {
+            rectTool.cancel();
+        }
+        return;
+    }
+
     // mousemove 이벤트에서 좌표 업데이트
     if (eventName === 'onMouseMove') {
         updateMousePosition(event);
@@ -1737,6 +1749,12 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   // 줌 이벤트 핸들러 수정
   const handleZoom = (event) => {
     viewModule?.zoomCanvas(event);
+    updateVisualElements();
+  };
+
+  const toggleLengthLabels = () => {
+    toolState.showLengthLabels = !toolState.showLengthLabels;
+    localStorage.setItem('showLengthLabels', toolState.showLengthLabels);
     updateVisualElements();
   };
 
