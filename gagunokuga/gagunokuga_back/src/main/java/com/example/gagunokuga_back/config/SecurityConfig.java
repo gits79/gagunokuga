@@ -50,7 +50,8 @@ public class SecurityConfig {
 //                .cors(cors -> cors.configurationSource(corsConfigurationSource()))a
                 .cors(cors -> cors.disable())
                 // REST API.. csrf 보안 x
-                .csrf(csrf ->csrf.disable())
+//                .csrf(csrf ->csrf.disable())
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/ws/**"))
                 // JWT를 사용하기 때문에 세션x
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
