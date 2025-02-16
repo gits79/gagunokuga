@@ -1,6 +1,7 @@
 <script setup>
   import { useFurnitureEditorStore } from "./furnitureEditorStore";
   import { ref } from "vue";
+  import Chat from "../../chat/Chat.vue";
   const store = useFurnitureEditorStore();
 </script>
 
@@ -65,6 +66,7 @@
     </div>
   </div>
   </aside>
+  <chat/>
 </template>
   
 <style scoped>
