@@ -38,7 +38,6 @@
       @mousemove="store.executeToolEvent('onMouseMove', $event)"
       @mouseup="store.executeToolEvent('onMouseUp', $event)"
       @click="store.executeToolEvent('onClick', $event)"
-      @wheel.prevent="store.zoomCanvas"
       @drop="onDrop"
       @dragover="$event.preventDefault()"
     >
