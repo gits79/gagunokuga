@@ -85,18 +85,22 @@
       </div>
     </div>
 
-    <!-- Toggle Buttons -->
-    <div class="toggle-buttons">
-      <button @click="store.toggleLengthLabels()" class="toggle-button">
-        길이표시 {{ store.toolState.showLengthLabels ? '끄기' : '켜기' }} [L]
-      </button>
-      <button @click="store.toggleGrid()" class="toggle-button">
-        그리드 {{ store.showGrid ? "ON" : "OFF" }} [G]
-      </button>
-      <button @click="store.toggleKeys()" class="toggle-button">
-        키포인트 {{ store.showKeys ? "ON" : "OFF" }} [K]
+    <!-- coordinates- -->
+  <div class="coordinates-panel">
+    <div class="coordinates-content">
+      <div class="coordinate-row">
+        <span>X:</span>
+        <span>{{ store.formatLength(store.mousePosition.x) }}</span>
+      </div>
+      <div class="coordinate-row">
+        <span>Y:</span>
+        <span>{{ store.formatLength(store.mousePosition.y) }}</span>
+      </div>
+      <button @click="store.cycleDisplayUnit" class="unit-button">
+        단위: {{ store.displayUnit }}
       </button>
     </div>
+  </div>
   </aside>
 </template>
 

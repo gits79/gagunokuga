@@ -127,3 +127,40 @@
     flex: 1;
     overflow-y: auto;
   }
+ 
+  .coordinates-panel {
+    margin-top: auto;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+  
+  .coordinates-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .coordinate-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .unit-button {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  
+  .unit-button:hover {
+    background: #f0f0f0;
+  }
+  
