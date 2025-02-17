@@ -50,7 +50,6 @@
       @mouseup.middle.prevent="store.executeToolEvent('onMouseUp', $event)"
       @mouseup="store.executeToolEvent('onMouseUp', $event)"
       @click="store.executeToolEvent('onClick', $event)"
-      @wheel.prevent="store.zoomCanvas"
       @contextmenu.prevent
     ></div>
 

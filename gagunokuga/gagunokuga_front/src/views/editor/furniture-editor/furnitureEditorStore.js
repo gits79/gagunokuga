@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { SVG } from "@svgdotjs/svg.js";
 import '@svgdotjs/svg.draggable.js';
+import '@svgdotjs/svg.panzoom.js'
 import { reactive, computed, ref } from "vue";
 import apiClient from "@/api/axiosInstance";
 import { subscribe, unsubscribe, publish } from '@/utils/stompClient';
@@ -10,12 +11,16 @@ import { createViewModule } from '@/views/editor/modules/viewModule';
 import { createToolModule } from '@/views/editor/modules/toolModule';
 import { createWallModule } from '@/views/editor/modules/wallModule';
 
+const WALL_COLOR = '#421';
+
 export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () => {
   
   // 객체 선언
   let draw = null; // SVG 객체
 
   let wallLayer = null;
+  
+  let furnitureGroup = null;
 
   const { walls, setWallLayer, getWallLayer } = createWallModule();
   const roomId = ref(null);
@@ -38,7 +43,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
 
   // 캔버스 초기화
   const initializeCanvas = (canvasElement) => {
-    draw = SVG().addTo(canvasElement).size("100%", "100%");
+    draw = SVG().addTo(canvasElement).size("100%", "100%").panZoom({ zoomMin: 0.01, zoomMax: 10, zoomFactor: 0.125 });
     addGrid();
     
     // view 모듈 생성
@@ -48,6 +53,8 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     
     wallLayer = draw.group().addClass("wall-layer");
     setWallLayer(wallLayer);
+
+    furnitureGroup = draw.group().addClass('furniture-group');
   };
 
   // 서버에서 벽 데이터 불러오기
@@ -89,28 +96,27 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   // 화면갱신
   const updateVisualElements = () => {
     // fillCornerSpaces();
-    renderKeyPoints();
+    // renderKeyPoints();
     renderLengthLabels();
   };
 
-  //  키 생성 함수
-  const drawKeyPoint = (x, y) => {
-    const keySize = viewModule.viewbox.width * 0.02;
-    draw.circle(keySize)
-      .fill("#fff")
-      .stroke({ color: "#000", width: keySize * 0.1 })
-      .center(x, y)
-      .addClass("key")
-  };
-
-  // 키 렌더링 함수
-  const renderKeyPoints = () => {
-    draw.find('.key').forEach(key => key.remove());
-    wallLayer.children().forEach(wall => {
-      drawKeyPoint(parseFloat(wall.attr('x1')), parseFloat(wall.attr('y1')));
-      drawKeyPoint(parseFloat(wall.attr('x2')), parseFloat(wall.attr('y2')));
-    });
-  };
+  // //  키 생성 함수
+  // const drawKeyPoint = (x, y) => {
+  //   const keySize = viewModule.viewbox.width * 0.02;
+  //   draw.circle(keySize)
+  //     .fill("#fff")
+  //     .stroke({ color: "#000", width: keySize * 0.1 })
+  //     .center(x, y)
+  //     .addClass("key")
+  // };
+  // // 키 렌더링 함수
+  // const renderKeyPoints = () => {
+  //   draw.find('.key').forEach(key => key.remove());
+  //   wallLayer.children().forEach(wall => {
+  //     drawKeyPoint(parseFloat(wall.attr('x1')), parseFloat(wall.attr('y1')));
+  //     drawKeyPoint(parseFloat(wall.attr('x2')), parseFloat(wall.attr('y2')));
+  //   });
+  // };
 
   // 화살표 생성 함수
   const drawArrow = (x, y, angle, isStart) => {
@@ -413,7 +419,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     // 벽 렌더링
     renderWall: (wall) => {
       const element = wallLayer.line(wall.x1, wall.y1, wall.x2, wall.y2)
-        .stroke({ width: wall.thickness, color: "#999" })
+        .stroke({ width: wall.thickness, color: WALL_COLOR })
         .data('id', wall.id);
       return element;
     },
@@ -460,7 +466,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
           
           draw.rect(width, height)
             .center(x, y)
-            .fill("#999")
+            .fill(WALL_COLOR)
             .addClass('corner-space');
         }
       }
@@ -500,20 +506,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
 
   // === 도구 이벤트 설정 === //
   const tools = createToolHandlers({
-    selectHandlers: {
-      onClick: (event) => {
-      },
-      onMouseDown: (event) => {
-        const coords = getSVGCoordinates(event);
-        viewModule?.panControls.start(event);
-      },
-      onMouseMove: (event) => {
-        viewModule?.panControls.move(event);
-      },
-      onMouseUp: () => {
-        viewModule?.panControls.stop();
-      }
-    },
+    selectHandlers: {},
     wallHandlers: {
       onClick: (event) => wallControls.onClick(getSVGCoordinates(event)),
       onMouseMove: (event) => wallControls.preview(getSVGCoordinates(event))
@@ -538,7 +531,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   
   // 줌 이벤트 핸들러 수정
   const handleZoom = (event) => {
-    viewModule?.zoomCanvas(event);
+    // viewModule?.zoomCanvas(event);
     updateVisualElements();
   };
 
@@ -697,7 +690,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     if (furniture.isDeleted === true) {
       return;
     }
-    const furn = draw.group();
+    const furn = furnitureGroup.group();
     const image = furn.image(furniture.imageUrl);
     image.attr('preserveAspectRatio', 'none');         // 종횡비 해제
     furn.attr('id', `furniture-${furniture.index}`);  // 아이디 설정
