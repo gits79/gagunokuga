@@ -18,24 +18,24 @@ public class WebSocketService {
 
     public void addSubscription(String sessionId, String roomId) {
         redisTemplate.opsForValue().set(SESSION_PREFIX + sessionId, roomId);
-        System.out.println("Session " + sessionId + " has subscribed to " + roomId);
+//        System.out.println("Session " + sessionId + " has subscribed to " + roomId);
         incrementSubscriberCount(roomId);
     }
 
     public void removeSubscription(String sessionId) {
         if (redisTemplate.opsForValue().get(SESSION_PREFIX + sessionId) != null) {
             String roomId = redisTemplate.opsForValue().get(SESSION_PREFIX + sessionId);
-            System.out.println("Session " + sessionId + " has removed " + roomId);
+//            System.out.println("Session " + sessionId + " has removed " + roomId);
             redisTemplate.delete(SESSION_PREFIX + sessionId);
             decrementSubscriberCount(roomId);
         } else {
-            System.out.println("Session " + sessionId + " has no subscribers left.");
+//            System.out.println("Session " + sessionId + " has no subscribers left.");
         }
     }
 
     private void incrementSubscriberCount(String roomId) {
         Long subscriberCount = redisTemplate.opsForValue().increment(CHANNEL_PREFIX + roomId, 1);
-        System.out.println("Channel " + roomId + " has " + subscriberCount + " subscribers.");
+//        System.out.println("Channel " + roomId + " has " + subscriberCount + " subscribers.");
         if (subscriberCount == 1) { // 룸에 첫 구독자 발생 시 Redis 메모리에 캐싱
             roomFurnitureService.loadAll(Long.parseLong(roomId));
         }
@@ -43,7 +43,7 @@ public class WebSocketService {
 
     private void decrementSubscriberCount(String roomId) {
         Long subscriberCount = redisTemplate.opsForValue().decrement(CHANNEL_PREFIX + roomId, 1);
-        System.out.println("Channel " + roomId + " has " + subscriberCount + " subscribers.");
+//        System.out.println("Channel " + roomId + " has " + subscriberCount + " subscribers.");
         if (subscriberCount == 0) { // 룸에서 마지막 구독자 연결 해제 시 캐싱 된 데이터를 DB 저장
             roomFurnitureService.saveAll(Long.parseLong(roomId));
         }
