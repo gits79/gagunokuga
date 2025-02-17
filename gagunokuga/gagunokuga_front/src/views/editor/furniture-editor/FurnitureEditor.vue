@@ -4,6 +4,7 @@
   import { useFurnitureEditorStore } from "./furnitureEditorStore";
   import LeftSidebar from "./LeftSidebar.vue";
   import RightSidebar from "./RightSidebar.vue";
+import Chat from "../../chat/Chat.vue";
 
   const store = useFurnitureEditorStore();
   const canvas = ref(null);
@@ -47,6 +48,7 @@
       </svg> -->
   </div>
     <RightSidebar />
+    <chat/>
   </div>
 </template>
 
