@@ -14,7 +14,6 @@ import ArticleDetail from "../views/article/ArticleDetail.vue";
 import ArticleCreate from "@/views/article/ArticleCreate.vue";
 import MypageInfo from "@/views/mypage/mypage/MypageInfo.vue";
 import MypageUpdate from "@/views/mypage/mypage/MypageUpdate.vue";
-import Test from "@/views/article/Test.vue";
 
 
 const router = createRouter({
@@ -24,36 +23,26 @@ const router = createRouter({
       path: "/",
       name: "Home",
       component: Home,
-      children: [
-        {
-          path: "",
-          name: "ArticleList",
-          component: ArticleList
-        },
-        {
-          path: "article/:articleId",
-          name: "ArticleDetail",
-          component: ArticleDetail
-        },
-        {
-          path: "article/create",
-          name: "ArticleCreate",
-          component: ArticleCreate
-        },
-        {
-          path: "article/:articleId/edit",
-          name: "ArticleUpdate",
-          component: ArticleCreate
-        },
-      ],
       meta: { showHeader: true },
     },
+    //////////////////수정해야됨///////////////////
     {
-      path: "/test",
-      name: "Test",
-      component: Test,
+      path: "/article/:articleId",
+      name: "ArticleDetail",
+      component: ArticleDetail,
       meta: { showHeader: true },
     },
+      {
+        path: "/article/create",
+        name: "ArticleCreate",
+        component: ArticleCreate
+      },
+      {
+        path: "/article/:articleId/edit",
+        name: "ArticleUpdate",
+        component: ArticleCreate
+      },
+      /////////////////////////////////////////
     
     { path: "/login", name: "Login", component: Login, meta: { showHeader: true }, },
     { path: "/room", name: "Room", component: Room, meta: { showHeader: true }, },
