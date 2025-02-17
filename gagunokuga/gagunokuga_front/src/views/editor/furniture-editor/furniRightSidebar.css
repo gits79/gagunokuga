@@ -1,0 +1,97 @@
+.sidebar-right {
+  width: 280px;
+  height: 100%;
+  background: white;
+  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.panel-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  border-bottom: 2px solid #4f46e5;
+  padding-bottom: 0.5rem;
+}
+
+.property-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input-group-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.input-with-label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input-with-label span {
+  width: 20px;
+  font-size: 12px;
+  color: #666;
+  text-align: right;
+}
+
+.input-with-label input,
+.full-width-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
+
+.input-with-label input:focus,
+.full-width-input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+.property-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.property-item label {
+  font-size: 14px;
+  color: #666;
+}
+
+.delete-section {
+  margin-top: 1rem;
+}
+
+.delete-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.delete-button:hover {
+  background: #dc2626;
+}
