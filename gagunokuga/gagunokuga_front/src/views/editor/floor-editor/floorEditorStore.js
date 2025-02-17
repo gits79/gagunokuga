@@ -13,6 +13,8 @@ import { createFloodFillModule } from '@/views/editor/modules/floodFillModule';
 
 // 파일 상단에 상수 선언
 const WALL_COLOR = '#421';
+const PAN_ON = { zoomMin: 0.01, zoomMax: 10, zoomFactor: 0.125};
+const PAN_OFF = { zoomMin: 0.01, zoomMax: 10, zoomFactor: 0.125, panning: false};
 
 // 초기값을 쿠키에서 불러오기
 const showGrid = ref(localStorage.getItem('showGrid') !== 'false');  // 기본값 true
@@ -24,6 +26,8 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   
   // 객체 선언
   let draw = null; // SVG 객체
+
+  let zoomLevel = null;
 
   const baseURL = import.meta.env.VITE_API_URL
 
@@ -80,7 +84,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
 
   // 캔버스 초기화
   const initializeCanvas = (canvasElement) => {
-    draw = SVG().addTo(canvasElement).size("100%", "100%");
+    draw = SVG().addTo(canvasElement).size("100%", "100%").panZoom({...PAN_ON});
     
     // 저장된 상태에 따라 그리드 표시
     if (showGrid.value) {
@@ -1419,6 +1423,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     if (event.code === 'Space' && !event.repeat) {
         event.preventDefault();
         toolState.isSpacePressed = true;
+        draw.panZoom({ ...PAN_ON });
         document.body.style.cursor = 'grab';
     }
     
@@ -1521,12 +1526,16 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
             case '+':
             case '=':  // Shift 없이 '+' 누를 때
                 event.preventDefault();
-                viewModule?.zoomIn();
+                zoomLevel = Math.min(draw.zoom() * 1.125, 10);
+                draw.zoom(zoomLevel);
+                // viewModule?.zoomIn();
                 updateVisualElements();
                 return;
             case '-':
                 event.preventDefault();
-                viewModule?.zoomOut();
+                zoomLevel = Math.max(draw.zoom() * 0.875, 0.01);
+                draw.zoom(zoomLevel);
+                // viewModule?.zoomOut();
                 updateVisualElements();
                 return;
             // ... existing cases (z, y, s) ...
@@ -1540,6 +1549,9 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
         event.preventDefault();
         toolState.isSpacePressed = false;
         document.body.style.cursor = '';
+        if (toolState.currentTool !== 'select') {
+          draw.panZoom({ ...PAN_OFF });
+        }
     }
   };
 
@@ -1571,21 +1583,21 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
           }
         } else {
           selection.selectedWallId = null;
-          viewModule?.panControls.start(event);
+          // viewModule?.panControls.start(event);
         }
       },
       onMouseMove: (event) => {
         if (isMovingWall) {
           moveWallControls.move(event);
         } else {
-          viewModule?.panControls.move(event);
+          // viewModule?.panControls.move(event);
         }
       },
       onMouseUp: () => {
         if (isMovingWall) {
           moveWallControls.end();
         } else {
-          viewModule?.panControls.stop();
+          // viewModule?.panControls.stop();
         }
       }
     },
@@ -1599,13 +1611,13 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       onMouseDown: (event) => {
         if (toolState.isSpacePressed) {
           // 스페이스바가 눌린 상태면 패닝 시작
-          viewModule?.panControls.start(event);
+          // viewModule?.panControls.start(event);
         }
       },
       onMouseMove: (event) => {
         if (toolState.isSpacePressed) {
           // 스페이스바가 눌린 상태면 패닝
-          viewModule?.panControls.move(event);
+          // viewModule?.panControls.move(event);
         } else {
           // 아니면 기존 벽 프리뷰
           wallControls.preview(getSVGCoordinates(event));
@@ -1614,7 +1626,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       onMouseUp: () => {
         if (toolState.isSpacePressed) {
           // 스페이스바가 눌린 상태면 패닝 종료
-          viewModule?.panControls.stop();
+          // viewModule?.panControls.stop();
         }
       }
     },
@@ -1629,13 +1641,13 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       onMouseDown: (event) => {
         if (toolState.isSpacePressed) {
           // 스페이스바가 눌린 상태면 패닝 시작
-          viewModule?.panControls.start(event);
+          // viewModule?.panControls.start(event);
         }
       },
       onMouseMove: (event) => {
         if (toolState.isSpacePressed) {
           // 스페이스바가 눌린 상태면 패닝
-          viewModule?.panControls.move(event);
+          // viewModule?.panControls.move(event);
         } else {
           // 아니면 사각형 프리뷰
           rectTool.move(getSVGCoordinates(event));
@@ -1644,7 +1656,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       onMouseUp: () => {
         if (toolState.isSpacePressed) {
           // 스페이스바가 눌린 상태면 패닝 종료
-          viewModule?.panControls.stop();
+          // viewModule?.panControls.stop();
         }
       }
     },
@@ -1674,7 +1686,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       },
       onMouseDown: (event) => {
         if (toolState.isSpacePressed) {
-          viewModule?.panControls.start(event);
+          // viewModule?.panControls.start(event);
         } else {
           saveState();
           eraserTool.start();
@@ -1690,7 +1702,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       },
       onMouseUp: () => {
         if (toolState.isSpacePressed) {
-          viewModule?.panControls.stop();
+          // viewModule?.panControls.stop();
         } else {
           eraserTool.stop();
         }
@@ -1720,14 +1732,14 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
         switch(eventName) {
             case 'onMouseDown':
                 document.body.style.cursor = 'grab';  // 휠 클릭 시 커서 변경
-                viewModule?.panControls.start(event);
+                // viewModule?.panControls.start(event);
                 return;
             case 'onMouseMove':
-                viewModule?.panControls.move(event);
+                // viewModule?.panControls.move(event);
                 return;
             case 'onMouseUp':
                 document.body.style.cursor = '';  // 휠 클릭 해제 시 원래 커서로
-                viewModule?.panControls.stop();
+                // viewModule?.panControls.stop();
                 return;
         }
     }
@@ -1747,10 +1759,10 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   const redo = () => historyRedo(walls, wallLayer, wallCreationMethods.renderWall, updateVisualElements);
 
   // 줌 이벤트 핸들러 수정
-  const handleZoom = (event) => {
-    viewModule?.zoomCanvas(event);
-    updateVisualElements();
-  };
+  // const handleZoom = (event) => {
+  //   viewModule?.zoomCanvas(event);
+  //   updateVisualElements();
+  // };
 
   const toggleLengthLabels = () => {
     toolState.showLengthLabels = !toolState.showLengthLabels;
@@ -1791,6 +1803,12 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     // 새 도구가 지우개면 프리뷰 생성
     if (newTool === 'eraser') {
       eraserTool.createPreview();
+    }
+
+    if (newTool === 'select' ) {
+      draw.panZoom({ ...PAN_ON });
+    } else {
+      draw.panZoom({ ...PAN_OFF });
     }
   };
 
@@ -1839,9 +1857,10 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     toolState,
     executeToolEvent,
     initializeCanvas,
-    zoomCanvas: handleZoom,
+    // zoomCanvas: handleZoom,
     handleKeyDown,
     handleKeyUp,  // handleKeyUp 추가
+    handleToolChange,
     
     setWallThickness,
     setSnapDistance,
