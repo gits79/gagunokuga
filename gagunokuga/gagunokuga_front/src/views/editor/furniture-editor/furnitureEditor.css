@@ -1,55 +1,166 @@
+/* Base Layout */
 .editor {
   display: flex;
   height: 100vh;
   width: 100%;
   overflow: hidden;
+  /* background-color: #f5f5f5; */
 }
 
+/* Sidebar Styling */
 .sidebar {
-  width: 200px;
+  width: 280px;
   height: 100%;
-  padding: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  border: 1px solid #000
+  gap: 20px;
+  overflow-y: auto;
 }
 
-button {
-  padding: 10px;
-  cursor: pointer;
-}
-
-.sidebar button:hover {
-  background-color: #DDDDDD;
-}
-
-.canvas {
-  flex: 1;
-  user-select: none;
-  -webkit-user-drag: none;
-}
-
+/* Furniture Grid */
 .furniture-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 16px;
+  padding: 8px;
 }
 
 .furniture-item {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: all 0.2s ease;
+  border: 1px solid #eaeaea;
+  cursor: move;
+}
+
+.furniture-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .furniture-image {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
-  /* background-color: #000; */
+  margin-bottom: 8px;
 }
 
 .furniture-name {
-  margin-top: 5px;
+  font-size: 14px;
+  color: #333;
   text-align: center;
+  font-weight: 500;
+}
+
+/* Form Controls */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.form-group input:focus {
+  border-color: #2196f3;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+.input-inline {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Buttons */
+button {
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: none;
+  background-color: #2196f3;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background-color: #1976d2;
+}
+
+.btn-delete {
+  background-color: #f44336;
+}
+
+.btn-delete:hover {
+  background-color: #d32f2f;
+}
+
+/* Canvas Area */
+.canvas {
+  flex: 1;
+  position: relative;
+  overflow: hidden
+}
+/* 
+.canvas-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  background-image: 
+    linear-gradient(90deg, rgba(200, 200, 200, 0.2) 1px, transparent 1px),
+    linear-gradient(rgba(200, 200, 200, 0.2) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: 0 0;
+  pointer-events: none;
+} */
+
+/* Headings */
+h2 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* Scrollbar Styling */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #999;
 }

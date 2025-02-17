@@ -5,10 +5,16 @@
     <div class="article-header">
       <!-- 옵션 메뉴 (로그인한 사용자가 작성자일 경우) -->
       <div v-if="isAuthor" class="article-options">
-        <button @click="toggleMenu" class="menu-button">⋯</button>
+        <button @click="toggleMenu" class="menu-button">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="6" r="2" fill="currentColor"/>
+      <circle cx="12" cy="12" r="2" fill="currentColor"/>
+      <circle cx="12" cy="18" r="2" fill="currentColor"/>
+    </svg>
+  </button>
         <div v-if="showMenu" class="menu-dropdown">
-          <button @click="editArticle">수정하기</button>
-          <button @click="deleteArticle" class="delete-button">삭제하기</button>
+          <button @click="editArticle" class="menu-item">수정하기</button>
+          <button @click="deleteArticle" class="menu-item delete-button">삭제하기</button>
         </div>
       </div>
 
