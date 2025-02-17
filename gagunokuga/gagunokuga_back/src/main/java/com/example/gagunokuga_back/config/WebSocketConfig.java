@@ -12,9 +12,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("https://ssafy-gagu.site")
-//                .setAllowedOrigins("http://127.0.0.1:5173") // 배포 시 도메인으로 변경
-                .setAllowedOriginPatterns("*");
+                .setAllowedOrigins("https://ssafy-gagu.site", "http://localhost:5173"); // 배포 시 도메인으로 변경
+//                .setAllowedOriginPatterns("*");
     }
 
     @Override
