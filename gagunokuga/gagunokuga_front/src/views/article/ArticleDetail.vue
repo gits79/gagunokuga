@@ -1,25 +1,20 @@
 <template>
   <div class="article-detail-container">
-    <!-- 옵션 메뉴 (로그인한 사용자가 작성자일 경우) -->
-    <div v-if="isAuthor" class="article-options">
-      <button @click="toggleMenu" class="menu-button">⋯</button>
-      <div v-if="showMenu" class="menu-dropdown">
-        <button @click="editArticle">수정하기</button>
-        <button @click="deleteArticle" class="delete-button">삭제하기</button>
-      </div>
-    </div>
 
-    <!-- 작성자 정보 및 날짜 한 줄 정렬 -->
-    <div class="author-meta">
-      <div class="author-info">
-        <img :src="store.article.profileImageUrl" class="author-image" alt="profile_image" />
-        <span class="author-name">{{ store.article.nickname }}</span>
+    <!-- 제목과 옵션 메뉴를 한 줄에 배치 -->
+    <div class="article-header">
+      <!-- 옵션 메뉴 (로그인한 사용자가 작성자일 경우) -->
+      <div v-if="isAuthor" class="article-options">
+        <button @click="toggleMenu" class="menu-button">⋯</button>
+        <div v-if="showMenu" class="menu-dropdown">
+          <button @click="editArticle">수정하기</button>
+          <button @click="deleteArticle" class="delete-button">삭제하기</button>
+        </div>
       </div>
-      <span class="article-date">{{ formattedDate }}</span>
-    </div>
 
-    <!-- 제목 -->
-    <h1 class="article-title">{{ store.article.title }}</h1>
+      <!-- 제목 -->
+      <h1 class="article-title">{{ store.article.title }}</h1>
+    </div>
 
     <!-- 이미지 리스트 -->
     <div class="image-gallery">
@@ -33,8 +28,36 @@
     <!-- 본문 내용 -->
     <div class="article-content">{{ store.article.content }}</div>
     
-    <!-- 댓글 추가 -->
+    <!-- 날짜 및 통계 정보 -->
+    <div class="article-meta">
+        <span>{{ formattedDate }}</span>
+    </div>
+
+    <!-- 작성자 정보 및 팔로우 버튼 -->
+    <div class="author-section">
+      <div class="author-info">
+        <img :src="store.article.profileImageUrl" 
+             class="author-image" 
+             alt="profile_image" />
+        <div class="author-details">
+          <span class="author-name">{{ store.article.nickname }}</span>
+        </div>
+      </div>
+      <!-- <div class="action-buttons">
+          <button class="follow-button">팔로우</button>
+          <button class="report-button">신고하기</button>
+      </div> -->
+    </div>
+
+    <!-- 좋아요 및 공유 버튼 -->
+    <!-- <div class="article-actions">
+      <button class="like-button">❤️ 좋아요</button>
+      <button class="share-button">🔗 공유</button>
+    </div> -->
+
+    <!-- ✅ 댓글 추가 -->
     <Comment :articleId="route.params.articleId" />
+
   </div>
 </template>
 
@@ -43,7 +66,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useArticleStore } from './articleStore';
 import { useLoginStore } from '../login/login';
 import { useRoute, useRouter } from 'vue-router';
-import Comment from '../comment/Comment.vue'; // 댓글 컴포넌트
+import Comment from '../comment/Comment.vue'; // 댓글 컴포넌트 추가
 
 const route = useRoute();
 const router = useRouter();
@@ -54,6 +77,7 @@ const showMenu = ref(false);
 
 // 현재 로그인한 사용자 정보
 const currentUser = computed(() => loginStore.state.nickname);
+console.log("✅ 게시글에서 현재 로그인된 사용자 닉네임:", currentUser.value.nickname);
 
 // 현재 게시글 작성자와 로그인한 사용자가 동일한지 확인
 const isAuthor = computed(() => store.article.nickname === currentUser.value);
