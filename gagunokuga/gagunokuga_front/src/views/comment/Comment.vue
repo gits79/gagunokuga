@@ -24,17 +24,15 @@
         <div class="comment-header">
           <img :src="comment.profileImageUrl" class="comment-profile-image" alt="프로필 이미지" />
           <span class="comment-author">{{ comment.nickname }}</span>
-
-          <!-- ✅ 날짜 및 삭제 버튼 -->
-          
         </div>
 
-        <p class="comment-content">{{ comment.content }}
-          <div class="comment-meta">
-            <span class="comment-date">{{ formatTimeAgo(comment.createdAt) }}</span>
-            <button v-if="comment.nickname === currentUser.nickname" @click="deleteComment(comment.id)" class="delete-button">삭제</button>
-          </div>
-        </p>
+        <p class="comment-content">{{ comment.content }}</p>
+
+        <!-- ✅ 날짜 및 삭제 버튼 (삭제 버튼을 오른쪽 정렬) -->
+        <div class="comment-meta">
+          <span class="comment-date">{{ formatTimeAgo(comment.createdAt) }}</span>
+          <button v-if="comment.nickname === currentUser.nickname" @click="deleteComment(comment.id)" class="delete-button">삭제</button>
+        </div>
       </div>
     </div>
 
