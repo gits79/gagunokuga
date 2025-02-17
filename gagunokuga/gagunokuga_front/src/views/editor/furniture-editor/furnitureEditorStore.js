@@ -583,7 +583,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     id: null,
     furnitureId: null,
     furnitureName: null,
-    imageUri: null,
+    imageUrl: null,
     roomId: null,
 
     xpos: null,
@@ -603,7 +603,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     selectedFurniture.id = null,
     selectedFurniture.furnitureId = null
     selectedFurniture.furnitureName = null
-    selectedFurniture.imageUri = null
+    selectedFurniture.imageUrl = null
     selectedFurniture.roomId = null
 
     selectedFurniture.xpos = null
@@ -630,7 +630,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   }
 
   // 가구 객체 업데이트
-  const updateObjectVaues = (furnObj, furniture) => {
+  const updateObjectValues = (furnObj, furniture) => {
     const image = furnObj.children()[0];
     image.transform({ rotate: furniture.rotation });
     image.size(furniture.width, furniture.height);
@@ -755,7 +755,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     image.attr('preserveAspectRatio', 'none');         
     furn.attr('id', `furniture-${furniture.index}`);  
     furn.draggable();                                 
-    updateObjectVaues(furn, furniture);
+    updateObjectValues(furn, furniture);
     
     // 가구 데이터 저장
     furnitureDataList.value[furniture.index] = furniture;
@@ -785,7 +785,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     }
     const furn = furnitureObjects.value[furniture.index];
     if (furn) {
-      updateObjectVaues(furn, furniture);
+      updateObjectValues(furn, furniture);
     }
   }
   // 가구 지우기
