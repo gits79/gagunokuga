@@ -1,120 +1,97 @@
 <template>
   <aside class="sidebar-left">
+    <div class="tools-container">
+      <!-- Room List Link -->
+      <router-link to="/room" class="tool-button">
+        <svg viewBox="0 0 24 24" class="icon">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </router-link>
 
-    <div class="head-left">
-      <router-link to="/room" class="button-link"><button>룸목록</button></router-link>
-
-      <div class="xy">
-        <button class="btn-xy" @click="store.undo" :disabled="!store.canUndo">뒤로 <br> [Ctrl + Z]</button>
-        <button class="btn-xy" @click="store.redo" :disabled="!store.canRedo">앞으로 <br> [Ctrl + Y]</button>
-      </div>
-    </div>
-
-    <div class="body-left">
-      <div class="controller">
-        <div class="button-container">
-          <!-- 저장 버튼 (가장 앞에 배치) -->
-          <button class="tool-button save" @click="saveData">
-            💾
-          </button>
-
-          <button class="tool-button select" :class="{ 'active': store.toolState.currentTool === 'select' }"
-                  @click="store.toolState.currentTool = 'select'">
-          <span class="tool-text">
-            선택[1]
-          </span>
-          </button>
-
-          <button class="tool-button wall" :class="{ 'active': store.toolState.currentTool === 'wall' }"
-                  @click="store.toolState.currentTool = 'wall'">
-            <span class="tool-text">선 그리기[2]</span>
-          </button>
-
-          <button class="tool-button rect" :class="{ 'active': store.toolState.currentTool === 'rect' }"
-                  @click="store.toolState.currentTool = 'rect'">
-            <span class="tool-text">사각형 그리기[3]</span>
-          </button>
-
-          <button class="tool-button eraser" :class="{ 'active': store.toolState.currentTool === 'eraser' }"
-                  @click="store.toolState.currentTool = 'eraser'">
-            <span class="tool-text">지우개[4]</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- 벽/사각형 도구 선택시 보이는 인터페이스 -->
-      <div v-if="['wall', 'rect'].includes(store.toolState.currentTool)" class="scale-changer">
-        <div class="scale-info">
-          <label>벽 두께 (mm)</label>
-          <input
-              type="number"
-              :value="store.toolState.wallThickness"
-              @input="store.setWallThickness($event.target.value)"
-              min="1"
-              step="10"
-          >
-        </div>
-        <div class="plus-minus">
-          <button class="pm-btn" @click="store.setWallThickness(store.toolState.wallThickness - 10)">- ( [ )</button>
-          <button class="pm-btn" @click="store.setWallThickness(store.toolState.wallThickness + 10)">+ ( ] )</button>
-        </div>
-        <button @click="handleCancel" class="btn-left">
-          그리기 취소 [ESC]
+      <!-- Undo/Redo -->
+      <div class="tool-group">
+        <button class="tool-button" @click="store.undo" :disabled="!store.canUndo">
+          <i class="icon">↩</i>
+          <span class="tooltip">뒤로 [Ctrl + Z]</span>
+        </button>
+        <button class="tool-button" @click="store.redo" :disabled="!store.canRedo">
+          <i class="icon">↪</i>
+          <span class="tooltip">앞으로 [Ctrl + Y]</span>
         </button>
       </div>
 
-      <!-- 지우개 도구 선택시 보이는 인터페이스 -->
-      <div v-if="store.toolState.currentTool === 'eraser'" class="scale-changer">
-        <div class="scale-info">
-          <label>지우개 크기</label>
-          <input
-              type="number"
-              :value="store.toolState.snapDistance"
-              @input="store.setSnapDistance($event.target.value)"
-              min="25"
-              max="500"
-              step="25"
-          >
-        </div>
-        <div class="plus-minus">
-          <button class="pm-btn" @click="store.setSnapDistance(Math.max(25, store.toolState.snapDistance - 25))">- ( [ )</button>
-          <button class="pm-btn" @click="store.setSnapDistance(Math.min(500, store.toolState.snapDistance + 25))">+ ( ] )</button>
-        </div>
+      <!-- Main Tools -->
+      <div class="tool-group">
+        <button 
+          class="tool-button"
+          :class="{ 'active': store.toolState.currentTool === 'select' }"
+          @click="store.toolState.currentTool = 'select'"
+        >
+          <svg viewBox="0 0 24 24" class="icon">
+            <path d="M4 4l7 7m-7-7l7 16l3-7l7-3z" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span class="tooltip">선택 [1]</span>
+        </button>
+        <button 
+          class="tool-button"
+          :class="{ 'active': store.toolState.currentTool === 'wall' }"
+          @click="store.toolState.currentTool = 'wall'"
+        >
+          <svg viewBox="0 0 24 24" class="icon">
+            <path d="M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="tooltip">선 그리기 [2]</span>
+        </button>
+        <button 
+          class="tool-button"
+          :class="{ 'active': store.toolState.currentTool === 'rect' }"
+          @click="store.toolState.currentTool = 'rect'"
+        >
+          <svg viewBox="0 0 24 24" class="icon">
+            <rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span class="tooltip">사각형 그리기 [3]</span>
+        </button>
+        <button 
+          class="tool-button"
+          :class="{ 'active': store.toolState.currentTool === 'eraser' }"
+          @click="store.toolState.currentTool = 'eraser'"
+        >
+          <svg viewBox="0 0 24 24" class="icon">
+            <path d="M20 20H4l4-4m3.5-3.5l7-7a2.12 2.12 0 013 0v0a2.12 2.12 0 010 3l-7 7z" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span class="tooltip">지우개 [4]</span>
+        </button>
       </div>
-    </div>
 
-
-    <!-- 마우스 좌표 표시 및 단위 변환 버튼 추가 -->
-    <div class="tail-left">
-      X: {{ store.formatLength(store.mousePosition.x) }}
-      Y: {{ store.formatLength(store.mousePosition.y) }}
-      <button @click="store.cycleDisplayUnit" class="btn-left">
-        단위: {{ store.displayUnit }}
-      </button>
+     <!-- Toggle Buttons -->
+      <div class="toggle-tools">
+        <button @click="store.toggleLengthLabels()" class="tool-button">
+          <svg viewBox="0 0 24 24" class="icon">
+            <path d="M4 12h16m-3-3l3 3-3 3M7 9l-3 3 3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="tooltip">길이표시 {{ store.toolState.showLengthLabels ? '끄기' : '켜기' }} [L]</span>
+        </button>
+        <button @click="store.toggleGrid()" class="tool-button">
+          <svg viewBox="0 0 24 24" class="icon">
+            <path d="M4 4h16v16H4zm5.333 0v16M14.667 4v16M4 9.333h16M4 14.667h16" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span class="tooltip">그리드 {{ store.showGrid ? "끄기" : "켜기" }} [G]</span>
+        </button>
+        <button @click="store.toggleKeys()" class="tool-button">
+          <svg viewBox="0 0 24 24" class="icon">
+            <path d="M12 12m-8 0a8 8 0 1 0 16 0a8 8 0 1 0 -16 0M12 2v20M2 12h20" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span class="tooltip">키포인트 {{ store.showKeys ? "끄기" : "켜기" }} [K]</span>
+        </button>
+      </div>
     </div>
   </aside>
 </template>
 
 <script setup>
-    import { useFloorEditorStore } from "./floorEditorStore";
-    const store = useFloorEditorStore();
-
-    const handleSave = () => {
-    store.saveWalls();
-    };
-
-    const handleCancel = () => {
-      if (store.toolState.currentTool === 'wall') {
-        store.wallControls.cancel();
-      } else if (store.toolState.currentTool === 'rect') {
-        store.rectTool.cancel();
-      }
-    };
-
-    const handleToggleLengthLabels = () => {
-      store.toggleLengthLabels();
-      store.updateVisualElements();
-    };
+import { useFloorEditorStore } from "./floorEditorStore";
+const store = useFloorEditorStore();
 </script>
 
 <style scoped>

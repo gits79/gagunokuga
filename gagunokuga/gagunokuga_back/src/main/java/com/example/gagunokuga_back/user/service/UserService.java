@@ -201,9 +201,25 @@ public class UserService {
             // 일반 회원가입 유저인 경우 예외 발생
             throw new IllegalArgumentException("User already exists with this email");
         }
+
+//        // 새로운 카카오 유저 저장 시에도 고유한 닉네임 생성
+//        String uniqueNickname = generateUniqueNickname(user.getNickname());
+//        user.changeNickname(uniqueNickname);
         return userRepository.save(user);
     }
 
+    private String generateUniqueNickname(String nickname) {
+        String uniqueNickname = nickname + "_k";
+        int suffix = 1;
+
+        // 이미 같은 닉네임이 존재하면
+        while (userRepository.existsByNickname(uniqueNickname)) {
+            uniqueNickname = nickname + "_k" + suffix++;
+        }
+
+        return uniqueNickname;
+
+    }
 
 
 }
