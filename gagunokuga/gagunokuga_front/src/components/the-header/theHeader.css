@@ -4,6 +4,9 @@ header {
   align-items: center;
   padding: 30px 130px;
   background-color: #fff;
+  width: 100%;
+  position: fixed;
+  z-index: 10;
 }
 
 .logo-link {
@@ -20,7 +23,7 @@ header {
 nav ul {
   display: flex;
   list-style: none;
-  padding-right: 16px;
+  padding-right: 250px;
   height: 42px;
   align-items: center;
 }

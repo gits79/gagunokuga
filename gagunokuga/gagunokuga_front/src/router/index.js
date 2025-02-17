@@ -27,6 +27,12 @@ const router = createRouter({
     },
     //////////////////수정해야됨///////////////////
     {
+      path: "/article",
+      name: "ArticleList",
+      component: ArticleList,
+      meta: { showHeader: true},
+    },
+    {
       path: "/article/:articleId",
       name: "ArticleDetail",
       component: ArticleDetail,
