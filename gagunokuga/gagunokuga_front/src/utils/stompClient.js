@@ -27,17 +27,16 @@ export const subscribe = (subPath, callback) => {
     stompClient.onStompError = (frame) => {
         console.error('WebSocket 에러:', frame);
     };
+    console.log(subPath, "구독 성공")
     stompClient.activate();
 };
 
 // 구독 해제 함수
-export const unsubscribe = (subPath, diactive) => {
+export const unsubscribe = (subPath) => {
   if (subscriptions[subPath]) {
     stompClient.unsubscribe(subscriptions[subPath]);
     delete subscriptions[subPath];
-    if (diactive) {
-      stompClient.deactivate();
-    }
+    stompClient.deactivate();
   }
 };
 

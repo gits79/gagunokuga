@@ -27,12 +27,12 @@ export const useChatStore = defineStore('chatStore', () => {
 
   const subscribeToChat = async (callback) => {
     const subPath = `/sub/chat/${roomId.value}`; 
-    subscribe(subPath, callback);
+    // subscribe(subPath, callback); // 가구 테스트용 구독 임시 비활성화화
   }
 
   const unsubscribeFromChat = () => {
     const subPath = `/sub/chat/${roomId.value}`;
-    unsubscribe(subPath, false);
+    unsubscribe(subPath);
   }
 
   const publishChatMessage = (data) => {
