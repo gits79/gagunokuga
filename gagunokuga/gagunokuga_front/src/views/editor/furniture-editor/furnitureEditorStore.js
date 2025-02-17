@@ -566,7 +566,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
 
   const unsubscribeFromRoom = () => {
     const subPath = `/sub/rooms/${roomId.value}`;
-    unsubscribe(subPath); // 구독 해제
+    unsubscribe(subPath, true); // 구독 해제
   }
 
   const publishFurnitureEvent = (data) => {

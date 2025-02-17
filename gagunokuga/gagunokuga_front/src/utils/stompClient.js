@@ -31,11 +31,13 @@ export const subscribe = (subPath, callback) => {
 };
 
 // 구독 해제 함수
-export const unsubscribe = (subPath) => {
+export const unsubscribe = (subPath, diactive) => {
   if (subscriptions[subPath]) {
     stompClient.unsubscribe(subscriptions[subPath]);
     delete subscriptions[subPath];
-    stompClient.deactivate();
+    if (diactive) {
+      stompClient.deactivate();
+    }
   }
 };
 

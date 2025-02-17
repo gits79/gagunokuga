@@ -18,9 +18,13 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
         String destination = headerAccessor.getDestination();
-        String roomId = destination.replace("/sub/rooms/", ""); // 구독 path 에서 roomId 값만 추출
+        String[] destinations = destination.split("/");
+        String roomId = destinations[destinations.length - 1];
+        String subscribeType = destinations[destinations.length - 2];
+        if (subscribeType.equals("rooms")) {
+            webSocketService.addSubscription(sessionId, roomId);
+        }
 
-        webSocketService.addSubscription(sessionId, roomId);
     }
 
     @EventListener
