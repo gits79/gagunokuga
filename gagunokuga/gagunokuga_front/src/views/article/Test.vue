@@ -2,12 +2,15 @@
   <div id="fullpage">
     <!-- 1번째 페이지 -->
     <section v-for="(section, index) in sections" :key="index" class="section page blue">
+      <Transition name="bounce">
+        <img v-if="section.contents[2] && section.contents[2].type === 'img' && visibleSections[index][0]"
+        :src="section.contents[2].src" alt="가구놓구가 로고" class="main-image"/>
+      </Transition>
       <div v-for="(content, i) in section.contents" :key="i"
-      class="content" v-bind:class="{ 'fade-in': visibleSections[index][i] }">
-      <component :is="content.type" class="title" v-if="content.type === 'h1' || content.type === 'h2'">
-          {{ content.text }}
+      class="content" v-bind:class="{ 'fade-in': visibleSections[index][i], 'right-position': index === 2}">
+        <component :is="content.type" class="title" v-if="content.type === 'h1' || content.type === 'h2'" v-html="content.text">
         </component>
-        <p class="subtitle" v-else-if="content.type === 'p'">{{ content.text }}</p>
+        <p class="subtitle" v-else-if="content.type === 'p'" v-html="content.text"></p>
         <button class="download-btn" v-else-if="content.type === 'button'" @click="content.action">
           {{ content.text }}
         </button>
@@ -17,82 +20,101 @@
 </template>
   
 <script setup>
-import { ref, onMounted, Transition} from 'vue';
-import { useRouter } from 'vue-router';
-import fullpage from 'fullpage.js'
+import { ref, onMounted, Transition, watchEffect} from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 
 const sections = ref([
   {
     contents: [
-      {type: 'h1', text: '모두의 생각이 모여\n완성되는 우리집'},
-      {type: 'p', text: '공간을 넘어 마음을 모아 사랑하는 이들과 함께\n실시간으로 아이디어를 나누고 가구 배치를 완성해보세요'},
-      {type: 'button', text: '에디터 바로가기', action: () => router.push('/room')}
+      {type: 'h1', text: '모두의 생각이 모여 <br> 완성되는 우리집'},
+      {type: 'p', text: '공간을 넘어 마음을 모아<br>사랑하는 이들과 함께 실시간으로 <br>아이디어를 나누고 가구 배치를 완성해보세요.'},
+      {type: 'button', text: '시작하기', action: () => router.push('/room')}
     ]
   },
   {
     contents : [
-      {type: 'h2', text: '간편하고 정확한 도면설계부터 가구배치'},
-      {type: 'p', text: '제공되는 기본 레이아웃으로 쉽게 시작하고,\n직관적인 도구로 정확하게 공간을 설계하세요.\n간단한 드래그로 가구를 배치하고 조정할 수 있습니다.'},
-      {type: 'button', text: '시작하기', action: () => router.push('/room')}
+      {type: 'h2', text: '간편하고 정확한 <br> 도면설계부터 가구배치'},
+      {type: 'p', text: '제공되는 기본 레이아웃으로 쉽게 시작하고,<br>직관적인 도구로 정확하게 공간을 설계하세요.<br>간단한 드래그로 가구를 배치하고 조정할 수 있습니다.'},
+      {type: 'img', src: "/main.gif"}
     ],
   },
   {
     contents: [
-      {type: 'h1', text: '떨어져 있어도 함께 만드는 우리 집\n-- 실시간 동시 편집으로 함께 가구를 배치하고\n-- 채팅으로 즉각적인 피드백을 주고받으세요'}
+      {type: 'h2', text: '떨어져 있어도 <br> 함께 만드는 우리 집'},
+      {type: 'p', text: '실시간 동시 편집으로 함께 가구를 배치하고,<br>채팅으로 즉각적인 피드백을 주고받으세요.'}
     ]
   },
   {
     contents: [
-      {type: 'h2', text: '공간의 영감을 나누는 커뮤니티'},
-      {type: 'p', text: '나만의 특별한 공간을 공유하고\n다양한 아이디어로 영감을 채워보세요'},
-      {type: 'button', text: '커뮤니티 둘러보기', action: () => router.push('/community')}
+      {type: 'h2', text: '공간의 영감을 나누는<br>커뮤니티'},
+      {type: 'p', text: '나만의 특별한 공간을 공유하고<br>다양한 아이디어로 영감을 채워보세요.'},
     ]
   }
 ]);
 
-const visibleSections = ref(sections.value.map(() => Array(3).fill(false)));
-
+const visibleSections = ref(sections.value.map(section => Array(section.contents.length).fill(false)));
 
 onMounted(() => {
-  new fullpage('#fullpage', {
-    autoScrolling: true,
-    navigation: true,
-    scrollHorizontally: true,
-    scrollBar: false,
-    scrollingSpeed: 1500,
-  
-    afterLoad: (origin, destination) => {
-      const index = destination.index;
-      if (!visibleSections.value[index].some(v => v)) { // 한 번만 실행되도록 체크
-        setTimeout(() => {
-          visibleSections.value[index][0] = true;
-          setTimeout(() => {
-            visibleSections.value[index][1] = true;
-            setTimeout(() => {
-              visibleSections.value[index][2] = true;
-            }, 500);
-          }, 500);
-        }, 500);
-      }
-    }
-  });
+  if (route.path === "/test") { // 특정 페이지 경로일 때만 초기화
+    initializeFullPage();
+  }
 });
-</script>
 
+function initializeFullPage() {
+  if (window.$ && window.$.fn.fullpage) {
+    window.$(document).ready(function() {
+      window.$('#fullpage').fullpage({
+        autoScrolling: true,
+        navigation: true,
+        scrollBar: false,
+        scrollingSpeed: 1500,
+
+        afterLoad: function (anchorLink, index) {
+          const sectionIndex = index - 1; // fullPage.js의 index는 1부터 시작하므로 보정
+          if (!visibleSections.value[sectionIndex].some(v => v)) { // 한 번만 실행되도록 체크
+            setTimeout(() => {
+              visibleSections.value[sectionIndex][0] = true;
+              if (visibleSections.value[sectionIndex][3] !== undefined) {
+                visibleSections.value[sectionIndex][3] = true;
+              }
+              setTimeout(() => {
+                visibleSections.value[sectionIndex][1] = true;
+                setTimeout(() => {
+                  visibleSections.value[sectionIndex][2] = true;
+                }, 500);
+              }, 500);
+            }, 500);
+          }
+        }
+      });
+    });
+  }
+}
+
+router.beforeEach((to, from, next) => {
+  // 페이지 이동 시 fullPage.js를 destroy하고 다시 초기화
+  if (from.name) {
+    window.$('#fullpage').fullpage.destroy('all'); // 현재 fullPage.js 인스턴스 해제
+  }
+  next();
+});
+
+
+</script>
   
-  <style lang="scss" scoped>
-  @import 'https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/4.0.20/fullpage.min.css';
-  
-  /* 크롬, 사파리에서 스크롤바 숨기기 */
+<style lang="scss" scoped>
+/* 크롬, 사파리에서 스크롤바 숨기기 */
 ::-webkit-scrollbar {
   display: none;
 }
 
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Arial', sans-serif;
+  background-color: #f6f8ff;
 }
 
 /* 기본 섹션 스타일 */
@@ -101,224 +123,127 @@ body {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  // text-align: center;
+  padding: 0 10%;
+  text-align: left;
+}
+
+/* 첫 번째 섹션에 배경 이미지와 연한 효과 */
+.page:nth-child(1) {
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.6), /* 배경색의 투명도 */
+    rgba(255, 255, 255, 0.6)
+  ), url('/main.png');  /* 배경 이미지 */
+  background-size: cover;  /* 이미지 크기를 섹션 크기에 맞게 조정 */
+  background-position: center;  /* 이미지가 섹션의 중앙에 위치하도록 */
+  background-repeat: no-repeat;  /* 이미지 반복 방지 */
+  height: 100vh;  /* 전체 섹션을 화면 크기만큼 설정 */
+  position: relative;  /* 자식 요소의 위치를 조정하기 위한 설정 */
 }
 
 .content {
-  max-width: 800px;
-  color: black;
-  align-items: left;
+  max-width: 600px;
+  // color: #2c3e50;
+  color:black;
   opacity: 0;
-  /* text-align: left; */
-  /* margin-left: 10%; */
-  // transform: translateY(20px);
-  
-  &.fade-in {
-    opacity: 1;
-    transform: translateX(0);
-    transition: all 3.0s ease-out;
-    }
+  transform: translateY(20px);
+  transition: all 0.8s ease-out;
+  padding: 0 30px;
+  position: relative;
 }
 
-.blue { 
-  /* background-color: linear-gradient(135deg, #f6f8ff 0%, #e9ecf9 100%);   */
-  background-color:#f6f8ff; color: white;
+.content.fade-in {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.pink { 
-  /* background-color: linear-gradient(135deg, #f6f8ff 0%, #e9ecf9 100%);   */
-  background-color:#FFF6F2; color: white;
+.right-position {
+  left: 60%;
+  padding: 0 30px;
 }
 
-/* 텍스트 스타일 */
+/* 섹션 스타일 */
+.blue {
+  background-color: #f6f8ff;
+  color: #2c3e50;
+}
+
+.pink {
+  background-color: #fff6f2;
+  color: #2c3e50;
+}
+
+/* 타이틀 스타일 */
 .title {
-  font-size: 2rem;
-  font-weight: bold;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 30px;
   color: black;
+  // color: #2c3e50;
   line-height: 1.6;
-  margin-bottom: 20px;
+  padding-top: 30%;
 }
 
 .subtitle {
-    font-size: 1.2rem;
-    line-height: 1.5;
-    color: #5a6c7f;
-    margin-top: 10px;
-    margin-bottom: 2rem;
-  }
+  font-size: 1.3rem;
+  line-height: 1.6;
+  color: #444;
+  margin-bottom: 30px;
+}
 
 /* 버튼 스타일 */
 .download-btn {
-  background-color:rgb(30, 59, 138);
+  background-color:#EF5C4E;
+  // background-color: #1e3b8a;
   color: white;
-  padding: 12px 24px;
+  padding: 15px 20px;
   font-size: 1.2rem;
   font-weight: bold;
   border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-  margin-top: 20px;
+  transition: background-color 0.3s ease;
   border: none;
+  margin-top: 1%;
 }
 
 .download-btn:hover {
-  background-color:rgb(16, 39, 92);
-}
-
-.icon {
-  width: 45px;
-  height: 45px;
-  margin-right: 10px;
-  margin-top: 5px;
+  background-color:rgb(239, 69, 54);
+  // background-color: #10375c;
 }
 
 /* 이미지 스타일 */
 .main-image {
   position: absolute;
-  right: 5%;
-  bottom: 0;
-  width: 500px;
+  right: 10%;
+  top: 20%;
+  width: 40%;
   height: auto;
+  border-radius: 10%;
+  animation: bounce-in 1.5s ease-out;
 }
 
 .bounce-enter-active {
-  animation: bounce-in 3.0s;
+  animation: bounce-in 1.5s ease-out;
 }
 
 .bounce-leave-active {
   animation: bounce-in 0.5s reverse;
 }
 
-.section div {
-    transition: all .3s .5s;
-}
-
 @keyframes bounce-in {
   0% { transform: scale(0); }
-  50% { transform: scale(1.25); }
+  50% { transform: scale(1.1); }
   100% { transform: scale(1); }
 }
 
-.community-section {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    background: #f8f9fc;
-    padding: 4rem 2rem;
-  }
-  
-  .content-wrapper {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    gap: 4rem;
-    align-items: center;
-  }
-  
-  // .text-content {
-  //   flex: 1;
-  //   opacity: 0;
-  //   transform: translateY(20px);
-  //   transition: all 0.8s ease-out;
-  
-  //   &.fade-in {
-  //     opacity: 1;
-  //     transform: translateY(0);
-  //   }
-  // }
-  
+/* 미디어 쿼리 - 작은 화면에서의 스타일 */
+@media (max-width: 768px) {
   .title {
-    font-size: 3.5rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    color: #2c3e50;
-    line-height: 1.3;
-    letter-spacing: -0.02em;
-  }
-  
-  .subtitle {
-    font-size: 1.3rem;
-    line-height: 1.6;
-    color: #666;
-    margin-bottom: 2.5rem;
-  }
-  
-  .community-button {
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
-    background: #3498db;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  
-    &:hover {
-      background: #2980b9;
-      transform: translateY(-2px);
-    }
+    font-size: 2.5rem;
   }
 
-.cards-content {
-    flex: 1.2;
+  .subtitle {
+    font-size: 1.1rem;
   }
-  
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-    position: relative;
-  }
-  
-  .community-card {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
-  
-    &:hover {
-      transform: translateY(-5px);
-    }
-  
-    &:first-child {
-      grid-column: 1 / -1;
-    }
-  }
-  
-  .card-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-  }
-  
-  .card-info {
-    padding: 1.5rem;
-  
-    .category {
-      font-size: 0.9rem;
-      color: #3498db;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      display: block;
-    }
-  
-    h3 {
-      font-size: 1.2rem;
-      color: #2c3e50;
-      margin: 0;
-      font-weight: 600;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .content-wrapper {
-      flex-direction: column-reverse;
-      text-align: center;
-    }
-    
-    .card-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-  </style>
+}
+ 
+</style>
