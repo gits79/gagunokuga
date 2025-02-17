@@ -15,13 +15,14 @@ const messageInput = ref("");
 const chatLogs = ref([]);
 let stompClient = null;
 const chatBoxRef = ref(null); //  스크롤 자동 이동을 위한 ref
+const inputRef = ref(null);
 
 
 // 채팅창 상태 관리
 const isOpen = ref(false);
 const unreadCount = ref(0);
 const isDragging = ref(false);
-const isMinimized = ref(true); // 새로운 상태 추가
+const isMinimized = ref(true); 
 const startX = ref(0);
 const startY = ref(0);
 const startWidth = ref(300);
@@ -46,6 +47,19 @@ const toggleChat = () => {
     });
   }
 };
+
+const handleKeyDown = (e) => {
+  if(e.key === ' ') {
+    e.preventDefault();
+    messageInput.value += ' ';
+
+    //커서 위치 끝으로 이동
+    nextTick(() => {
+      const length = messageInput.value.length;
+      inputRef.value.setSelectionRange(length, length);
+    });
+  }
+}
 
 //  채팅창 자동 스크롤 함수
 const scrollToBottom = () => {
@@ -82,6 +96,8 @@ const loadChatLogs = async () => {
     scrollToBottom();
   }
 };
+
+
 
 // 메시지 전송 (WebSocket만 사용)
 const sendChatMessage = async () => {
@@ -180,7 +196,7 @@ onMounted(async () => {
 //  WebSocket 연결 해제
 onUnmounted(() => {
   disconnectWebSocket();
- // document에 남아있을 수 있는 이벤트 리스너들을 정리
+ // 이벤트 리스너들을 정리
  document.removeEventListener('mousemove', resize);
   document.removeEventListener('mouseup', stopResize);
 });
@@ -243,11 +259,13 @@ onUnmounted(() => {
     <!-- input -->
     <div class="chat-input">
       <input 
+        ref= "inputRef"
         v-model="messageInput" 
         type="text" 
         placeholder="메시지 입력" 
         class="input-field message-input" 
         @keydown.enter="sendChatMessage"
+        @keydown="handleKeyDown"
       />
       <button @click="sendChatMessage" class="send-button">전송</button>
     </div>
