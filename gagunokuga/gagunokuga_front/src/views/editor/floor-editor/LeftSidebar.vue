@@ -25,7 +25,7 @@
         <button 
           class="tool-button"
           :class="{ 'active': store.toolState.currentTool === 'select' }"
-          @click="store.toolState.currentTool = 'select'"
+          @click="store.handleToolChange('select')"
         >
           <svg viewBox="0 0 24 24" class="icon">
             <path d="M4 4l7 7m-7-7l7 16l3-7l7-3z" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -35,7 +35,7 @@
         <button 
           class="tool-button"
           :class="{ 'active': store.toolState.currentTool === 'wall' }"
-          @click="store.toolState.currentTool = 'wall'"
+          @click="store.handleToolChange('wall')"
         >
           <svg viewBox="0 0 24 24" class="icon">
             <path d="M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -45,7 +45,7 @@
         <button 
           class="tool-button"
           :class="{ 'active': store.toolState.currentTool === 'rect' }"
-          @click="store.toolState.currentTool = 'rect'"
+          @click="store.handleToolChange('rect')"
         >
           <svg viewBox="0 0 24 24" class="icon">
             <rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -55,7 +55,7 @@
         <button 
           class="tool-button"
           :class="{ 'active': store.toolState.currentTool === 'eraser' }"
-          @click="store.toolState.currentTool = 'eraser'"
+          @click="store.handleToolChange('eraser')"
         >
           <svg viewBox="0 0 24 24" class="icon">
             <path d="M20 20H4l4-4m3.5-3.5l7-7a2.12 2.12 0 013 0v0a2.12 2.12 0 010 3l-7 7z" fill="none" stroke="currentColor" stroke-width="2"/>
