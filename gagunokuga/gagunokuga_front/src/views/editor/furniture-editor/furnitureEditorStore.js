@@ -647,7 +647,12 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     furnitureObjects.value = [];
     furnitureDataList.value = [];
     try {
-      const response = await apiClient.get(`/api/rooms/${roomId.value}/furnitures/fetch`);
+      const token = localStorage.getItem('accessToken');
+      const response = await apiClient.get(`/api/rooms/${roomId.value}/furnitures/fetch`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       response.data.furnitureList.forEach(furnitureEvent => {
         receiveFurnitureEvent(furnitureEvent);
       });
@@ -664,7 +669,12 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   };
   const createNewFurniture = async (furnitureId, x, y) => {
     try {
-      await apiClient.get(`/api/rooms/${roomId.value}/furnitures/${furnitureId}?xpos=${x}&ypos=${y}`);
+      const token = localStorage.getItem('accessToken');
+      await apiClient.get(`/api/rooms/${roomId.value}/furnitures/${furnitureId}?xpos=${x}&ypos=${y}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
     } catch (error) {
       console.error("가구 생성 중 오류 발생:", error);
     }
