@@ -74,7 +74,12 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   // 서버에서 벽 데이터 불러오기
   const fetchWalls = async () => {
     try {
-      const response = await apiClient.get(`/api/rooms/${roomId.value}/walls`);
+      const token = localStorage.getItem('accessToken');
+      const response = await apiClient.get(`/api/rooms/${roomId.value}/walls`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       
       if (response.data && response.data.walls) {
         // 삭제되지 않은 벽만 필터링하여 저장
