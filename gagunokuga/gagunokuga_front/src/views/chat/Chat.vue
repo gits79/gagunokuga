@@ -28,6 +28,7 @@ const scrollToBottom = () => {
 //  기존 채팅 기록 불러오기 (API 사용)
 const loadChatLogs = async () => {
   const logs = await fetchChatLogs(roomId.value);
+  console.log("닉네임",nickname.value)
   console.log(" 과거 채팅 기록:", logs);
 
   if (Array.isArray(logs.chats)) {
@@ -96,9 +97,15 @@ const handleMessageReceived = (message) => {
   scrollToBottom();
 };
 
+// 닉네임을 가져오는 함수
+const fetchNickname = async () => {
+  await loginStore.fetchUserInfo(); // 사용자 정보 가져오기
+};
+
 //  WebSocket 연결 및 기존 채팅 기록 불러오기
 onMounted(async () => {
   await loadChatLogs();
+  await fetchNickname();
   stompClient = connectWebSocket(roomId.value, handleMessageReceived);
 });
 
@@ -141,7 +148,7 @@ onUnmounted(() => {
         type="text" 
         placeholder="메시지 입력" 
         class="input-field message-input" 
-        @keyup.enter="sendChatMessage" 
+        @keyup.enter="sendChatMessage"
       />
       <button @click="sendChatMessage" class="send-button">전송</button>
     </div>
