@@ -21,7 +21,7 @@ export const fetchChatLogs = async (roomId) => {
 //  WebSocket 연결
 export const connectWebSocket = (roomId, onMessageReceived) => {
   stompClient = new Client({
-    brokerURL: `${API_BASE_URL.replace("http", "ws")}/ws`,
+    brokerURL: `${API_BASE_URL.replace("http", "ws")}/ws/`,
     reconnectDelay: 5000, // 5초 후 자동 재연결
     onConnect: () => {
       console.log(" WebSocket 연결됨!");
