@@ -74,12 +74,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   // 서버에서 벽 데이터 불러오기
   const fetchWalls = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await apiClient.get(`/api/rooms/${roomId.value}/walls`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await apiClient.get(`/api/rooms/${roomId.value}/walls`);
       
       if (response.data && response.data.walls) {
         // 삭제되지 않은 벽만 필터링하여 저장
@@ -647,12 +642,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     furnitureObjects.value = [];
     furnitureDataList.value = [];
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await apiClient.get(`/api/rooms/${roomId.value}/furnitures/fetch`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await apiClient.get(`/api/rooms/${roomId.value}/furnitures/fetch`);
       response.data.furnitureList.forEach(furnitureEvent => {
         receiveFurnitureEvent(furnitureEvent);
       });
@@ -669,12 +659,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   };
   const createNewFurniture = async (furnitureId, x, y) => {
     try {
-      const token = localStorage.getItem('accessToken');
-      await apiClient.get(`/api/rooms/${roomId.value}/furnitures/${furnitureId}?xpos=${x}&ypos=${y}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      await apiClient.get(`/api/rooms/${roomId.value}/furnitures/${furnitureId}?xpos=${x}&ypos=${y}`);
     } catch (error) {
       console.error("가구 생성 중 오류 발생:", error);
     }
