@@ -47,7 +47,8 @@ onBeforeUnmount(() => {
       </svg> -->
   </div>
     <RightSidebar />
-    <chat/>
+    <!-- kakao 호출 확인용 -->
+    <!-- <chat/> -->
   </div>
 </template>
 
