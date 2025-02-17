@@ -266,6 +266,7 @@
   background-color: #357ABD;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+  
 }
 
 .send-button:active {
