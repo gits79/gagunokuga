@@ -1,6 +1,7 @@
 <script setup>
   import { useFurnitureEditorStore } from "./furnitureEditorStore";
   import { ref } from "vue";
+  import Chat from "../../chat/Chat.vue";
   const store = useFurnitureEditorStore();
 </script>
 
@@ -9,7 +10,7 @@
     <div class="container">
     <h2>가구 속성 수정</h2>
 
-    <div class="form-group">
+    <!-- <div class="form-group">
       <label for="furnitureId">가구 ID</label>
       <input type="number" v-model="store.selectedFurniture.furnitureId" disabled>
     </div>
@@ -27,7 +28,7 @@
     <div class="form-group">
       <label for="roomId">방 ID</label>
       <input type="number" v-model="store.roomId" disabled>
-    </div>
+    </div> -->
 
     <div class="form-group input-inline">
       <div>
@@ -65,6 +66,7 @@
     </div>
   </div>
   </aside>
+  <chat/>
 </template>
   
 <style scoped>
