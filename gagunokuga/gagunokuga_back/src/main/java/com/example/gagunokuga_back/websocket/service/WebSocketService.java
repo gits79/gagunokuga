@@ -50,10 +50,6 @@ public class WebSocketService {
     }
 
     public void receiveFurnitureEvent(Long roomId, FurnitureEventDto furnitureEventDto) {
-        if (furnitureEventDto.getEvent().equals(FurnitureEventDto.Event.DELETE)) {
-            roomFurnitureService.delete(roomId, furnitureEventDto.getFurniture());
-        } else {
-            roomFurnitureService.store(roomId, furnitureEventDto.getFurniture());
-        }
+        roomFurnitureService.store(roomId, furnitureEventDto.getFurniture());
     }
 }

@@ -111,6 +111,7 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
         redisTemplate.opsForHash().put("room:" + roomId + ":furniture", roomFurnitureDto.getIndex().toString(), roomFurnitureDto);
     }
 
+    @Deprecated // 시간 되면 삭제된 데이터에 대한 최적화 구현해 보겠음
     @Override
     public void delete(Long roomId, RoomFurnitureDto roomFurnitureDto) { // 삭제 된 가구 Redis 에서도 지우기
         redisTemplate.opsForHash().delete("room:" + roomId + ":furniture", roomFurnitureDto.getIndex().toString());

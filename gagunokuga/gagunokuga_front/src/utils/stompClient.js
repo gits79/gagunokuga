@@ -27,6 +27,7 @@ export const subscribe = (subPath, callback) => {
     stompClient.onStompError = (frame) => {
         console.error('WebSocket 에러:', frame);
     };
+    console.log(subPath, "구독 성공")
     stompClient.activate();
 };
 
