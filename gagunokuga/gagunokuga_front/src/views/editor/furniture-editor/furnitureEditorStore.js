@@ -41,10 +41,26 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
 
   let viewModule = null;
 
+  // 그리드 표시 여부 상태
+  const showGrid = ref(localStorage.getItem('showGrid') !== 'false');
+
+  // 그리드 토글 함수
+  const toggleGrid = () => {
+    showGrid.value = !showGrid.value;
+    if (showGrid.value) {
+      addGrid();  // 그리드 켤 때는 다시 렌더링
+    } else {
+      gridModule.toggleGrid(draw, false);  // 끌 때는 숨기기만
+    }
+    localStorage.setItem('showGrid', showGrid.value);
+  };
+
   // 캔버스 초기화
   const initializeCanvas = (canvasElement) => {
     draw = SVG().addTo(canvasElement).size("100%", "100%").panZoom({ zoomMin: 0.01, zoomMax: 10, zoomFactor: 0.125 });
-    addGrid();
+    if (showGrid.value) {
+      addGrid();
+    }
     
     viewModule = createViewModule(draw);
     draw.viewbox(viewModule.viewbox.x, viewModule.viewbox.y, 
@@ -472,21 +488,22 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     });
   }
 
-  // == 유틸리티 함수들 == //
-
   // 단축키 처리 함수
   const handleKeyDown = (event) => {
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
-    switch (event.key) {
-      case "Escape":
+    switch (event.key.toLowerCase()) {
+      case 'g':
+        toggleGrid();
         break;
-      case "Delete":
+      case 'escape':
+        break;
+      case 'delete':
         deleteFurniture();
         break;
-      case "1": break;
-      case "2": break;
-      case "3": break;
-      case "l": case "L": 
+      case '1': break;
+      case '2': break;
+      case '3': break;
+      case 'l': case 'L': 
         toggleLengthLabels();  // toolModule의 함수 사용
         updateVisualElements(); // 시각적 요소 업데이트 추가
         break;
@@ -819,6 +836,8 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
 
     viewbox: computed(() => viewModule?.viewbox),
     changeFurnitureLayer,  // 레이어 변경 함수 export
+    toggleGrid,
+    showGrid,
   };
     
 });
