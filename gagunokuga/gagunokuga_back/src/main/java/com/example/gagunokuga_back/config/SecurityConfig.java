@@ -45,10 +45,30 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true);
+
+        configuration.setAllowedOrigins(List.of("https://ssafy-gagu.site", "http://localhost:5173"));
+
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Refresh-Token"));
+//        configuration.setExposedHeaders(List.of("Authorization", "Refresh-Token"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("*"));
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtTokenProvider jwtTokenProvider) throws Exception {
         return http
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))a
-                .cors(cors -> cors.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                .cors(cors -> cors.disable())
                 // REST API.. csrf 보안 x
                 .csrf(csrf ->csrf.disable())
                 // JWT를 사용하기 때문에 세션x
@@ -59,7 +79,7 @@ public class SecurityConfig {
                         auth.requestMatchers(HttpMethod.GET,"/api/users").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/api/users").permitAll()
                                 .requestMatchers("/ws/**").permitAll()
-                                .requestMatchers("/**").permitAll()
+//                                .requestMatchers("/**").permitAll()
                                 .requestMatchers("/api/users/login", "/api/users/email",
                                         "/api/users/email/verify", "/api/users/nickname","api/users/pwd/reset", "/api/oauth/login/**").permitAll()
                                 .requestMatchers("/api/health").permitAll()
@@ -84,23 +104,6 @@ public class SecurityConfig {
 
     }
 
-
-    //cors 설정
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowCredentials(true);
-//        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-////        configuration.setAllowedOrigins(List.of("http://localhost:5174"));
-//        configuration.setAllowedMethods(List.of("OPTIONS","GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Refresh-Token"));
-//        configuration.setExposedHeaders(List.of("Authorization", "Refresh-Token"));
-//        configuration.setMaxAge(3600L); // 프리플라이트 요청의 캐시 시간 설정
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
 
 
     //spring security 로그인 요청 인증 수행
