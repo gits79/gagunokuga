@@ -1,12 +1,17 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, computed } from "vue";
+import { useRoute } from 'vue-router';
 import { useLoginStore } from "@/views/login/login"; // 로그인 스토어 가져오기
-import {
-  fetchChatLogs,
-  connectWebSocket,
-  sendMessage,
-  disconnectWebSocket,
-} from "./chat.js";
+// import {
+//   fetchChatLogs,
+//   connectWebSocket,
+//   sendMessage,
+//   disconnectWebSocket,
+// } from "./chat.js";
+
+import { useChatStore } from "./chat.js";
+const store = useChatStore();
+const route = useRoute();
 
 const loginStore = useLoginStore(); // 로그인 스토어 초기화
 const roomId = ref("1");
@@ -72,7 +77,7 @@ const scrollToBottom = () => {
 
 //  기존 채팅 기록 불러오기 (API 사용)
 const loadChatLogs = async () => {
-  const logs = await fetchChatLogs(roomId.value);
+  const logs = await store.fetchChatLogs();
   console.log("닉네임",nickname.value)
   console.log(" 과거 채팅 기록:", logs);
 
@@ -115,7 +120,7 @@ const sendChatMessage = async () => {
 
   console.log(" 전송할 메시지:", chatMessage);
 
-  sendMessage(roomId.value, chatMessage);
+  store.publishChatMessage(chatMessage);
   messageInput.value = "";
 
   scrollToBottom();
@@ -187,15 +192,16 @@ const stopResize = () => {
 };
 //  WebSocket 연결 및 기존 채팅 기록 불러오기
 onMounted(async () => {
+  await store.initializeWebSocket(route.params.roomId);
+  await store.subscribeToChat(handleMessageReceived);
   await loadChatLogs();
   await fetchNickname();
-  stompClient = connectWebSocket(roomId.value, handleMessageReceived);
 
 });
 
 //  WebSocket 연결 해제
 onUnmounted(() => {
-  disconnectWebSocket();
+  store.unsubscribeFromChat();
  // 이벤트 리스너들을 정리
  document.removeEventListener('mousemove', resize);
   document.removeEventListener('mouseup', stopResize);
