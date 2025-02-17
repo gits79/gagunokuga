@@ -28,6 +28,9 @@ const logout = () => {
     <router-link to="/" class="logo-link">
       <img class="logo" src="@/assets/gagunokuga_logo_logo.svg" alt="가구놓구가" />
     </router-link>
+    <router-link to="/article" class="article-link">
+      커뮤니티
+    </router-link>
     <nav>
       <ul>
         <template v-if="isLoggedIn">
@@ -42,9 +45,9 @@ const logout = () => {
 
         <!-- 로그인 상태일 때 버튼 표시 -->
 
-        <li v-if="isLoggedIn" @click="logout"><router-link to="/login">로그아웃</router-link></li>
         <li v-if="isLoggedIn && !isProvided"><router-link to="/pwdcheck">마이페이지</router-link></li>
-        <li v-if="isLoggedIn"><router-link to="/room">마이홈</router-link></li>
+        <li v-if="isLoggedIn" class="my-home"><router-link to="/room">마이홈</router-link></li>
+        <li v-if="isLoggedIn" @click="logout"><router-link to="/login">로그아웃</router-link></li>
 
       </ul>
     </nav>
