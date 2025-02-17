@@ -66,7 +66,6 @@
     </div>
   </div>
   </aside>
-  <chat/>
 </template>
   
 <style scoped>
