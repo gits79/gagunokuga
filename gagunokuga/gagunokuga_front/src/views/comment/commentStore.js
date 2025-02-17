@@ -47,29 +47,7 @@ export const useCommentStore = defineStore("commentStore", () => {
     }
   };
 
-  //  댓글 수정하기
-  const updateComment = async (articleId, commentId, updatedContent) => {
-    try {
-      const token = localStorage.getItem('accessToken');
-      const response = await axios.put(
-        `${baseURL}/api/articles/${articleId}/comments/${commentId}`,
-        { content: updatedContent },
-        { headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } }
-      );
-
-      //  수정된 댓글을 comments 배열에서 업데이트
-      const commentIndex = comments.value.findIndex(comment => comment.id === commentId);
-      if (commentIndex !== -1) {
-        comments.value[commentIndex].content = updatedContent;
-      }
-
-      console.log(" 댓글 수정 완료:", response.data);
-    } catch (error) {
-      console.error(" 댓글 수정 중 오류 발생:", error);
-      throw error;
-    }
-  };
-
+  
   //  댓글 삭제하기
   const deleteComment = async (articleId, commentId) => {
     try {
@@ -89,7 +67,6 @@ export const useCommentStore = defineStore("commentStore", () => {
     comments,
     fetchComments,
     createComment,
-    updateComment, //  댓글 수정 기능 추가
     deleteComment
   };
 });
