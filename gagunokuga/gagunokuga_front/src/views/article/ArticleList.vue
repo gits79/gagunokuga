@@ -1,9 +1,5 @@
 <template>
   <div class="container">
-
-    <!-- 텍스트 -->
-    <p class="text">직접 꾸며놓은 피드! 구경하러 가볼까요?</p>
-
     <router-link to="/article/create" class="create-button">글쓰기</router-link>
     <div class="grid-container">
       <div v-for="article in store.articleList.articles" :key="article.id" class="card">
