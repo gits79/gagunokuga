@@ -2,9 +2,10 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import apiClient from "@/api/axiosInstance";
 import { subscribe, unsubscribe, publish } from '@/utils/stompClient';
+import { useFurnitureEditorStore } from '../editor/furniture-editor/furnitureEditorStore';
 
 export const useChatStore = defineStore('chatStore', () => {
-  const stompClient = ref(null);
+  const furnitureEditorStore = useFurnitureEditorStore();
   const roomId = ref(null);//  채팅 기록 가져오기 (REST API, GET 요청)
 
   const fetchChatLogs = async () => {
@@ -20,13 +21,15 @@ export const useChatStore = defineStore('chatStore', () => {
   };
   const initializeWebSocket = async (id) => {
     roomId.value = id;
-    if (!stompClient.value) {
-      stompClient.value = true; // WebSocket 초기화 로직 (필요하면 연결 설정)
-    }
+    // if (!stompClient.connected) {
+    //   console.log(stompClient.connected)
+    //   stompClient.activate();
+    // }
   };
 
   const subscribeToChat = async (callback) => {
-    const subPath = `/sub/chat/${roomId.value}`; 
+    furnitureEditorStore.subscribeToRoom(callback)
+    // const subPath = `/sub/chat/${roomId.value}`; 
     // subscribe(subPath, callback); // 가구 테스트용 구독 임시 비활성화화
   }
 
@@ -42,7 +45,6 @@ export const useChatStore = defineStore('chatStore', () => {
 
   return {
     roomId,
-    stompClient,
     fetchChatLogs,
     initializeWebSocket,
     subscribeToChat,

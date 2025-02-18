@@ -956,6 +956,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
     if (!coords) return;
     const walls = wallLayer.children();
     let closestWallId = null;
+    draw.panZoom({ ...PAN_ON });
     let minDistance = toolState.snapDistance;
     walls.forEach(wall => {
       const start = { x: +wall.attr('x1'), y: +wall.attr('y1') };
@@ -965,6 +966,7 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
       if (distance < minDistance) {
         minDistance = distance;
         closestWallId = wall.data('id');
+        draw.panZoom({ ...PAN_OFF });
       }
     });
     selection.selectedWallId = closestWallId;
