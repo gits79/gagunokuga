@@ -6,7 +6,7 @@ import LeftSidebar from "./LeftSidebar.vue";
 import RightSidebar from "./RightSidebar.vue";
 import Chat from "../../chat/Chat.vue";
 import axiosInstance from "@/api/axiosInstance.js";
-
+import { Canvg } from 'canvg';
 
 const store = useFurnitureEditorStore();
 const canvas = ref(null);
@@ -16,35 +16,6 @@ const baseURL = import.meta.env.VITE_API_URL;
 const onDrop = (event) => { // 가구 생성 시 이벤트 전달
   event.preventDefault();
   store.dropFurniture(event);
-};
-
-const captureScreen = async () => {
-  try {
-    const response = await axiosInstance.get(`${baseURL}/api/image/captureElement`, {
-      params: {
-        url: window.location.href,
-        elementClass: "canvas"
-      },
-      responseType: 'blob' // 이미지 데이터 받기
-    });
-
-    if (response.status === 200) {
-      const blob = new Blob([response.data], { type: 'image/png' });
-      const url = URL.createObjectURL(blob);
-      downloadImage(url);
-    } else {
-      console.error("캡처 요청 실패");
-    }
-  } catch (error) {
-    console.error("서버와 통신 중 오류 발생:", error);
-  }
-};
-
-const downloadImage = (imageUrl) => {
-  const a = document.createElement('a');
-  a.href = imageUrl;
-  a.download = 'captured_canvas.png';
-  a.click();
 };
 
 onMounted(async () => {
@@ -59,6 +30,33 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   store.unsubscribeFromRoom(); // 구독 해제 및 연결 종료
 });
+
+
+// 화면 캡처 기능
+const captureScreen = async () => {
+  const svgElement = document.querySelector('svg');  // SVG 요소 찾기
+  if (svgElement) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // SVG 요소를 문자열로 변환
+    const svgString = svgElement.outerHTML;
+
+    // Canvg를 사용하여 SVG 문자열을 캔버스로 렌더링
+    const v = await Canvg.from(ctx, svgString);
+    v.start();
+
+    // 캡처된 이미지를 PNG로 변환
+    const imageURL = canvas.toDataURL("image/png");
+
+    // 이미지 다운로드 링크 생성
+    const link = document.createElement("a");
+    link.href = imageURL;
+    link.download = "furniture_editor_capture.png";
+    link.click();  // 이미지 다운로드
+  }
+};
+
 </script>
 
 <template>
