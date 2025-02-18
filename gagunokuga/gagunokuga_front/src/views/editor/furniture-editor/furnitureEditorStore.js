@@ -58,6 +58,10 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   // 캔버스 초기화
   const initializeCanvas = (canvasElement) => {
     draw = SVG().addTo(canvasElement).size("100%", "100%").panZoom({ zoomMin: 0.01, zoomMax: 10, zoomFactor: 0.125 });
+    draw.on('zoom', () => {
+      viewModule.viewbox.width = draw.viewbox().width;
+      updateVisualElements();
+    })
     if (showGrid.value) {
       addGrid();
     }

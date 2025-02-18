@@ -2,7 +2,7 @@
   <aside class="sidebar-right">
     <!-- Navigation Buttons -->
     <div class="nav-buttons">
-      <router-link :to="`/furniture-editor/${route.params.roomId}`" class="nav-button">
+      <router-link @mousedown="store.saveWalls" :to="`/furniture-editor/${route.params.roomId}`" class="nav-button">
         가구배치로
       </router-link>
       <button class="nav-button" @click="store.saveWalls">
