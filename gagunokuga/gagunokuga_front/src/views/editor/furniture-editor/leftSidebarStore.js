@@ -6,14 +6,18 @@ export const useLeftSidebarStore = defineStore('leftSidebarStore', () => {
     const furnitureList = ref([])
     const loading = ref(false)
     const error = ref(null)
+    const searchKeyword = ref('')
 
-    const fetchFurnitureList = async () => {
+    const fetchFurnitureList = async (keyword = '') => {
         loading.value = true
         error.value = null
         try {
             // 첫 페이지를 가져와서 전체 페이지 수 확인
             const firstResponse = await apiClient.get('/api/furnitures', {
-                params: { page: 0 }
+                params: { 
+                    page: 0,
+                    keyword: keyword 
+                }
             })
             
             const totalPages = firstResponse.data.totalPages
@@ -24,7 +28,10 @@ export const useLeftSidebarStore = defineStore('leftSidebarStore', () => {
             for (let page = 1; page < totalPages; page++) {
                 remainingRequests.push(
                     apiClient.get('/api/furnitures', {
-                        params: { page }
+                        params: { 
+                            page,
+                            keyword 
+                        }
                     })
                 )
             }
@@ -47,6 +54,7 @@ export const useLeftSidebarStore = defineStore('leftSidebarStore', () => {
         furnitureList,
         loading,
         error,
+        searchKeyword,
         fetchFurnitureList
     }
 })

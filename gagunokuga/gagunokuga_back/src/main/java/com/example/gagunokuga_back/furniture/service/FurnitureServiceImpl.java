@@ -21,11 +21,15 @@ public class FurnitureServiceImpl implements FurnitureService {
     private final FurnitureRepository furnitureRepository;
 
     @Override
-    public FurnitureListResponse getFurnitureList(int page) {
+    public FurnitureListResponse getFurnitureList(int page, String keyword) {
         int size = 6; // 한페이지에 6개씩
         Pageable pageable = PageRequest.of(page, size); // 페이지네이션 설정
-
-        Page<Furniture> furniturePage = furnitureRepository.findAll(pageable);
+        Page<Furniture> furniturePage;
+        if (keyword.length() == 0) {
+            furniturePage = furnitureRepository.findAll(pageable);
+        } else {
+            furniturePage = furnitureRepository.findAllByKeyword(keyword, pageable);
+        }
 
         List<FurnitureResponse> furnitures = new ArrayList<>();
 

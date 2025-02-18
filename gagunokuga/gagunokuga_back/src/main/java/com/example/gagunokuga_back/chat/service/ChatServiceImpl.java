@@ -76,4 +76,9 @@ public class ChatServiceImpl implements ChatService {
         return response;
     }
 
+    @Override
+    public void deleteAllByRoom(Room room) {
+        chatRepository.deleteAllByRoom(room);
+    }
+
 }

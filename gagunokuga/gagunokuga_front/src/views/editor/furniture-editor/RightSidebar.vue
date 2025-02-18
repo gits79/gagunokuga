@@ -1,21 +1,98 @@
 <script setup>
   import { useFurnitureEditorStore } from "./furnitureEditorStore";
-  import { useRoute } from 'vue-router';
+  import { useRoute, useRouter } from 'vue-router';
+  import axiosInstance from "@/api/axiosInstance.js";
+  import { defineProps } from "vue";
 
   const store = useFurnitureEditorStore();
   const route = useRoute();
+  const router = useRouter();
+
+  // 부모 컴포넌트로부터 이미지를 받기 위한 props
+  const props = defineProps({
+    backgroundImage: String,
+    svgImage: String,
+  });
+
+
+  // 합성을 위해 이미지 불러오기
+  const loadImage = (url) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.src = url;
+    });
+  };
+
+  // 캡처 후 이미지를 서버로 전송하는 함수
+  const uploadCapturedImage = async (imageURL) => {
+    const formData = new FormData();
+    const blob = convertBase64ToBlob(imageURL);
+
+    formData.append('image', blob, 'comb_img.png'); // 최종 이미지 파일을 'image' 필드로 추가
+    formData.append('roomId', route.params.roomId); // 룸 번호 추가
+
+    try {
+      console.log("캡쳐전송")
+      // FormData 내용 출력
+      formData.forEach((value, key) => {
+        console.log(`${key}: ${value}`);
+      });
+      const response = await axiosInstance.post(`${baseURL}/api/rooms/capture`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('이미지 업로드 성공:', response.data);
+    } catch (error) {
+      console.error('이미지 업로드 실패:', error);
+    }
+  };
+
+  // 이미지 합성
+  const combineImages = async (backgroundImageURL, svgImageURL, width, height) => {
+    const canvasElement = document.createElement('canvas');
+    const ctx = canvasElement.getContext('2d');
+    canvasElement.width = width;
+    canvasElement.height = height;
+
+    // 배경 이미지 그리기
+    const backgroundImage = await loadImage(backgroundImageURL);
+    ctx.drawImage(backgroundImage, 0, 0, width, height);
+
+    // SVG 이미지 그리기
+    const svgImage = await loadImage(svgImageURL);
+    ctx.drawImage(svgImage, 0, 0, width, height);
+
+    // 최종 이미지 만들기
+    return canvasElement.toDataURL("image/png");
+  };
+
+  // 없을수도 있다 해서 추가함.
+  const convertBase64ToBlob = (base64Data) => {
+    const [header, base64] = base64Data.split(',');
+    const mime = header.match(/:(.*?);/)[1]; // MIME 타입 추출
+    const binaryString = atob(base64); // Base64를 이진 문자열로 디코딩
+    const length = binaryString.length;
+    const uint8Array = new Uint8Array(length);
+
+    for (let i = 0; i < length; i++) {
+      uint8Array[i] = binaryString.charCodeAt(i);
+    }
+
+    return new Blob([uint8Array], { type: mime }); // Blob 객체 생성
+  };
+
 </script>
 
 <template>
   <aside class="sidebar-right">
-    <router-link 
-      to="/" 
-      class="back-button">
-        홈으로
+    <button @click="handleCapture" class="back-button">
+      홈으로
       <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
-      <path d="M9 6l6 6-6 6" />
+        <path d="M9 6l6 6-6 6" />
       </svg>
-    </router-link>
+    </button>
 
     <h3 class="panel-title">가구 속성 수정</h3>
 
