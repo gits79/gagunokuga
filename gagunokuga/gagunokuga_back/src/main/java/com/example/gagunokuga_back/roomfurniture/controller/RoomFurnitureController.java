@@ -24,8 +24,9 @@ public class RoomFurnitureController {
             @PathVariable("roomId") Long roomId,
             @PathVariable Long furnitureId,
             @RequestParam(defaultValue = "0") Integer xpos,
-            @RequestParam(defaultValue = "0") Integer ypos) {
-        template.convertAndSend("/sub/rooms/" + roomId, roomFurnitureService.createRoomFurniture(roomId, furnitureId, xpos, ypos));
+            @RequestParam(defaultValue = "0") Integer ypos,
+            @RequestParam(defaultValue = "0") Integer layer) {
+        template.convertAndSend("/sub/rooms/" + roomId, roomFurnitureService.createRoomFurniture(roomId, furnitureId, xpos, ypos, layer));
         return ResponseEntity.ok().build();
     }
 

@@ -22,6 +22,22 @@
       <h1 class="article-title">{{ store.article.title }}</h1>
     </div>
 
+      <!-- 작성자 정보 및 팔로우 버튼 -->
+    <div class="author-section">
+      <div class="author-info">
+        <img :src="store.article.profileImageUrl" 
+             class="author-image" 
+             alt="profile_image" />
+        <div class="author-details">
+        <span class="author-name">{{ store.article.nickname }}</span>
+        </div>
+      </div>
+      <!-- <div class="action-buttons">
+          <button class="follow-button">팔로우</button>
+          <button class="report-button">신고하기</button>
+      </div> -->
+    </div>
+
     <!-- 이미지 리스트 -->
     <div class="image-gallery">
       <img v-for="(image, index) in store.article.articleImages" 
@@ -37,22 +53,6 @@
     <!-- 날짜 및 통계 정보 -->
     <div class="article-meta">
         <span>{{ formattedDate }}</span>
-    </div>
-
-    <!-- 작성자 정보 및 팔로우 버튼 -->
-    <div class="author-section">
-      <div class="author-info">
-        <img :src="store.article.profileImageUrl" 
-             class="author-image" 
-             alt="profile_image" />
-        <div class="author-details">
-          <span class="author-name">{{ store.article.nickname }}</span>
-        </div>
-      </div>
-      <!-- <div class="action-buttons">
-          <button class="follow-button">팔로우</button>
-          <button class="report-button">신고하기</button>
-      </div> -->
     </div>
 
     <!-- 좋아요 및 공유 버튼 -->

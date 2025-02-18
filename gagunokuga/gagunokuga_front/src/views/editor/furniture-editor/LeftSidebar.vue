@@ -25,6 +25,16 @@
           도면 에디터로
         </router-link>
 
+        <!-- Layer Selection -->
+        <div class="layer-selection">
+          <label for="layer">레이어:</label>
+          <select v-model="selectedLayer" id="layer" class="layer-select">
+            <option v-for="n in 11" :key="n-1" :value="n-1">
+              레이어 {{n-1}}
+            </option>
+          </select>
+        </div>
+
         <!-- Furniture Grid -->
         <div class="furniture-grid">
           <div
@@ -56,9 +66,12 @@ import { useRoute } from 'vue-router';
 const store = useLeftSidebarStore();
 const route = useRoute();
 const isOpen = ref(true);
+const selectedLayer = ref(0);
 
 const onDragStart = (event, furniture) => {
+  console.log('드래그 시작 - 선택된 레이어:', selectedLayer.value);
   event.dataTransfer.setData('furnitureId', furniture.id);
+  event.dataTransfer.setData('selectedLayer', selectedLayer.value.toString());
 };
 
 onMounted(() => {
@@ -179,5 +192,18 @@ onMounted(() => {
   font-size: 14px;
   color: #666;
   text-align: center;
+}
+
+.layer-selection {
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+.layer-select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 5px;
 }
 </style>
