@@ -1,66 +1,139 @@
 header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 15px 80px;
   background-color: #fff;
-  width: 100%;
+  width: 90%;
+  max-width: 1600px;
   position: fixed;
-  z-index: 10;
-  padding: 30px 100px; /* 좌우 여백 추가 */
-  box-sizing: border-box; /* padding이 width에 포함되도록 설정 */
+  z-index: 100;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 로고 */
+.left-nav {
+  display: flex;
+  align-items: center;
 }
 
 .logo-link {
-
-  height: 42px;
   display: flex;
   align-items: center;
 }
 
 .logo {
-  height: 42px;
+  height: 50px;
 }
 
-nav ul {
+/* 가운데 메뉴 */
+.center-nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  /* flex: 1; */
+  display: flex;
+  justify-content: center;
+  width: auto;
+}
+
+.center-nav ul {
   display: flex;
   list-style: none;
-  height: 42px;
-  align-items: center;
+  gap: 40px;
 }
 
-nav ul li {
-  margin-left: 20px;
-  display: flex;
-  align-items: center;
-}
-
-nav ul li a {
+.center-nav ul li a {
+  font-family: 'Jua', sans-serif;
   text-decoration: none;
+  font-size: 20px;
+  color: #333;
+  padding: 8px 14px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.center-nav ul li a:hover {
+  font-size: 22px;
+  /* background-color: rgba(239, 69, 54, 0.1); */
+  color: rgb(239, 69, 54);
+}
+
+/* 오른쪽 로그인 관련 메뉴 */
+.right-nav {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.right-nav ul {
+  display: flex;
+  list-style: none;
+  align-items: center;
+  gap: 15px;
+}
+
+.right-nav ul li a {
+  font-family: 'Jua', sans-serif;
+  text-decoration: none;
+  font-size: 16px;
+  color: #444;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 12px 15px;
+  border-radius: 10px;
+}
+
+.right-nav ul li a:hover {
   color: black;
-  font-weight: bold;
+  background: rgba(0, 0, 0, 0.1);
 }
 
-.my-home a {
-  color: #EF5C4E;
-}
-
+/* 프로필 스타일 */
 .profile {
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 50px; /* 프로필 컨테이너 높이 증가 */
+  /* padding: 6px 14px; */
 }
 
 .profile-img {
-  width: 45px; /* 프로필 이미지 크기 증가 */
-  height: 45px; /* 프로필 이미지 크기 증가 */
-  border-radius: 40%;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
   object-fit: cover;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .nickname {
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 15px;
   color: #2e1614;
-  font-family: "Noto Sans KR", sans-serif;
+  font-family: "Jua", sans-serif;
+}
+
+/* 로그아웃 버튼 */
+.logout a {
+  color: #666;
+}
+
+/* 반응형 (태블릿, 모바일) */
+@media (max-width: 1024px) {
+  header {
+    padding: 15px 40px;
+  }
+
+  .center-nav ul {
+    gap: 20px;
+  }
+
+  .right-nav ul {
+    gap: 10px;
+  }
+
+  .nickname {
+    display: none; /* 작은 화면에서는 닉네임 숨김 */
+  }
+
+  .profile {
+    padding: 6px;
+  }
 }
