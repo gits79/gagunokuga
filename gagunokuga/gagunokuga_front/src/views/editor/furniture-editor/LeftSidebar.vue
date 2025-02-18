@@ -35,6 +35,16 @@
           </select>
         </div>
 
+        <!-- Search Box -->
+        <div class="search-box">
+          <input 
+            type="search"
+            :value="searchKeyword"
+            placeholder="가구 검색..."
+            @input="handleSearch"
+          />
+        </div>
+
         <!-- Furniture Grid -->
         <div class="furniture-grid">
           <div
@@ -59,14 +69,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useLeftSidebarStore } from './leftSidebarStore';
 import { useRoute } from 'vue-router';
+import { debounce } from 'lodash';
 
 const store = useLeftSidebarStore();
 const route = useRoute();
 const isOpen = ref(true);
 const selectedLayer = ref(0);
+const searchKeyword = ref('');
+const isComposing = ref(false);  // IME 조합 중인지 확인하는 플래그
 
 const onDragStart = (event, furniture) => {
   console.log('드래그 시작 - 선택된 레이어:', selectedLayer.value);
@@ -74,11 +87,29 @@ const onDragStart = (event, furniture) => {
   event.dataTransfer.setData('selectedLayer', selectedLayer.value.toString());
 };
 
+// debounce를 사용하여 검색 딜레이 추가
+const debouncedSearch = debounce((value) => {
+  store.fetchFurnitureList(value);
+}, 300);  // 300ms 딜레이
+
+const handleSearch = (e) => {
+  searchKeyword.value = e.target.value;
+  store.fetchFurnitureList(e.target.value);
+};
+
+const onCompositionEnd = () => {
+  isComposing.value = false;
+  store.fetchFurnitureList(searchKeyword.value);
+};
+
+watch(searchKeyword, (newValue) => {
+  debouncedSearch(newValue);
+});
+
 onMounted(() => {
-  store.fetchFurnitureList();
+  store.fetchFurnitureList('');
 });
 </script>
-
 
 <style scoped>
   /* @import "./furnitureEditor.css"; */
@@ -205,5 +236,23 @@ onMounted(() => {
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-top: 5px;
+}
+
+.search-box {
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #4CAF50;
 }
 </style>
