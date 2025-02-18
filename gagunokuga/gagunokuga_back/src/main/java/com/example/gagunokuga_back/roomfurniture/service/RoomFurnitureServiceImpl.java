@@ -1,6 +1,7 @@
 package com.example.gagunokuga_back.roomfurniture.service;
 
 import com.example.gagunokuga_back.furniture.repository.FurnitureRepository;
+import com.example.gagunokuga_back.room.domain.Room;
 import com.example.gagunokuga_back.room.repository.RoomRepository;
 import com.example.gagunokuga_back.roomfurniture.domain.RoomFurniture;
 import com.example.gagunokuga_back.roomfurniture.mapper.RoomFurnitureMapper;
@@ -115,6 +116,11 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
     @Override
     public void delete(Long roomId, RoomFurnitureDto roomFurnitureDto) { // 삭제 된 가구 Redis 에서도 지우기
         redisTemplate.opsForHash().delete("room:" + roomId + ":furniture", roomFurnitureDto.getIndex().toString());
+    }
+
+    @Override
+    public void deleteRoomFurnitures(Room room) {
+        roomFurnitureRepository.deleteAllByRoom(room);
     }
 
 }

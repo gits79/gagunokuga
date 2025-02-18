@@ -1,10 +1,12 @@
 package com.example.gagunokuga_back.room.service;
 
+import com.example.gagunokuga_back.chat.service.ChatService;
 import com.example.gagunokuga_back.room.domain.Room;
 import com.example.gagunokuga_back.room.dto.RoomListResponse;
 import com.example.gagunokuga_back.room.dto.RoomResponse;
 import com.example.gagunokuga_back.room.dto.UpdateRoomNameRequest;
 import com.example.gagunokuga_back.room.repository.RoomRepository;
+import com.example.gagunokuga_back.roomfurniture.service.RoomFurnitureService;
 import com.example.gagunokuga_back.roomuser.domain.RoomUser;
 import com.example.gagunokuga_back.roomuser.repository.RoomUserRepository;
 import com.example.gagunokuga_back.roomuser.service.RoomUserService;
@@ -28,6 +30,8 @@ public class RoomServiceImpl implements RoomService {
     private final UserService userService;
     private final RoomUserService roomUserService;
     private final RoomUserRepository roomUserRepository;
+    private final RoomFurnitureService roomFurnitureService;
+    private final ChatService chatService;
     private static final int PAGE_SIZE = 24;
 
     @Override
@@ -83,6 +87,8 @@ public class RoomServiceImpl implements RoomService {
             RoomUser roomUser = roomUserRepository.findByRoomAndUser(room, currentUser);
             if (roomUser != null && roomUser.getIsHost()) {
                 roomUserService.deleteRoomUsers(room);
+                roomFurnitureService.deleteRoomFurnitures(room);
+                chatService.deleteAllByRoom(room);
                 roomRepository.delete(room);
 
             }
