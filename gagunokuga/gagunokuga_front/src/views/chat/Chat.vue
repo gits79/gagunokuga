@@ -201,7 +201,7 @@ onMounted(async () => {
 
 //  WebSocket 연결 해제
 onUnmounted(() => {
-  store.unsubscribeFromChat();
+  // store.unsubscribeFromChat();
  // 이벤트 리스너들을 정리
  document.removeEventListener('mousemove', resize);
   document.removeEventListener('mouseup', stopResize);
