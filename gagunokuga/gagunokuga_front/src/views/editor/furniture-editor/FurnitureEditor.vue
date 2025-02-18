@@ -7,6 +7,7 @@ import RightSidebar from "./RightSidebar.vue";
 import Chat from "../../chat/Chat.vue";
 import axiosInstance from "@/api/axiosInstance.js";
 import { Canvg } from 'canvg';
+import html2canvas from 'html2canvas';
 
 const store = useFurnitureEditorStore();
 const canvas = ref(null);
@@ -33,30 +34,23 @@ onBeforeUnmount(() => {
 
 
 // 화면 캡처 기능
-const captureScreen = async () => {
-  const svgElement = document.querySelector('svg');  // SVG 요소 찾기
+const captureScreen = () => {
+  const svgElement = document.querySelector('.canvas'); // 또는 document.querySelector('#your-svg-id');
   if (svgElement) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    html2canvas(svgElement).then(canvas => {
+      // 캡처된 canvas에서 이미지를 PNG로 변환
+      const imageURL = canvas.toDataURL("image/png");
 
-    // SVG 요소를 문자열로 변환
-    const svgString = svgElement.outerHTML;
-
-    // Canvg를 사용하여 SVG 문자열을 캔버스로 렌더링
-    const v = await Canvg.from(ctx, svgString);
-    v.start();
-
-    // 캡처된 이미지를 PNG로 변환
-    const imageURL = canvas.toDataURL("image/png");
-
-    // 이미지 다운로드 링크 생성
-    const link = document.createElement("a");
-    link.href = imageURL;
-    link.download = "furniture_editor_capture.png";
-    link.click();  // 이미지 다운로드
+      // 이미지 다운로드 링크 생성
+      const link = document.createElement("a");
+      link.href = imageURL;
+      link.download = "furniture_editor_capture.png";
+      link.click();  // 이미지 다운로드
+    });
+  } else {
+    console.error("SVG element not found");
   }
 };
-
 </script>
 
 <template>
