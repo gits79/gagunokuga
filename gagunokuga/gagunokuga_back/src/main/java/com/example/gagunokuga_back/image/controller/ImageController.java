@@ -36,6 +36,7 @@ public class ImageController {
 
     @GetMapping("/captureElement")
     public @ResponseBody byte[] captureElement(@RequestParam String url, @RequestParam String elementClass) throws IOException {
+        System.out.println(url + " / " + elementClass + " / 캡쳐링 확인");
         System.setProperty("webdriver.chrome.driver", "/path/to/chromedriver"); // chromedriver 경로 설정
 
         ChromeOptions options = new ChromeOptions();
@@ -52,7 +53,7 @@ public class ImageController {
             File screenshot = element.getScreenshotAs(OutputType.FILE);
 
             // 파일로 저장하기
-            File destinationFile = new File("/path/to/save/image.png");  // 원하는 경로로 설정
+            File destinationFile = new File("C:/SSAFY/S12P11A607/gagunokuga");  // 원하는 경로로 설정
             Files.copy(screenshot.toPath(), destinationFile.toPath());   // 이미지 파일 복사
 
             // 파일을 byte[]로 읽기 (필요한 경우)
