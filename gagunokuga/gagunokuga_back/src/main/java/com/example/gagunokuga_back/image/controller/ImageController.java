@@ -2,6 +2,12 @@ package com.example.gagunokuga_back.image.controller;
 
 import com.example.gagunokuga_back.image.service.ImageService;
 import lombok.RequiredArgsConstructor;
+import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
