@@ -1,15 +1,15 @@
 <template>
   <aside class="sidebar-right">
-    <!-- Navigation Buttons -->
-    <div class="nav-buttons">
-      <router-link @mousedown="store.saveWalls" :to="`/furniture-editor/${route.params.roomId}`" class="nav-button">
-        가구배치로
-      </router-link>
-      <button class="nav-button" @click="store.saveWalls">
-        저장
-      </button>
-    </div>
-
+    <router-link 
+      @mousedown="store.saveWalls" 
+      :to="`/furniture-editor/${route.params.roomId}`" 
+      class="back-button"
+    >
+      가구 에디터로
+      <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+        <path d="M9 6l6 6-6 6" />
+      </svg>
+    </router-link>
 
  <!-- Default Settings -->
  <div class="settings-panel">
@@ -76,7 +76,7 @@
         </div>
 
         <button @click="store.deleteSelectedWall" class="delete-button">
-          벽 삭제 [Delete]
+          벽 삭제
         </button>
       </div>
       
@@ -85,6 +85,9 @@
       </div>
     </div>
 
+
+   
+    <div class="bottom-container">
     <!-- coordinates- -->
   <div class="coordinates-panel">
     <div class="coordinates-content">
@@ -99,8 +102,12 @@
       <button @click="store.cycleDisplayUnit" class="unit-button">
         단위: {{ store.displayUnit }}
       </button>
-    </div>
+    </div>  <!-- 저장 버튼을 맨 아래로 이동 -->
   </div>
+  <button @click="store.saveWalls" class="save-button" style="margin-top: auto; background: #4f46e5;">
+   도면 저장하기
+ </button>
+</div>
   </aside>
 </template>
 

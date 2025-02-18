@@ -2,14 +2,14 @@
 .container {
   /* background-color: #c8bdb220; */
   padding-top: 8%;
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
 /* 그리드 레이아웃 */
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   column-gap: 30px;
   row-gap: 50px;
 }
@@ -21,7 +21,7 @@
   box-shadow: none;  /* 그림자 제거 */
   overflow: hidden;
   transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
-  width: 220px;  /* 카드의 가로 길이 줄이기 */
+  width: 350px;  /* 카드의 가로 길이 줄이기 */
 }
 
 /* 이미지 스타일 */
@@ -93,18 +93,19 @@
   justify-content: center;  /* 가로 가운데 정렬 */
   background: #ef5c4e;
   color: white;
-  width: 80px;  /* 원의 지름 설정 */
-  height: 80px;  /* 원의 지름 설정 */
+  width: 60px;  /* 원의 지름 설정 */
+  height: 60px;  /* 원의 지름 설정 */
   font-family: 'Jua', serif;
-  font-size: 20px;  /* 텍스트 크기 조정 */
+  font-size: 30px;  /* 텍스트 크기 조정 */
   text-align: center;
   border-radius: 50%;  /* 원형 만들기 */
   text-decoration: none;
   transition: all 0.2s ease-in-out;
   position: fixed;
   bottom: 5%;
-  right: 3%;
+  right: 5%;
   z-index: 1000;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);  /* 기본 그림자 */
 }
 
 .create-button:hover {
