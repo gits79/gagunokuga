@@ -146,7 +146,7 @@
 .back-button {
   display: inline-flex;
   align-items: center;
-  justify-content: flex-end; /* 오른쪽 정렬 */
+  justify-content: flex-end; 
   gap: 8px;
   padding: 8px 12px;
   background: none;
@@ -154,7 +154,7 @@
   color: #666;
   font-size: 14px;
   text-decoration: none;
-  margin-bottom: 1rem; /* 간격 증가 */
+  margin-bottom: 1rem; 
   margin-left: auto;    /* 오른쪽 정렬을 위해 추가 */
 }
 
@@ -184,7 +184,6 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  /* padding: 0.5rem;        각 항목 여백 */
  
 }
 
@@ -261,7 +260,6 @@
 }
 
 .delete-button {
-  /* margin-top: auto; */
   padding: 0.75rem;
   background: #ef4444;
   color: white;

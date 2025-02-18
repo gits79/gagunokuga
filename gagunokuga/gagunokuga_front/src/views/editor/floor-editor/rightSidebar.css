@@ -161,13 +161,13 @@
     background: #f0f0f0;
   }
   
-  /* 하단 요소들을 감싸는 새로운 컨테이너 */
+
 .bottom-container {
-  margin-top: auto; /* 여기로 margin-top: auto 이동 */
+  margin-top: auto; 
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding-top: 1.5rem; /* 위쪽 여백 추가 */
+  padding-top: 1.5rem; 
   border-top: 1px solid #eee; /* 구분선 추가 */
   margin-bottom: 1.5rem;
 }
