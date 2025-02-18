@@ -85,6 +85,10 @@ export const useFloorEditorStore = defineStore("floorEditorStore", () => {
   // 캔버스 초기화
   const initializeCanvas = (canvasElement) => {
     draw = SVG().addTo(canvasElement).size("100%", "100%").panZoom({...PAN_ON});
+    draw.on('zoom', () => {
+      viewModule.viewbox.width = draw.viewbox().width;
+      updateVisualElements();
+    })
     
     // 저장된 상태에 따라 그리드 표시
     if (showGrid.value) {
