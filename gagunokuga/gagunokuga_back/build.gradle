@@ -49,6 +49,9 @@ dependencies {
 
     implementation(platform("software.amazon.awssdk:bom:2.27.21"))
     implementation("software.amazon.awssdk:s3")
+
+    // Selenium WebDriver 의존성 추가
+    implementation 'org.seleniumhq.selenium:selenium-java:4.9.0'  // 최신 버전 사용
 }
 
 tasks.named('test') {
