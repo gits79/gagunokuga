@@ -550,23 +550,21 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   };
 
   // -------------- 웹소켓 연결 및 구독 ---------------
-  const stompClient = ref(null);
 
-  const initializeWebSocket = (id) => {
+  const initializeWebSocket = async (id) => {
     roomId.value = id;
-    if (!stompClient.value) {
-      stompClient.value = true; // WebSocket 초기화 로직 (필요하면 연결 설정)
-    }
+    // if (!stompClient.connected) {
+    //   stompClient.activate();
+    // }
   };
 
-  const subscribeToRoom = () => {
+  const subscribeToRoom = async (chatCallback) => {
     const subPath = `/sub/rooms/${roomId.value}`; // 동적으로 subPath 생성
-    subscribe(subPath, receiveFurnitureEvent); // subscribe 호출
+    subscribe(roomId.value, receiveFurnitureEvent, chatCallback); // subscribe 호출
   }
 
   const unsubscribeFromRoom = () => {
-    const subPath = `/sub/rooms/${roomId.value}`;
-    unsubscribe(subPath); // 구독 해제
+    unsubscribe(roomId.value); // 구독 해제
   }
 
   const publishFurnitureEvent = (data) => {
@@ -642,6 +640,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     furnitureObjects.value = [];
     furnitureDataList.value = [];
     try {
+      // const apiClient = createApiClient();  
       const response = await apiClient.get(`/api/rooms/${roomId.value}/furnitures/fetch`);
       response.data.furnitureList.forEach(furnitureEvent => {
         receiveFurnitureEvent(furnitureEvent);
@@ -703,7 +702,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     }
   };
 
-  // 가구 레이어 업데이트 함수
+  // 가구 레이어 업데이트 함수 수정
   const updateFurnitureLayer = (furnObj, layer) => {
     // 모든 가구를 레이어 순서대로 정렬
     const allFurniture = furnitureObjects.value
@@ -711,8 +710,8 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
       .sort((a, b) => {
         const indexA = parseInt(a.attr('id').split('-')[1]);
         const indexB = parseInt(b.attr('id').split('-')[1]);
-        const layerA = parseInt(furnitureDataList.value[indexA]?.layer) || 0;
-        const layerB = parseInt(furnitureDataList.value[indexB]?.layer) || 0;
+        const layerA = furnitureDataList.value[indexA]?.layer || 0;
+        const layerB = furnitureDataList.value[indexB]?.layer || 0;
         
         if (layerA === layerB) {
           return indexA - indexB;
@@ -723,7 +722,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     // 레이어 0 이하의 가구는 벽 아래로, 1 이상은 벽 위로
     allFurniture.forEach(furn => {
       const furnIndex = parseInt(furn.attr('id').split('-')[1]);
-      const furnLayer = parseInt(furnitureDataList.value[furnIndex]?.layer) || 0;
+      const furnLayer = furnitureDataList.value[furnIndex]?.layer || 0;
       
       if (furnLayer <= 0) {
         furn.before(wallLayer); // 벽 레이어 앞에 배치 (아래)
@@ -735,7 +734,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     // 각 그룹 내에서 레이어 순서대로 정렬
     allFurniture.forEach(furn => {
       const furnIndex = parseInt(furn.attr('id').split('-')[1]);
-      const furnLayer = parseInt(furnitureDataList.value[furnIndex]?.layer) || 0;
+      const furnLayer = furnitureDataList.value[furnIndex]?.layer || 0;
       
       if (furnLayer <= 0) {
         furn.back();  // 0 이하 그룹 내에서 정렬
@@ -786,6 +785,8 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     const furn = furnitureObjects.value[furniture.index];
     if (furn) {
       updateObjectValues(furn, furniture);
+      // 레이어 변경 즉시 적용
+      updateFurnitureLayer(furn, furniture.layer);
     }
   }
   // 가구 지우기
@@ -809,9 +810,24 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     }
   }
 
+  // 레이어 조정 함수 수정
+  const adjustLayer = (delta) => {
+    if (selectedFurniture.index !== null) {
+      const newLayer = Math.max(0, Math.min(10, selectedFurniture.layer + delta));
+      selectedFurniture.layer = newLayer;
+      furnitureDataList.value[selectedFurniture.index].layer = newLayer;
+      
+      const furn = furnitureObjects.value[selectedFurniture.index];
+      if (furn) {
+        updateFurnitureLayer(furn, newLayer);
+      }
+      
+      updateFurniture();
+    }
+  };
+
   return {
     //----- 웹소켓 관련 -----
-    stompClient,
     initializeWebSocket,    // 웹소켓 초기화 및 roomId 초기화화
     subscribeToRoom,        // 채널 구독
     unsubscribeFromRoom,    // 채널 구독 해제
@@ -838,6 +854,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     changeFurnitureLayer,  // 레이어 변경 함수 export
     toggleGrid,
     showGrid,
+    adjustLayer,  // 새로운 함수 export
   };
     
 });
