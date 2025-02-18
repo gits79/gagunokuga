@@ -1,15 +1,19 @@
 /* 마이페이지 */
 /* 전체 컨테이너 수평 배치 및 50:50 비율 */
 .content-wrapper {
+    margin-top: 0;
     display: flex;
     width: 100%;
-    height: 84vh;
+    min-height: 100vh;
     justify-content: flex-start; /* 왼쪽 정렬로 변경 */
     align-items: center;
     gap: 30px; /* 간격 줄임 */
-    background: linear-gradient(135deg, #f6f8ff 0%, #e9ecf9 100%);
+    background: #c8bdb220;
     padding: 0 50px; /* 좌우 패딩 추가 */
 }
+
+
+
 
 /* 프로필 영역 조정 */
 .profile-changer {
