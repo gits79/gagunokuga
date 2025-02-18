@@ -1,20 +1,18 @@
-# Node.js 이미지 사용
-FROM node:22.13.0
+# 기존 nodejs로 빌드하는 거 젠킨스에서 실행
 
-# 작업 디렉토리 설정
-WORKDIR /app
+# Nginx를 위한 최종 이미지
+FROM nginx:alpine
 
-# package.json과 package-lock.json 복사
-COPY package*.json ./
+WORKDIR /usr/share/nginx/html
 
-# 의존성 설치
-RUN npm install
+# Vue 빌드 결과물을(정적파일 SPA) Nginx 컨테이너로 복사
+COPY dist .
 
-# 소스 코드 복사
-COPY . .
+# Nginx 설정 복사
+#COPY nginx.conf /etc/nginx/nginx.conf 볼륨 마운트로 대체
 
-# 개발 서버 노출
-EXPOSE 5173
+EXPOSE 80
 
-# Vite 개발 서버 실행
-CMD ["npm", "run", "dev"]
+CMD ["nginx", "-g", "daemon off;"]
+
+

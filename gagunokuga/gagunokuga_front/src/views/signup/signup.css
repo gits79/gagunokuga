@@ -1,0 +1,136 @@
+/* 기본적인 폼 레이아웃 */
+/* 전체 컨테이너 */
+.signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: rgb(246, 248, 255);
+    padding: 20px;
+}
+
+
+.signup-box {
+    width: 100%;
+    max-width: 420px;  /* 450px에서 420px로 수정 */
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    padding: 2rem;
+}
+
+h1 {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+}
+
+/* 폼 그룹 */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-bottom: 1rem;
+}
+
+label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+input {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: #003366;
+    box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+}
+
+/* 중복 확인 버튼 */
+button {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+    background-color: #4338ca;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    width: auto;  /* width를 auto로 설정 */
+    min-width: 90px;  /* 최소 너비 설정 */
+    align-self: flex-start;  /* 버튼을 왼쪽으로 정렬 */
+}
+
+button:hover {
+    background-color: #003366;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+button:disabled {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 메시지 표시 */
+span {
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+}
+
+span.valid {
+    color: #2ecc71;
+}
+
+span.invalid {
+    color: #e74c3c;
+}
+
+/* 비밀번호 유효성 메시지 */
+.invalid {
+    color: #e74c3c;
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+}
+
+/* 회원가입 버튼 */
+button[type="submit"] {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #003366;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    border-radius: 8px;
+}
+
+button[type="submit"]:hover {
+    background-color: #4338ca;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+button[type="submit"]:disabled {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}

@@ -1,0 +1,149 @@
+/* 전체 컨테이너 */
+.room-list-container {
+    max-width: 1200px;
+    margin: 80px auto 0;
+    padding: 40px 20px;
+    background-color: #f8f9fa;
+}
+
+/* 타이틀 영역 */
+.room-title {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.room-subtitle {
+    color: #666;
+    margin-bottom: 24px;
+    text-align: left;
+    font-size: 14px;
+}
+
+/* 방 목록 그리드 */
+ul {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding: 0;
+    list-style: none;
+}
+
+/* 카드 아이템 */
+li {
+    background-color: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s ease;
+}
+
+li:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 썸네일 이미지 */
+li img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+}
+
+/* 방 이름 */
+li span {
+    padding: 12px;
+    color: #333;
+    font-size: 14px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* 버튼 그룹 */
+li div {
+    padding: 8px;
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    background-color: #f8f9fa;
+    border-radius: 0 0 8px 8px;
+}
+
+/* 버튼 스타일 */
+button {
+    background-color: white;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background-color: #f1f3f5;
+}
+
+/* 방생성 버튼 */
+.create-room {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    background-color: #228be6;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(34, 139, 230, 0.3);
+}
+
+.create-room:hover {
+    background-color: #1c7ed6;
+}
+
+/* 빈 상태 */
+.no-room-container {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.no-room {
+    color: #868e96;
+    font-size: 16px;
+    margin-bottom: 16px;
+}
+
+.first-room {
+    background-color: #228be6;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+@media (max-width: 1200px) {
+    ul {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    ul {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    ul {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}

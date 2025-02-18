@@ -10,6 +10,6 @@ import java.util.List;
 @Builder
 @ToString
 public class FurnitureListResponse {
-    private Long totalPages;
+    private int totalPages;
     private List<FurnitureResponse> furnitures;
 }
