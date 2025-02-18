@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #ef5c4e;
+      }
+
+      .cls-2 {
+        fill: #fff;
+        stroke: #ef5c4e;
+        stroke-miterlimit: 10;
+        stroke-width: 4px;
+      }
+    </style>
+  </defs>
+  <rect class="cls-1" x="0" y="0" width="160" height="160" rx="40" ry="40"/>
+  <g>
+    <path class="cls-2" d="M37,50h43v36H29v-28c0-4.42,3.58-8,8-8Z"/>
+    <path class="cls-2" d="M80,50h43c4.42,0,8,3.58,8,8v28h-51v-36h0Z"/>
+    <path class="cls-2" d="M25,68h8c2.76,0,5,2.24,5,5v31h-13c-2.76,0-5-2.24-5-5v-26c0-2.76,2.24-5,5-5Z"/>
+    <rect class="cls-2" x="38" y="86" width="84" height="18"/>
+    <path class="cls-2" d="M127,68h8c2.76,0,5,2.24,5,5v26c0,2.76-2.24,5-5,5h-13v-31c0-2.76,2.24-5,5-5Z"/>
+    <path class="cls-2" d="M122,104h10.5v3c0,2.21-1.79,4-4,4h-2.5c-2.21,0-4-1.79-4-4v-3h0Z"/>
+    <path class="cls-2" d="M27.5,104h10.5v3c0,2.21-1.79,4-4,4h-2.5c-2.21,0-4-1.79-4-4v-3h0Z"/>
+  </g>
+</svg>

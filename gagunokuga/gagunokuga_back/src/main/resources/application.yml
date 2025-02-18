@@ -10,6 +10,8 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
+      repositories:
+        enabled: false
 
   jpa:
     hibernate:
@@ -31,5 +33,19 @@ spring:
           starttls:
             enable: true
 
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      s3:
+        bucket: ${AWS_BUCKET_NAME}
+      region:
+        static: ap-northeast-2
+
 jwt:
   secret: ${JWT_SECRET}
+
+spring.config.import: "application-oauth.yml"
+
+

@@ -1,8 +1,12 @@
 package com.example.gagunokuga_back.room.domain;
 
 import com.example.gagunokuga_back.common.BaseTimeEntity;
+import com.example.gagunokuga_back.wall.domain.Wall;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,5 +28,9 @@ public class Room extends BaseTimeEntity {
     public void updateRoomName(String roomName) {
         this.roomName = roomName;
     }
+
+    @Builder.Default
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Wall> walls = new ArrayList<>();
 
 }

@@ -42,8 +42,20 @@ public class FurnitureServiceImpl implements FurnitureService {
                             .build());
         }
         return FurnitureListResponse.builder()
-                .totalPages((long) furniturePage.getTotalPages())
+                .totalPages(furniturePage.getTotalPages())
                 .furnitures(furnitures)
+                .build();
+    }
+
+    @Override
+    public FurnitureResponse getFurniture(Long id) {
+        Furniture furniture = furnitureRepository.findById(id).orElse(null);
+        return FurnitureResponse.builder()
+                .id(furniture.getId())
+                .furnitureName(furniture.getFurnitureName())
+                .imageUrl(furniture.getImageUrl())
+                .width(furniture.getWidth())
+                .height(furniture.getHeight())
                 .build();
     }
 }

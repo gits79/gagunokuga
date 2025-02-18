@@ -1,0 +1,66 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 130px;
+  background-color: #fff;
+  width: 100%;
+  position: fixed;
+  z-index: 10;
+}
+
+.logo-link {
+  padding-left: 16px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 42px;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+  padding-right: 250px;
+  height: 42px;
+  align-items: center;
+}
+
+nav ul li {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+}
+
+.my-home a {
+  color: #EF5C4E;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 50px; /* 프로필 컨테이너 높이 증가 */
+}
+
+.profile-img {
+  width: 45px; /* 프로필 이미지 크기 증가 */
+  height: 45px; /* 프로필 이미지 크기 증가 */
+  border-radius: 40%;
+  object-fit: cover;
+}
+
+.nickname {
+  font-size: 16px;
+  font-weight: bold;
+  color: #2e1614;
+  font-family: "Noto Sans KR", sans-serif;
+}
