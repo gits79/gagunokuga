@@ -29,7 +29,7 @@
     background: linear-gradient(
       rgba(255, 255, 255, 0.6), /* 배경색의 투명도 */
       rgba(255, 255, 255, 0.6)
-    ), url('/mainPage.png');  /* 배경 이미지 */
+    ), url('/public/mainPage.png');  /* 배경 이미지 */
     background-size: cover;  /* 이미지 크기를 섹션 크기에 맞게 조정 */
     background-position: center;  /* 이미지가 섹션의 중앙에 위치하도록 */
     background-repeat: no-repeat;  /* 이미지 반복 방지 */
