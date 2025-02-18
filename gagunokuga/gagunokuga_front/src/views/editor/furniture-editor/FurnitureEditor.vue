@@ -128,7 +128,7 @@ const loadImage = (url) => {
       </svg> -->
   </div>
     <RightSidebar />
-    <button @click="captureScreen">화면 캡처</button>
+    <button class="capture" @click="captureScreen">화면 캡처</button>
     <chat/>
   </div>
 </template>
