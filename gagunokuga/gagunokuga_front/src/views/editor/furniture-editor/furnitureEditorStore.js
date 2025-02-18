@@ -640,7 +640,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     furnitureObjects.value = [];
     furnitureDataList.value = [];
     try {
-      const apiClient = createApiClient();  
+      // const apiClient = createApiClient();  
       const response = await apiClient.get(`/api/rooms/${roomId.value}/furnitures/fetch`);
       response.data.furnitureList.forEach(furnitureEvent => {
         receiveFurnitureEvent(furnitureEvent);
