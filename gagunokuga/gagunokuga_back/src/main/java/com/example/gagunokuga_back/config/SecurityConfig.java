@@ -105,6 +105,23 @@ public class SecurityConfig {
     }
 
 
+    //cors 설정
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(List.of("http://localhost:5173","https:ssafy-gagu.site"));
+//        configuration.setAllowedOrigins(List.of("http://localhost:5174"));
+        configuration.setAllowedMethods(List.of("OPTIONS","GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("*"));
+        configuration.setMaxAge(3600L); // 프리플라이트 요청의 캐시 시간 설정
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 
     //spring security 로그인 요청 인증 수행
     @Bean

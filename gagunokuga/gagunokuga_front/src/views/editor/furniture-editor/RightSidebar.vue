@@ -1,73 +1,123 @@
 <script setup>
   import { useFurnitureEditorStore } from "./furnitureEditorStore";
-  import { ref } from "vue";
-  import Chat from "../../chat/Chat.vue";
   const store = useFurnitureEditorStore();
 </script>
 
 <template>
-  <aside class="sidebar left">
-    <div class="container">
-    <h2>가구 속성 수정</h2>
+  <aside class="sidebar-right">
+    <h3 class="panel-title">가구 속성 수정</h3>
 
-    <!-- <div class="form-group">
-      <label for="furnitureId">가구 ID</label>
-      <input type="number" v-model="store.selectedFurniture.furnitureId" disabled>
-    </div>
-
-    <div class="form-group">
-      <label for="furnitureName">가구 이름</label>
-      <input type="text" v-model="store.selectedFurniture.furnitureName" disabled>
-    </div>
-
-    <div class="form-group">
-      <label for="imageUrl">이미지 URL</label>
-      <input type="text" v-model="store.selectedFurniture.imageUrl" disabled>
-    </div>
-
-    <div class="form-group">
-      <label for="roomId">방 ID</label>
-      <input type="number" v-model="store.roomId" disabled>
-    </div> -->
-
-    <div class="form-group input-inline">
-      <div>
-        <label for="xpos">X 좌표</label>
-        <input type="number" v-model="store.selectedFurniture.xpos" @input="store.updateFurniture()">
+    <div class="property-group">
+      <!-- Position Controls -->
+      <div class="property-item">
+        <label>위치</label>
+        <div class="input-group">
+          <div style="flex: 1">
+            <span style="font-size: 12px; color: #666; display: block; margin-bottom: 4px">X 좌표</span>
+            <div class="input-group">
+              <input 
+                type="number" 
+                v-model="store.selectedFurniture.xpos" 
+                @input="store.updateFurniture()"
+              >
+              <div class="button-group">
+                <button @click="store.adjustPosition('x', -1)">-</button>
+                <button @click="store.adjustPosition('x', 1)">+</button>
+              </div>
+            </div>
+          </div>
+          <div style="flex: 1">
+            <span style="font-size: 12px; color: #666; display: block; margin-bottom: 4px">Y 좌표</span>
+            <div class="input-group">
+              <input 
+                type="number" 
+                v-model="store.selectedFurniture.ypos" 
+                @input="store.updateFurniture()"
+              >
+              <div class="button-group">
+                <button @click="store.adjustPosition('y', -1)">-</button>
+                <button @click="store.adjustPosition('y', 1)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div>
-        <label for="ypos">Y 좌표</label>
-        <input type="number" v-model="store.selectedFurniture.ypos" @input="store.updateFurniture()">
+
+      <!-- Size Controls -->
+      <div class="property-item">
+        <label>크기</label>
+        <div class="input-group">
+          <div style="flex: 1">
+            <span style="font-size: 12px; color: #666; display: block; margin-bottom: 4px">너비</span>
+            <div class="input-group">
+              <input 
+                type="number" 
+                v-model="store.selectedFurniture.width" 
+                @input="store.updateFurniture()"
+              >
+              <div class="button-group">
+                <button @click="store.adjustSize('width', -1)">-</button>
+                <button @click="store.adjustSize('width', 1)">+</button>
+              </div>
+            </div>
+          </div>
+          <div style="flex: 1">
+            <span style="font-size: 12px; color: #666; display: block; margin-bottom: 4px">높이</span>
+            <div class="input-group">
+              <input 
+                type="number" 
+                v-model="store.selectedFurniture.height" 
+                @input="store.updateFurniture()"
+              >
+              <div class="button-group">
+                <button @click="store.adjustSize('height', -1)">-</button>
+                <button @click="store.adjustSize('height', 1)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rotation Control -->
+      <div class="property-item">
+        <label>회전 각도</label>
+        <div class="input-group">
+          <input 
+            type="number" 
+            v-model="store.selectedFurniture.rotation" 
+            @input="store.updateFurniture()"
+          >
+          <div class="button-group">
+            <button @click="store.adjustRotation(-45)">-</button>
+            <button @click="store.adjustRotation(45)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layer Control -->
+      <div class="property-item">
+        <label>레이어</label>
+        <div class="input-group">
+          <input 
+            type="number" 
+            v-model="store.selectedFurniture.layer" 
+            @input="store.updateFurniture()"
+          >
+          <div class="button-group">
+            <button @click="store.adjustLayer(-1)">-</button>
+            <button @click="store.adjustLayer(1)">+</button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="form-group input-inline">
-      <div>
-        <label for="width">너비</label>
-        <input type="number" v-model="store.selectedFurniture.width" @input="store.updateFurniture()">
-      </div>
-      <div>
-        <label for="height">높이</label>
-        <input type="number" v-model="store.selectedFurniture.height" @input="store.updateFurniture()">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="rotation">회전 각도</label>
-      <input type="number" v-model="store.selectedFurniture.rotation" @input="store.updateFurniture()">
-    </div>
-
-    <div class="form-group">
-      <label for="layer">레이어</label>
-      <input type="number" v-model="store.selectedFurniture.layer" @input="store.updateFurniture()">
-    </div>
-    <div class="form-group">
-        <button @click="store.deleteFurniture()" class="btn-delete">삭제</button>
-    </div>
-  </div>
+    <!-- Delete Button -->
+    <button @click="store.deleteFurniture()" class="delete-button">
+      가구 삭제
+    </button>
   </aside>
 </template>
-  
+
 <style scoped>
   @import "./furnitureEditor.css";
 </style> 

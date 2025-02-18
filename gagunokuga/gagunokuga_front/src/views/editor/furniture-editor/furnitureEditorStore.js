@@ -550,23 +550,21 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   };
 
   // -------------- 웹소켓 연결 및 구독 ---------------
-  const stompClient = ref(null);
 
-  const initializeWebSocket = (id) => {
+  const initializeWebSocket = async (id) => {
     roomId.value = id;
-    if (!stompClient.value) {
-      stompClient.value = true; // WebSocket 초기화 로직 (필요하면 연결 설정)
-    }
+    // if (!stompClient.connected) {
+    //   stompClient.activate();
+    // }
   };
 
-  const subscribeToRoom = () => {
+  const subscribeToRoom = async (chatCallback) => {
     const subPath = `/sub/rooms/${roomId.value}`; // 동적으로 subPath 생성
-    subscribe(subPath, receiveFurnitureEvent); // subscribe 호출
+    subscribe(roomId.value, receiveFurnitureEvent, chatCallback); // subscribe 호출
   }
 
   const unsubscribeFromRoom = () => {
-    const subPath = `/sub/rooms/${roomId.value}`;
-    unsubscribe(subPath); // 구독 해제
+    unsubscribe(roomId.value); // 구독 해제
   }
 
   const publishFurnitureEvent = (data) => {
@@ -642,6 +640,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     furnitureObjects.value = [];
     furnitureDataList.value = [];
     try {
+      // const apiClient = createApiClient();  
       const response = await apiClient.get(`/api/rooms/${roomId.value}/furnitures/fetch`);
       response.data.furnitureList.forEach(furnitureEvent => {
         receiveFurnitureEvent(furnitureEvent);
@@ -811,7 +810,6 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
 
   return {
     //----- 웹소켓 관련 -----
-    stompClient,
     initializeWebSocket,    // 웹소켓 초기화 및 roomId 초기화화
     subscribeToRoom,        // 채널 구독
     unsubscribeFromRoom,    // 채널 구독 해제
