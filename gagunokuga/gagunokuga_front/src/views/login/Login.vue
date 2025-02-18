@@ -1,5 +1,5 @@
 <script setup>
-import { useLoginStore } from './login';  // 로그인 상태를 가져옵니다.
+import { useLoginStore } from './login';  
 
 const loginStore = useLoginStore();  // 로그인 상태를 초기화
 
@@ -8,11 +8,11 @@ const handleKakaoLogin = () => {
 };
 
 const handlePasswordReset = () => {
-  loginStore.passwordReset(loginStore.state.email);  // 이메일을 넘겨줘야 합니다.
+  loginStore.passwordReset(loginStore.state.email);  
 };
 
 const toggleModal = () => {
-  loginStore.state.showModal = !loginStore.state.showModal;  // 모달 열기/닫기
+  loginStore.state.showModal = !loginStore.state.showModal;  
 }
 </script>
 
