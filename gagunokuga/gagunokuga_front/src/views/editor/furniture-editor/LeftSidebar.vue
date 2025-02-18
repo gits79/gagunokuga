@@ -127,7 +127,7 @@ onMounted(() => {
 }
 
 .back-button {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
@@ -137,6 +137,7 @@ onMounted(() => {
   font-size: 14px;
   text-decoration: none;
   margin-bottom: 20px;
+  
 }
 
 .back-button:hover {

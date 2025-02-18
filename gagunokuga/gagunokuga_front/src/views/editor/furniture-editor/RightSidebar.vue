@@ -1,10 +1,22 @@
 <script setup>
   import { useFurnitureEditorStore } from "./furnitureEditorStore";
+  import { useRoute } from 'vue-router';
+
   const store = useFurnitureEditorStore();
+  const route = useRoute();
 </script>
 
 <template>
   <aside class="sidebar-right">
+    <router-link 
+      to="/" 
+      class="back-button">
+        홈으로
+      <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+      <path d="M9 6l6 6-6 6" />
+      </svg>
+    </router-link>
+
     <h3 class="panel-title">가구 속성 수정</h3>
 
     <div class="property-group">
@@ -125,9 +137,29 @@
   height: 100%;
   background: white;
   box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
+  
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end; 
+  gap: 8px;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 14px;
+  text-decoration: none;
+  margin-bottom: 1rem; 
+  margin-left: auto;    /* 오른쪽 정렬을 위해 추가 */
+}
+
+.back-button:hover {
+  color: #333;
 }
 
 .panel-title {
@@ -140,13 +172,19 @@
 .property-group {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.8rem;
+  margin-bottom: 1.5rem; /* 삭제 버튼과의 간격 확보 */
+  border: 1px solid #eee;  /* 연한 회색 테두리 추가 */
+  border-radius: 8px;      /* 모서리 둥글게 */
+  padding: 1rem;          /* 내부 여백 추가 */
+ background: #fafafa;  /*  배경색 약간 추가 */
 }
 
 .property-item {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+ 
 }
 
 .property-item label {
@@ -222,7 +260,6 @@
 }
 
 .delete-button {
-  margin-top: auto;
   padding: 0.75rem;
   background: #ef4444;
   color: white;
