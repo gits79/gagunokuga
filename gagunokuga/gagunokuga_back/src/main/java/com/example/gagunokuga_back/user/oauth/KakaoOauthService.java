@@ -7,6 +7,7 @@ import com.example.gagunokuga_back.user.repository.UserRepository;
 import com.example.gagunokuga_back.user.security.JwtTokenProvider;
 import com.example.gagunokuga_back.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.http.HttpStatusCode;
@@ -21,7 +22,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class KakaoOauthService {
@@ -115,6 +116,7 @@ public class KakaoOauthService {
 //
 //        }
 //        return user;
+        log.info("카카오정보받아옴");
         Map<String, Object> response = webClient.get()
                 .uri("https://kapi.kakao.com/v2/user/me")
                 .headers(headers -> headers.setBearerAuth(accessToken))
