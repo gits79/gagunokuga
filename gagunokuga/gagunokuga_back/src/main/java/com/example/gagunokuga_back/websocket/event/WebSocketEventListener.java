@@ -21,7 +21,7 @@ public class WebSocketEventListener {
         String[] destinations = destination.split("/");
         String roomId = destinations[destinations.length - 1];
         String subscribeType = destinations[destinations.length - 2];
-//        System.out.println("subscribeType: " + subscribeType + " roomId: " + roomId);
+        System.out.println("subscribeType: " + subscribeType + " roomId: " + roomId);
         if (subscribeType.equals("rooms")) {
             webSocketService.addSubscription(sessionId, roomId);
         }

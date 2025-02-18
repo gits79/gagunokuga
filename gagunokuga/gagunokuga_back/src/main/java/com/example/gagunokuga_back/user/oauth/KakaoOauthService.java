@@ -22,7 +22,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class KakaoOauthService {
@@ -116,7 +115,6 @@ public class KakaoOauthService {
 //
 //        }
 //        return user;
-        log.info("카카오정보받아옴");
         Map<String, Object> response = webClient.get()
                 .uri("https://kapi.kakao.com/v2/user/me")
                 .headers(headers -> headers.setBearerAuth(accessToken))
