@@ -809,6 +809,41 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
       updateFurniture();
     }
   }
+// ------------------------------
+// 위치 조정 함수
+const adjustPosition = (axis, delta) => {
+  if (selectedFurniture.index === null) return;
+  
+  if (axis === 'x') {
+    selectedFurniture.xpos += delta;
+  } else if (axis === 'y') {
+    selectedFurniture.ypos += delta;
+  }
+  updateFurniture();
+};
+
+// 크기 조정 함수
+const adjustSize = (dimension, delta) => {
+  if (selectedFurniture.index === null) return;
+  
+  if (dimension === 'width') {
+    selectedFurniture.width = Math.max(10, selectedFurniture.width + delta);
+  } else if (dimension === 'height') {
+    selectedFurniture.height = Math.max(10, selectedFurniture.height + delta);
+  }
+  updateFurniture();
+};
+
+// 회전 조정 함수
+const adjustRotation = (delta) => {
+  if (selectedFurniture.index === null) return;
+  
+  selectedFurniture.rotation = (selectedFurniture.rotation + delta + 360) % 360;
+  updateFurniture();
+};
+
+
+  
 
   // 레이어 조정 함수 수정
   const adjustLayer = (delta) => {
@@ -855,6 +890,11 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     toggleGrid,
     showGrid,
     adjustLayer,  // 새로운 함수 export
+
+    adjustPosition,
+    adjustSize,
+    adjustRotation,
+    adjustLayer
   };
     
 });
