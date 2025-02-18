@@ -76,7 +76,7 @@
         </div>
 
         <button @click="store.deleteSelectedWall" class="delete-button">
-          벽 삭제 [Delete]
+          벽 삭제
         </button>
       </div>
       
@@ -105,7 +105,7 @@
     </div>  <!-- 저장 버튼을 맨 아래로 이동 -->
   </div>
   <button @click="store.saveWalls" class="save-button" style="margin-top: auto; background: #4f46e5;">
-   저장
+   도면 저장하기
  </button>
 </div>
   </aside>
