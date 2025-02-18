@@ -8,7 +8,7 @@ import com.example.gagunokuga_back.websocket.dto.FurnitureListDto;
 import java.util.List;
 
 public interface RoomFurnitureService {
-    public FurnitureEventDto createRoomFurniture(Long roomId, Long furnitureId, Integer xpos, Integer ypos);
+    public FurnitureEventDto createRoomFurniture(Long roomId, Long furnitureId, Integer xpos, Integer ypos, Integer layer);
     public FurnitureListDto getAllRoomFurniture(Long roomId);
     public void saveAll(Long roomId);
     public void loadAll(Long roomId);

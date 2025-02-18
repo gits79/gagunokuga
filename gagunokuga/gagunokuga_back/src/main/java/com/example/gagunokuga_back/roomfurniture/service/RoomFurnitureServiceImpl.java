@@ -32,13 +32,13 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
     private final RoomFurnitureMapper roomFurnitureMapper = Mappers.getMapper(RoomFurnitureMapper.class);
 
     @Override
-    public FurnitureEventDto createRoomFurniture(Long roomId, Long furnitureId, Integer xpos, Integer ypos) {  // 방에 배치된 가구 하나 생성
+    public FurnitureEventDto createRoomFurniture(Long roomId, Long furnitureId, Integer xpos, Integer ypos, Integer layer) {  // 방에 배치된 가구 하나 생성
         String key = "room:" + roomId + ":furniture:index";
         redisTemplate.opsForValue().setIfAbsent(key, -1L);
         RoomFurniture roomFurniture = new RoomFurniture(
                 roomRepository.getReferenceById(roomId),
                 furnitureRepository.getReferenceById(furnitureId),
-                xpos, ypos);
+                xpos, ypos, layer);
 
         RoomFurnitureDto roomFurnitureDto = roomFurnitureMapper.toRoomFurnitureDto(
                 roomFurniture,
