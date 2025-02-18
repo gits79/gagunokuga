@@ -1,10 +1,7 @@
-.article {
-  overflow: hidden;
-}
-
 .container {
   padding: 32px;
   width: 100%;
+  box-sizing: border-box; /* 패딩 포함하여 width 유지 */
 }
 
 .grid-container {
@@ -12,6 +9,8 @@
   grid-template-columns: repeat(3, minmax(250px, 1fr));
   gap: 45px;
   max-width: 1200px;
+  margin: 0 auto; /* 중앙 정렬 */
+  background: #d7d7d7;
 }
 
 .card {
@@ -23,7 +22,7 @@
 }
 
 .card:hover {
-  transform: translateY(-5px);
+  transform: scale(1.1); /* 카드 확대 1.1배 */
   box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.15);
 }
 
@@ -35,7 +34,8 @@
 
 .image-container {
   overflow: hidden;
-  height: 280px;
+  height: 280px; /* 높이 고정 */
+  width: 100%; /* 상위 컨테이너(card-link)의 너비를 꽉 채움 */
 }
 
 .thumbnail {
@@ -46,7 +46,7 @@
 }
 
 .card:hover .thumbnail {
-  transform: scale(1.05);
+  transform: scale(1.1); /* 이미지 확대 1.1배 */
 }
 
 .card-content {
