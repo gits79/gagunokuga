@@ -11,10 +11,32 @@ export const useLeftSidebarStore = defineStore('leftSidebarStore', () => {
         loading.value = true
         error.value = null
         try {
-            const response = await apiClient.get('/api/furnitures')
-            console.log(response.data)
-            furnitureList.value = response.data.furnitures
+            // 첫 페이지를 가져와서 전체 페이지 수 확인
+            const firstResponse = await apiClient.get('/api/furnitures', {
+                params: { page: 0 }
+            })
+            
+            const totalPages = firstResponse.data.totalPages
+            furnitureList.value = firstResponse.data.furnitures
+
+            // 나머지 페이지 데이터 가져오기
+            const remainingRequests = []
+            for (let page = 1; page < totalPages; page++) {
+                remainingRequests.push(
+                    apiClient.get('/api/furnitures', {
+                        params: { page }
+                    })
+                )
+            }
+
+            const responses = await Promise.all(remainingRequests)
+            responses.forEach(response => {
+                furnitureList.value = [...furnitureList.value, ...response.data.furnitures]
+            })
+
+            console.log('전체 가구 개수:', furnitureList.value.length)
         } catch (err) {
+            console.error('API 오류:', err)
             error.value = '데이터를 불러오는 중 오류 발생'
         } finally {
             loading.value = false
