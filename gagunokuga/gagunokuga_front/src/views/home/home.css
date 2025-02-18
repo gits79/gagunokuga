@@ -113,21 +113,26 @@
   
   /* 버튼 스타일 */
   .download-btn {
-    background-color:#EF5C4E;
-    color: white;
+    /* background-color:#EF5C4E; */
+    background-color:rgba(255, 255, 255, 0.7);
+    color: black;
     padding: 15px 20px;
     font-family: '42dot Sans', serif;
     font-size: 1.3rem;
     font-weight: bold;
+    border: 1px solid #6666662e; /* 테두리 색상 */
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    border: none;
     margin-top: 1%;
+    /* hover 시 그림자 강조 */
+    box-shadow: 6px 6px 10px rgba(0, 0, 0, 0.2);
   }
   
   .download-btn:hover {
-    background-color:rgb(239, 69, 54);
+
+    background-color: rgba(255, 255, 255, 0.9);
+    /* background-color:rgb(239, 69, 54); */
     /* background-color: #10375c; */
   }
   
