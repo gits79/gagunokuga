@@ -1,7 +1,7 @@
 <template>
   <div id="fullpage">
     <!-- 1번째 페이지 -->
-    <section v-for="(section, index) in sections" :key="index" class="section page blue">
+    <section v-for="(section, index) in sections" :key="index" class="section page beige" :class="{ 'center-text': index === 0}">
       <Transition name="bounce">
         <img v-if="section.contents[2] && section.contents[2].type === 'img' && visibleSections[index][0]"
         :src="section.contents[2].src" alt="가구놓구가 로고" class="main-image"/>
@@ -41,7 +41,7 @@ const handleButtonClick = () => {
 const sections = ref([
   {
     contents: [
-      {type: 'h1', text: '모두의 생각이 모여 <br> 완성되는 우리집'},
+      {type: 'h1', text: '모두의 생각이 모여 완성되는 우리집, <br> 가구놓구가'},
       {type: 'p', text: '공간을 넘어 마음을 모아<br>사랑하는 이들과 함께 실시간으로 <br>아이디어를 나누고 가구 배치를 완성해보세요.'},
       {type: 'button', text: '시작하기', action: handleButtonClick }
     ]
