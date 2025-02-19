@@ -1,7 +1,10 @@
 package com.example.gagunokuga_back.category.domain;
 
+import com.example.gagunokuga_back.furniture.domain.Furniture;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,4 +20,8 @@ public class Category {
 
     @Column(nullable = false)
     private String categoryName;
+
+    @OneToMany(mappedBy = "category")
+    List<Furniture> furnitureList;
+
 }

@@ -13,4 +13,5 @@ public interface FurnitureRepository extends JpaRepository<Furniture, Long> {
 
     @Query("SELECT f FROM Furniture f WHERE f.furnitureName LIKE %:keyword%")
     Page<Furniture> findAllByKeyword(String keyword, Pageable pageable);
+    Page<Furniture> findByCategoryId(Long categoryId, Pageable pageable);
 }

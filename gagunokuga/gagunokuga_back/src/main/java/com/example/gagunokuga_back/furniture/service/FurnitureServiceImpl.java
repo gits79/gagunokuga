@@ -62,4 +62,35 @@ public class FurnitureServiceImpl implements FurnitureService {
                 .height(furniture.getHeight())
                 .build();
     }
+
+    @Override
+    public FurnitureListResponse getFurnitureListByCategory(Long categoryId, int page) {
+        int size = 6; // 한페이지에 6개씩
+        Pageable pageable = PageRequest.of(page, size); // 페이지네이션 설정
+        Page<Furniture> furniturePage = furnitureRepository.findByCategoryId(categoryId, pageable);
+//        if (keyword.length() == 0) {
+//            furniturePage = furnitureRepository.findAll(pageable);
+//        } else {
+//            furniturePage = furnitureRepository.findAllByKeyword(keyword, pageable);
+//        }
+
+        List<FurnitureResponse> furnitures = new ArrayList<>();
+
+        // 현재 페이지의 데이터만 가져옴
+        for(Furniture furniture : furniturePage.getContent()){
+            furnitures.add(FurnitureResponse.builder()
+                    .id(furniture.getId())
+                    .furnitureName(furniture.getFurnitureName())
+                    .imageUrl(furniture.getImageUrl())
+                    .width(furniture.getWidth())
+                    .height(furniture.getHeight())
+                    .categoryId(furniture.getCategory().getId())
+                    .categoryName(furniture.getCategory().getCategoryName())
+                    .build());
+        }
+        return FurnitureListResponse.builder()
+                .totalPages(furniturePage.getTotalPages())
+                .furnitures(furnitures)
+                .build();
+    }
 }
