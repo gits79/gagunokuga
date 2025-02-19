@@ -1,26 +1,17 @@
 <script setup>
   import { useFurnitureEditorStore } from "./furnitureEditorStore";
-  import { useRoute, useRouter } from 'vue-router';
+  import { useRoute } from 'vue-router';
   import axiosInstance from "@/api/axiosInstance.js";
-  import { defineProps } from "vue";
 
   const store = useFurnitureEditorStore();
   const route = useRoute();
-  const router = useRouter();
-  const baseURL = import.meta.env.VITE_API_URL;
-
-  // 부모 컴포넌트로부터 이미지를 받기 위한 props
-  const props = defineProps({
-    backgroundImage: String,
-    svgImage: String,
-  });
 
 
 </script>
 
 <template>
   <aside class="sidebar-right">
-    <button @click="uploadCapture" class="back-button">
+    <button class="back-button">
       <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
         <path d="" />
       </svg>
