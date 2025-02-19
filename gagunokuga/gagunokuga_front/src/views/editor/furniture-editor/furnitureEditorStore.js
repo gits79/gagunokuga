@@ -947,7 +947,6 @@ const adjustRotation = (delta) => {
     adjustPosition,
     adjustSize,
     adjustRotation,
-    adjustLayer
   };
     
 });
