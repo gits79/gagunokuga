@@ -9,6 +9,7 @@
 /* 타이틀 영역 */
 .room-title {
     margin-top: 1rem;
+    font-family: '42dot Sans', serif;
     font-size: 24px;
     color: #333;
     margin-bottom: 12px;
@@ -19,6 +20,7 @@
     color: #666;
     margin-bottom: 30px;
     text-align: left;
+    font-family: '42dot Sans', serif;
     font-size: 14px;
 }
 
@@ -59,6 +61,7 @@ li img {
 li span {
     padding: 12px;
     color: #333;
+    font-family: '42dot Sans', serif;
     font-size: 14px;
     text-align: left;
     border-bottom: 1px solid #e9ecef;
@@ -95,18 +98,19 @@ button:hover {
     position: fixed;
     right: 24px;
     bottom: 24px;
-    background-color: #228be6;
+    background-color: #302e19ea;
     color: white;
     border: none;
     padding: 12px 24px;
-    border-radius: 24px;
+    border-radius: 12px;
+    font-family: '42dot Sans', serif;
     font-size: 14px;
     font-weight: 500;
-    box-shadow: 0 4px 12px rgba(34, 139, 230, 0.3);
+    box-shadow: 0 4px 12px #302e1929;
 }
 
 .create-room:hover {
-    background-color: #1c7ed6;
+    background-color: #302e19;
 }
 
 /* 빈 상태 */
@@ -149,3 +153,59 @@ button:hover {
         grid-template-columns: repeat(1, 1fr);
     }
 }
+
+.room-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    color: #333;
+    font-size: 14px;
+    border-bottom: 1px solid #e9ecef;
+    height: 40px; /* 높이 고정 */
+    /* width: 100%; 가로 크기 유지 */
+  }
+  
+  .room-info input {
+    font-family: '42dot Sans', serif;
+    font-size: 14px;
+    padding: 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    height: 24px;
+    width: 250px; /* 입력칸 크기 고정 */
+    max-width: 100%; /* 너무 커지지 않도록 제한 */
+  }
+  
+  .edit-icon{
+    cursor: pointer;
+    width: 20px;  /* 이미지 크기 조절 */
+    height: 20px;
+    margin-left: 8px;
+  }
+  
+  .confirm-icon, .cancel-icon {
+      cursor: pointer;
+      font-size: 18px;
+      text-shadow: none; /* 텍스트 그림자 제거 */
+      box-shadow: none; /* 아이콘 그림자 제거 */
+      background: none; /* 배경 제거 */
+      border: none; /* 혹시 있을 수도 있는 기본 테두리 제거 */
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 3%;
+      height: 20px;
+    }
+  
+    .confirm-icon:hover {
+      color: #2f9e44;
+    }
+  
+    .cancel-icon:hover {
+      color: #e03131;
+    }
+  
+  
+  .edit-icon:hover {
+    opacity: 0.7;
+  }
