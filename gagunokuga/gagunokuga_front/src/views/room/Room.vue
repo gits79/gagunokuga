@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useRoomListStore } from './roomStore'
 import defaultThumbnail from '@/assets/gagunokugaLogo.png'
 import CreateRoomModal from './CreateRoomModal.vue'
+import DeleteRoomModal from './DeleteRoomModal.vue'
 
 const store = useRoomListStore()
 const router = useRouter()
@@ -11,6 +12,8 @@ const editingRoomId = ref(null)
 const editedRoomName = ref('')
 const originalRoomName = ref('')
 const isModalOpen = ref(false)
+const isDeleteModalOpen = ref(false)
+const roomIdToDelete = ref(null)
 
 onMounted(() => {
   store.fetchRooms()
@@ -19,6 +22,20 @@ onMounted(() => {
 // ✅ 방 생성 모달 열기
 const showCreateRoomModal = () => {
   isModalOpen.value = true
+}
+
+//  방 삭제 모달 열기
+const openDeleteRoomModal = (roomId) => {
+  roomIdToDelete.value = roomId
+  isDeleteModalOpen.value = true
+}
+
+//  방 삭제
+const deleteRoom = async () => {
+  if (roomIdToDelete.value) {
+    await store.deleteRoom(roomIdToDelete.value)
+    isDeleteModalOpen.value = false
+  }
 }
 
 // ✅ 방 생성
@@ -30,14 +47,6 @@ const createRoom = async (name) => {
     router.push({ name: 'Editor', params: { roomId: roomData.roomId } });
   }
 };
-
-// ✅ 방 삭제
-const handleDeleteRoom = async (roomId) => {
-  const confirmDelete = confirm('정말 이 방을 삭제하시겠습니까?')
-  if (confirmDelete) {
-    await store.deleteRoom(roomId)
-  }
-}
 
 // ✅ 편집 모드 활성화
 const startEditing = (room) => {
@@ -85,7 +94,7 @@ const goToEditor = (roomId) => {
           </div>
           <div>
             <button @click="goToEditor(room.roomId)">에디터로 이동</button>
-            <button @click="handleDeleteRoom(room.roomId)">삭제</button>
+            <button @click="openDeleteRoomModal(room.roomId)">삭제</button>
           </div>
         </li>
       </ul>
@@ -99,6 +108,7 @@ const goToEditor = (roomId) => {
     </div>
 
     <CreateRoomModal v-if="isModalOpen" @close="isModalOpen = false" @create="createRoom" />
+    <DeleteRoomModal v-if="isDeleteModalOpen" @close="isDeleteModalOpen = false" @delete="deleteRoom" />
   </div>
 </template>
 
