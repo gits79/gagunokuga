@@ -80,8 +80,6 @@ services:
       - "6379:6379" 
     networks:
       - app-network 
-    volumes:
-      - redis_data:/data 
     healthcheck:  
       test: ["CMD", "redis-cli", "ping"] 
       interval: 5s 
@@ -96,4 +94,4 @@ networks:
 
 volumes:
   mysql_data: 
-  redis_data:  
+ 
