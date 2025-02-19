@@ -6,7 +6,7 @@ export const useEditorStore = defineStore("editorStore", () => {
     const roomId = ref(null);
     const role = ref('');
     const isExistsFurniture = ref(false);
-    const editorMode = ref('none');
+    const editorMode = ref('');
     // const currentNickname = computed(() => loginStore.state.nickname);
 
     const initEditor = async (id) => {
