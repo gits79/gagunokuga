@@ -2,16 +2,11 @@
 import { ref, onMounted, onUnmounted, nextTick, computed } from "vue";
 import { useRoute } from 'vue-router';
 import { useLoginStore } from "@/views/login/login"; // 로그인 스토어 가져오기
-// import {
-//   fetchChatLogs,
-//   connectWebSocket,
-//   sendMessage,
-//   disconnectWebSocket,
-// } from "./chat.js";
-
+import { useEditorStore } from '../editor/editorStore';
 import { useChatStore } from "./chat.js";
 const store = useChatStore();
 const route = useRoute();
+const editorStore = useEditorStore();
 
 const loginStore = useLoginStore(); // 로그인 스토어 초기화
 const roomId = ref("1");
@@ -192,7 +187,7 @@ const stopResize = () => {
 };
 //  WebSocket 연결 및 기존 채팅 기록 불러오기
 onMounted(async () => {
-  await store.initializeWebSocket(route.params.roomId);
+  await store.initializeWebSocket(editorStore.roomId);
   await store.subscribeToChat(handleMessageReceived);
   await loadChatLogs();
   await fetchNickname();

@@ -9,13 +9,14 @@ import axiosInstance from "@/api/axiosInstance.js";
 import { Canvg } from 'canvg';
 import { captureScreen } from "./furnitureCapture.js";
 import UserShare from "../../room-users/UserShareTrigger.vue";
-import html2canvas from 'html2canvas';
+import { useEditorStore } from '../editorStore';
 
 const store = useFurnitureEditorStore();
 const canvas = ref(null);
 const route = useRoute();
 const router = useRouter();
 const baseURL = import.meta.env.VITE_API_URL;
+const editorStore = useEditorStore();
 
 const onDrop = (event) => { // 가구 생성 시 이벤트 전달
   event.preventDefault();
@@ -23,7 +24,7 @@ const onDrop = (event) => { // 가구 생성 시 이벤트 전달
 };
 
 onMounted(async () => {
-  await store.initializeWebSocket(route.params.roomId); // WebSocket 연결 초기화
+  await store.initializeWebSocket(editorStore.roomId); // WebSocket 연결 초기화
   // await store.subscribeToRoom(); // 구독
   await store.initializeCanvas(canvas.value);
   await store.fetchWalls();
@@ -39,30 +40,6 @@ const handleCapture = async () => {
   await captureScreen(canvas, route.params.roomId, baseURL);
 
 };
-
-function html2Screen() {
-  const targetElement = canvas.value; // ref로 캡쳐할 영역 지정
-
-  if (!targetElement) {
-    console.error('캡쳐할 요소를 찾을 수 없습니다.');
-    return;
-  }
-
-  html2canvas(targetElement).then(canvas => {
-    const image = canvas.toDataURL('image/png');
-
-    // 이미지 다운로드
-    const link = document.createElement('a');
-    link.href = image;
-    link.download = 'screenshot.png';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }).catch(error => {
-    console.error('캡쳐 중 오류 발생:', error);
-  });
-}
-
 
 </script>
 
