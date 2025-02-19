@@ -7,9 +7,13 @@
       </div>
 
       <div class="modal-body">
-        <p>방장만 사용자를 초대하거나 강퇴할 수 있습니다.</p>
+        <!-- 현재 사용자 및 초대 가능 인원 -->
+        <div class="user-status">
+          <p>현재 사용자: {{ currentUserCount }}명 / 최대 3명</p>
+          <p>남은 초대 가능 인원: {{ remainingInvites }}명</p>
+        </div>
 
-        <!--  전체 사용자 검색 후 초대 -->
+        <!-- 닉네임 검색 입력 -->
         <div class="search-container">
           <input
             v-model="searchQuery"
@@ -19,7 +23,6 @@
             :disabled="!isHost"
           />
 
-          <!-- 검색어가 있고 결과가 있으며, 방장일 때만 표시-->
           <ul
             v-if="isHost && searchQuery.trim() && searchResults.length > 0"
             class="search-results"
@@ -40,7 +43,7 @@
           </ul>
         </div>
 
-        <!--  선택된 유저 목록 -->
+        <!-- 선택된 유저 목록 (닉네임 검색 아래, 초대 버튼 위로 이동) -->
         <div v-if="selectedUsers.length > 0" class="selected-users">
           <h3>선택된 사용자</h3>
           <ul>
@@ -51,65 +54,67 @@
           </ul>
         </div>
 
-        <!--  현재 프로젝트 사용자 목록 -->
+        <!-- 초대 인원 초과 시 경고 메시지 -->
+        <p v-if="inviteError" class="error-message">{{ inviteError }}</p>
+
+        <!-- 초대 버튼 -->
+        <div class="modal-footer">
+          <button
+            @click="validateAndInvite"
+            class="invite-btn"
+            :disabled="!isHost || selectedUsers.length === 0"
+          >
+            초대
+          </button>
+        </div>
+
+        <!-- 프로젝트 내 사용자 목록 -->
         <div class="user-list-container">
           <h3>프로젝트 내 사용자</h3>
-          <ul v-if="users.length > 0">
-            <li v-for="user in users" :key="user.nickname" class="user-item">
-              <img
-                :src="user.profileImageUrl || defaultProfileImage"
-                alt="프로필 이미지"
-                class="profile-img"
-              />
-              <div class="user-info">
-                <span class="nickname">
-                  {{ user.nickname }}
-                  <span v-if="user.isHost">(방장)</span>
-                </span>
-              </div>
-
-              <!-- 버튼 텍스트 "내보내기" -->
-              <!-- 방장이면서, 해당 유저가 방장이 아닐 때만 표시 -->
-              <button
-                v-if="isHost && !user.isHost"
-                @click="kickUser(user.nickname)"
-                class="kick-btn"
-              >
-                내보내기
-              </button>
-            </li>
-          </ul>
-          <p v-else>초대된 사용자가 없습니다.</p>
+          <div class="user-list-scroll">
+            <ul v-if="users.length > 0">
+              <li v-for="user in users" :key="user.nickname" class="user-item">
+                <img
+                  :src="user.profileImageUrl || defaultProfileImage"
+                  alt="프로필 이미지"
+                  class="profile-img"
+                />
+                <div class="user-info">
+                  <span class="nickname">
+                    {{ user.nickname }}
+                    <span v-if="user.isHost">(방장)</span>
+                  </span>
+                </div>
+                <button
+                  v-if="isHost && !user.isHost"
+                  @click="kickUser(user.nickname)"
+                  class="kick-btn"
+                >
+                  내보내기
+                </button>
+              </li>
+            </ul>
+            <p v-else>초대된 사용자가 없습니다.</p>
+          </div>
         </div>
-      </div>
-
-      <div class="modal-footer">
-        
-        <button
-          @click="inviteUsers"
-          class="invite-btn"
-          :disabled="!isHost || selectedUsers.length === 0"
-        >
-          초대
-        </button>
       </div>
     </div>
   </div>
 </template>
 
+
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import useUserShare from "./userShareModal.js";
 import "@/views/room-users/userShareModal.css";
 
 const props = defineProps(["isOpen"]);
 const emit = defineEmits(["close"]);
 
-
 const {
   users,
   defaultProfileImage,
-  isHost,        
+  isHost,
   kickUser,
   fetchUsers,
   searchQuery,
@@ -121,9 +126,71 @@ const {
   inviteUsers,
 } = useUserShare();
 
-
 const closeModal = () => emit("close");
 
-// 모달이 열릴 때마다 사용자 목록 불러오기
+// 최대 초대 가능 인원 설정 (3명)
+const maxUsers = 3;
+
+// 현재 사용자 수 계산
+const currentUserCount = computed(() => users.value.length);
+
+// 남은 초대 가능 인원 계산
+const remainingInvites = computed(() => maxUsers - currentUserCount.value);
+
+// 초대 가능 인원을 초과할 경우 경고 메시지
+const inviteError = ref("");
+
+// 초대 버튼 클릭 시 유효성 검사 후 초대 실행
+const validateAndInvite = () => {
+  if (remainingInvites.value <= 0) {
+    inviteError.value = "초대 가능한 인원이 가득 찼습니다.";
+    return;
+  }
+
+  if (selectedUsers.value.length > remainingInvites.value) {
+    inviteError.value = `최대 ${remainingInvites.value}명까지 초대할 수 있습니다.`;
+    return;
+  }
+
+  inviteError.value = "";
+  inviteUsers();
+  searchQuery.value = ""; // 초대 후 검색창 초기화
+};
+
 fetchUsers();
 </script>
+
+<style scoped>
+/* 현재 사용자 및 초대 가능 인원 스타일 */
+.user-status {
+  background: #f8f8f8;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+/* 초대 가능 인원 초과 시 경고 메시지 */
+.error-message {
+  color: #d32f2f;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* 프로젝트 내 사용자 목록에 스크롤뷰 적용 */
+.user-list-scroll {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 8px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #e5e5e5;
+}
+</style>
