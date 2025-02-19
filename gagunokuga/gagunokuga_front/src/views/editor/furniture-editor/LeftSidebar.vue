@@ -174,6 +174,7 @@ onMounted(() => {
 }
 
 .back-button {
+  font-family: '42dot Sans', serif;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -181,7 +182,6 @@ onMounted(() => {
   background: none;
   border: none;
   color: #666;
-  font-size: 14px;
   text-decoration: none;
   margin-bottom: 20px;
   
@@ -209,6 +209,7 @@ onMounted(() => {
   align-items: center;
   transition: all 0.2s ease;
   cursor: move;
+  
 }
 
 .furniture-item:hover {
@@ -227,6 +228,7 @@ onMounted(() => {
   font-size: 14px;
   color: #666;
   text-align: center;
+  font-family: '42dot Sans', serif;
 }
 
 .layer-selection {
@@ -239,7 +241,7 @@ onMounted(() => {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  margin-top: 5px;
+  margin-top: 1px;
 }
 
 .search-box {
@@ -258,5 +260,83 @@ onMounted(() => {
 .search-box input:focus {
   outline: none;
   border-color: #4CAF50;
+}
+
+.layer-selection {
+  padding: 13px;
+  margin-bottom: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.layer-selection label {
+  display: block;
+  color: #4a5568;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  font-family: '42dot Sans', serif;
+}
+
+.layer-select {
+  font-family: '42dot Sans', serif;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background-color: white;
+  color: #2d3748;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+
+.layer-select:hover {
+  border-color: #5e6469;
+}
+
+.layer-select:focus {
+  outline: none;
+  border-color: #132636;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+}
+
+.search-box {
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 8px 15px;
+  padding-left: 36px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3ccircle cx='11' cy='11' r='8'%3e%3c/circle%3e%3cline x1='21' y1='21' x2='16.65' y2='16.65'%3e%3c/line%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: left 12px center;
+  background-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.search-box input:hover {
+  border-color: #464a4e;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #173852;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+}
+
+.search-box input::placeholder {
+  color: #a0aec0;
+  font-family: '42dot Sans', serif;
 }
 </style>
