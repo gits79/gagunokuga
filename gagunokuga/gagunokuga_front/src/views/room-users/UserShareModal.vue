@@ -2,7 +2,7 @@
   <div v-if="isOpen" class="modal-overlay" @click.self="closeModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>사용자 관리</h2>
+        <h2>사용자 초대</h2>
         <button @click="closeModal">×</button>
       </div>
 
