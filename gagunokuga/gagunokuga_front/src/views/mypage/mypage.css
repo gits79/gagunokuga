@@ -7,8 +7,8 @@
     gap: 2rem;
     background: #c8bdb220;
     padding: 0 3rem;
-    align-items: flex-start;  /* 상단 정렬로 변경 */
-    padding-top: 2rem;      /* 상단 여백 추가 */
+    align-items: center;  /* 중앙 정렬로 변경 */
+    justify-content: center; /* 수평 중앙 정렬 추가 */     /* 상단 여백 추가 */
 }
 
 
