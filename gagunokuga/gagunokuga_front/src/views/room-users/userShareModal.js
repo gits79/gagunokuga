@@ -14,19 +14,15 @@ export default function useUserShare() {
   const searchResults = ref([]);
   const selectedUsers = ref([]);
 
-  
   const defaultProfileImage = "@assets/gagunokugaLogo.png";
 
-
   const myNickname = computed(() => loginStore.state.nickname);
-
 
   const isHost = computed(() => {
     return users.value.some(
       (u) => u.nickname === myNickname.value && u.isHost
     );
   });
-
 
   // 프로젝트 내 사용자 목록 불러오기
   const fetchUsers = async () => {
@@ -61,7 +57,6 @@ export default function useUserShare() {
 
   // 선택된 사용자 관리
   const selectUser = (user) => {
-    // 중복 선택 방지
     if (!selectedUsers.value.some((u) => u.nickname === user.nickname)) {
       selectedUsers.value.push(user);
     }
@@ -119,8 +114,6 @@ export default function useUserShare() {
     fetchUsers,
     kickUser,
     defaultProfileImage,
-
-    // [추가] 방장 여부 반환
     isHost,
   };
 }
