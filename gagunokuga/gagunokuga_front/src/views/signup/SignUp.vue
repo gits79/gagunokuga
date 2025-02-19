@@ -1,7 +1,14 @@
 <script setup>
-  import { ref } from "vue";
+  import { ref, watch } from "vue";
   import { useSignupStore } from "./signup";  // Pinia Store 임포트
   const store = useSignupStore();
+
+  // 닉네임 길이 제한 적용
+  watch(() => store.state.nickname, (newVal) => {
+    if (newVal.length > 16) {
+      store.state.nickname = newVal.slice(0, 16);
+    }
+  });
 </script>
 
 <template>
@@ -20,6 +27,9 @@
               placeholder="닉네임을 입력하세요"
               required
             />
+            <p v-if="store.state.nickname.length >= 16" class="error-message">
+              닉네임은 최대 16자까지 입력 가능합니다.
+            </p>
             <button type="button" @click="store.checkNickname" :disabled="store.state.isCheckingNickname">
               중복 확인
             </button>
