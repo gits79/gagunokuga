@@ -794,7 +794,9 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     
     const furn = furnitureGroup.group();
     const furnSelection = furn.group();
-    furnSelection.image(furniture.imageUrl).size(furniture.width, furniture.height).attr('preserveAspectRatio', 'none'); 
+    furnSelection.image(furniture.imageUrl).size(furniture.width, furniture.height)
+        .attr('preserveAspectRatio', 'none')
+        .attr('crossOrigin', 'anonymous');
     furnSelection.rect(furniture.width - 10, furniture.height - 10)
     .move(5, 5)
     .fill('none')
