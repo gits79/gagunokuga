@@ -1,0 +1,113 @@
+<template>
+
+
+    <!-- 최소화된 채팅 버튼 -->
+   <div v-if="isMinimized" class="chat-toggle" @click="toggleChat">
+    <svg 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+      class="chat-icon"
+    >
+      <path 
+        d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.663 3.04094 17.0829 4.73812 18.875L2.72681 21.1705C2.44361 21.4937 2.67314 22 3.10288 22H12Z" 
+        fill="currentColor"
+      />
+      <circle cx="7" cy="12" r="1.5" fill="white"/>
+      <circle cx="12" cy="12" r="1.5" fill="white"/>
+      <circle cx="17" cy="12" r="1.5" fill="white"/>
+    </svg>
+    <span v-if="unreadCount > 0" class="unread-badge">{{ unreadCount }}</span>
+  </div>
+  
+  <!-- 채팅창 -->
+  <div 
+    v-show="isOpen" 
+    class="chat-container" 
+    :style="{ 
+      width: `${chatWidth}px`, 
+      height: `${chatHeight}px`,
+      display: isOpen ? 'flex' : 'none'
+    }"
+    :data-resizing="isDragging">
+  </div>
+
+
+    <!-- 사용자 공유 버튼 -->
+  <div class="chat-toggle" @click="showModal = !showModal">
+    <svg 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+      class="chat-icon"
+    >
+      <path 
+        d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.663 3.04094 17.0829 4.73812 18.875L2.72681 21.1705C2.44361 21.4937 2.67314 22 3.10288 22H12Z" 
+        fill="currentColor"
+      />
+      <circle cx="7" cy="12" r="1.5" fill="white"/>
+      <circle cx="12" cy="12" r="1.5" fill="white"/>
+      <circle cx="17" cy="12" r="1.5" fill="white"/>
+    </svg>
+    사용자 공유
+  </div>
+
+  <UserShareModal :isOpen="showModal" title="사용자 초대대" @close="showModal = false" />
+  </template>
+  
+  <script setup>
+  import { ref } from "vue";
+  import UserShareModal from "./UserShareModal.vue";
+  
+  const showModal = ref(false);
+  </script>
+  
+<style scoped>
+.chat-toggle {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background-color: #4a4d52;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(45, 55, 72, 0.2);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.chat-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(45, 55, 72, 0.3);
+}
+
+.chat-icon {
+  width: 24px;
+  height: 24px;
+  color: white;
+}
+
+.unread-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #E53E3E;
+  color: white;
+  border-radius: 12px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+</style>
+  
