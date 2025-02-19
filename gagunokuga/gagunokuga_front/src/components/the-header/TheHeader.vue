@@ -28,21 +28,23 @@ const logout = () => {
   loginStore.logout();  // loginStore의 logout 메서드 호출
 };
 
-// 방 생성 모달 열기
-const handleCreateRoom = () => {
+
+const showCreateRoomModal = () => {
   if (!isLoggedIn.value) {
-    router.push({ name: 'Login' });
+    router.push({ name: 'Login' }); 
   } else {
-    isModalOpen.value = true;
+    isModalOpen.value = true; 
   }
 };
 
-// 방 생성 후 모달 닫기
-const handleRoomCreated = async (roomName) => {
-  await roomStore.createRoom(roomName);
-  await roomStore.fetchRooms();
-  isModalOpen.value = false;
+const createRoom = async (roomName) => {
+  const roomData = await roomStore.createRoom(roomName);
+  if (roomData && roomData.roomId) {
+    isModalOpen.value = false;
+    router.push({ name: 'Editor', params: { roomId: roomData.roomId } });
+  }
 };
+
 
 const handleMyRoom = async () => {
   if (!isLoggedIn.value) {
@@ -66,7 +68,7 @@ const handleMyRoom = async () => {
     <nav class="center-nav">
       <ul>
         <li><router-link to="/article">커뮤니티</router-link></li>
-        <li><a @click="handleCreateRoom">홈 만들기</a></li>
+        <li><a @click="showCreateRoomModal">홈 만들기</a></li>
         <li><a @click="handleMyRoom">마이홈</a></li>
         <li v-if="isLoggedIn && !isProvided"><router-link to="/pwdcheck">마이페이지</router-link></li>
       </ul>
@@ -88,7 +90,7 @@ const handleMyRoom = async () => {
     </nav>
 
     <!-- 방 생성 모달 -->
-    <CreateRoomModal v-if="isModalOpen" @close="isModalOpen = false" @create="handleRoomCreated" />
+    <CreateRoomModal v-if="isModalOpen" @close="isModalOpen = false" @create="createRoom" />
   </header>
 </template>
 

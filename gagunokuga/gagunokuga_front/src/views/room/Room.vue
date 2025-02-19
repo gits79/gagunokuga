@@ -24,10 +24,12 @@ const showCreateRoomModal = () => {
 // ✅ 방 생성
 const createRoom = async (name) => {
   if (name?.trim()) {
-    await store.createRoom(name.trim())
-    isModalOpen.value = false
+    const roomData = await store.createRoom(name.trim());
+    isModalOpen.value = false;
+    // 방 생성 후 에디터로 이동
+    router.push({ name: 'Editor', params: { roomId: roomData.roomId } });
   }
-}
+};
 
 // ✅ 방 삭제
 const handleDeleteRoom = async (roomId) => {

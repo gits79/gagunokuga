@@ -5,7 +5,13 @@
       <h2 class="modal-title">홈 만들기</h2>
       <p class="modal-description">나만의 방을 생성하세요</p>
       <div class="input-container">
-        <input v-model="roomName" placeholder="방 이름을 입력하세요" class="input-box" />
+        <input
+          ref="roomInput"
+          v-model="roomName"
+          placeholder="방 이름을 입력하세요"
+          class="input-box"
+          @keyup.enter="submit"
+        />
       </div>
       <button class="create-button" @click="submit">만들기</button>
     </div>
@@ -13,21 +19,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const emit = defineEmits();
 const roomName = ref('');
+const roomInput = ref(null);
 
-const submit = () => {
+const submit = async () => {
   if (roomName.value.trim()) {
-    emit('create', roomName.value);
+    const roomData = await emit('create', roomName.value);
     roomName.value = '';
+    return roomData; // 방 생성 후 roomId를 반환
   }
 };
 
 const closeModal = () => {
   emit('close');
 };
+
+onMounted(() => {
+  if (roomInput.value) {
+    roomInput.value.focus();
+  }
+});
 </script>
 
 <style scoped>
