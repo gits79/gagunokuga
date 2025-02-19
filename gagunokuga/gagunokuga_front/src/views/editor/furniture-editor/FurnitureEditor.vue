@@ -64,11 +64,11 @@ const handleCapture = async () => {
     <chat/>
 
     <router-link
-        :to="`/`"
+        :to="`/room`"
         class="capture"
         @click="handleCapture"
     >
-      홈으로
+      마이 홈으로
       <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
         <path d="M9 6l6 6-6 6" transform="translate(3, 6)" />
       </svg>

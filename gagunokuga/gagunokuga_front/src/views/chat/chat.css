@@ -68,6 +68,7 @@
 
 /* 채팅 헤더 */
 .chat-header {
+  font-family: '42dot Sans', serif;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -150,6 +151,7 @@
 }
 
 .chat-message {
+  font-family: '42dot Sans', serif;
   display: flex;
   align-items: flex-end;
   gap: 10px;
@@ -204,6 +206,7 @@
 }
 
 .message-text {
+  font-family: '42dot Sans', serif;
   font-size: 14px;
   line-height: 1.5;
   word-break: break-word;
@@ -235,6 +238,7 @@
 }
 
 .message-input {
+  font-family: '42dot Sans', serif;
   flex-grow: 1;
   padding: 10px 16px;
   border: 2px solid #EDF2F7;
@@ -253,6 +257,7 @@
 }
 
 .send-button {
+  font-family: '42dot Sans', serif;
   padding: 10px 20px;
   background-color: #2D3748;
   color: white;
