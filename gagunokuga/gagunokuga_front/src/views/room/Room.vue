@@ -3,22 +3,29 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRoomListStore } from './roomStore'
 import defaultThumbnail from '@/assets/gagunokugaLogo.png'
+import CreateRoomModal from './CreateRoomModal.vue'
 
 const store = useRoomListStore()
 const router = useRouter()
 const editingRoomId = ref(null)
 const editedRoomName = ref('')
 const originalRoomName = ref('')
+const isModalOpen = ref(false)
 
 onMounted(() => {
   store.fetchRooms()
 })
 
+// ✅ 방 생성 모달 열기
+const showCreateRoomModal = () => {
+  isModalOpen.value = true
+}
+
 // ✅ 방 생성
-const handleCreateRoom = async () => {
-  const name = prompt('새로운 방 이름을 입력하세요:')
+const createRoom = async (name) => {
   if (name?.trim()) {
     await store.createRoom(name.trim())
+    isModalOpen.value = false
   }
 }
 
@@ -81,13 +88,15 @@ const goToEditor = (roomId) => {
         </li>
       </ul>
       <div>
-        <button class="create-room" @click="handleCreateRoom">새 홈 만들기</button>
+        <button class="create-room" @click="showCreateRoomModal">새 홈 만들기</button>
       </div>
     </div>
     <div v-else class="no-room-container">
       <p class="no-room">현재 생성된 방이 없습니다. 방을 생성해 주세요.</p>
-      <button class="first-room" @click="handleCreateRoom">새 홈 만들기</button>
+      <button class="first-room" @click="showCreateRoomModal">새 홈 만들기</button>
     </div>
+
+    <CreateRoomModal v-if="isModalOpen" @close="isModalOpen = false" @create="createRoom" />
   </div>
 </template>
 
