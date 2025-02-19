@@ -9,7 +9,7 @@
       <div class="modal-body">
         <!-- 현재 사용자 및 초대 가능 인원 -->
         <div class="user-status">
-          <p>현재 사용자: {{ currentUserCount }}명 / 최대 3명</p>
+          <p>현재 사용자: {{ currentUserCount }}명 / 최대 {{maxUsers}}명</p>
           <p>남은 초대 가능 인원: {{ remainingInvites }}명</p>
         </div>
 
@@ -54,7 +54,7 @@
           </ul>
         </div>
 
-        <!-- 초대 인원 초과 시 경고 메시지 -->
+        <!-- 초대 에러 메시지 -->
         <p v-if="inviteError" class="error-message">{{ inviteError }}</p>
 
         <!-- 초대 버튼 -->
@@ -102,7 +102,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref, computed } from "vue";
 import useUserShare from "./userShareModal.js";
@@ -121,15 +120,15 @@ const {
   searchResults,
   searchUsers,
   selectedUsers,
-  selectUser,
+  selectUser: originalSelectUser, // 기존 selectUser 함수 사용 (중복 선언 방지)
   removeSelectedUser,
   inviteUsers,
 } = useUserShare();
 
 const closeModal = () => emit("close");
 
-// 최대 초대 가능 인원 설정 (3명)
-const maxUsers = 3;
+// 최대 초대 가능 인원 설정 (8명)
+const maxUsers = 8;
 
 // 현재 사용자 수 계산
 const currentUserCount = computed(() => users.value.length);
@@ -143,18 +142,37 @@ const inviteError = ref("");
 // 초대 버튼 클릭 시 유효성 검사 후 초대 실행
 const validateAndInvite = () => {
   if (remainingInvites.value <= 0) {
-    inviteError.value = "초대 가능한 인원이 가득 찼습니다.";
+    inviteError.value = "현재 초대 가능한 인원이 없습니다.";
     return;
   }
 
   if (selectedUsers.value.length > remainingInvites.value) {
-    inviteError.value = `최대 ${remainingInvites.value}명까지 초대할 수 있습니다.`;
+    inviteError.value = `현재 초대 가능한 인원은 ${remainingInvites.value}명입니다.`;
     return;
   }
 
   inviteError.value = "";
   inviteUsers();
   searchQuery.value = ""; // 초대 후 검색창 초기화
+};
+
+// 기존 selectUser 함수를 래핑 (중복 선언 방지)
+const selectUser = (user) => {
+  // 이미 프로젝트 내에 있는 사용자라면 에러 메시지 표시
+  if (users.value.some((u) => u.nickname === user.nickname)) {
+    inviteError.value = "이미 초대된 사용자입니다.";
+    return;
+  }
+
+  // 초대 가능한 인원을 초과하는 경우 메시지 표시
+  if (selectedUsers.value.length >= remainingInvites.value) {
+    inviteError.value = `현재 초대 가능한 인원은 ${remainingInvites.value}명입니다.`;
+    return;
+  }
+
+  // 기존 selectUser 호출
+  originalSelectUser(user);
+  inviteError.value = ""; // 정상 선택 시 에러 메시지 초기화
 };
 
 fetchUsers();
