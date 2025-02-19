@@ -6,6 +6,9 @@
 
       <label>닉네임</label>
       <input v-model="user.nickname" class="input-box" />
+      <p v-if="user.nickname.length >= 16" class="error-message">
+        닉네임은 최대 16자까지 입력 가능합니다.
+      </p>
       <div class="check-nickname">
         <button @click="checkNickname" class="blue-btn">닉네임 중복 확인</button>
         <p v-if="nicknameError" class="error-message">{{ nicknameError }}</p>
@@ -25,6 +28,7 @@
 </template>
 
 <script>
+import { watch } from "vue";
 import { useMypageStore } from '../mypage.js';  // Pinia store 사용
 import { useLoginStore } from '../../login/login.js';
 
@@ -56,9 +60,16 @@ export default {
       console.error(error.message);
     }
   },
+  watch: {
+    "user.nickname"(newVal) {
+      if (newVal.length > 16) {
+        this.user.nickname = newVal.slice(0, 16); // 16자로 자동 자르기
+      }
+    }
+  },
   methods: {
     async checkNickname() {
-      const userStore = useMypageStore(); 
+      const userStore = useMypageStore();
       try {
         const isAvailable = await userStore.checkNicknameAvailability(this.user.nickname); // store 메서드 호출
         if (isAvailable) {

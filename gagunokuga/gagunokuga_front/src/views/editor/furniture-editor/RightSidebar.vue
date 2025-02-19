@@ -1,21 +1,21 @@
 <script setup>
   import { useFurnitureEditorStore } from "./furnitureEditorStore";
   import { useRoute } from 'vue-router';
+  import axiosInstance from "@/api/axiosInstance.js";
 
   const store = useFurnitureEditorStore();
   const route = useRoute();
+
+
 </script>
 
 <template>
   <aside class="sidebar-right">
-    <router-link 
-      to="/" 
-      class="back-button">
-        홈으로
+    <button class="back-button">
       <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
-      <path d="M9 6l6 6-6 6" />
+        <path d="" />
       </svg>
-    </router-link>
+    </button>
 
     <h3 class="panel-title">가구 속성 수정</h3>
 

@@ -1,6 +1,7 @@
 package com.example.gagunokuga_back.room.service;
 
 import com.example.gagunokuga_back.chat.service.ChatService;
+import com.example.gagunokuga_back.image.service.ImageService;
 import com.example.gagunokuga_back.room.domain.Room;
 import com.example.gagunokuga_back.room.dto.RoomListResponse;
 import com.example.gagunokuga_back.room.dto.RoomResponse;
@@ -18,9 +19,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @Transactional
@@ -30,6 +34,7 @@ public class RoomServiceImpl implements RoomService {
     private final UserService userService;
     private final RoomUserService roomUserService;
     private final RoomUserRepository roomUserRepository;
+    private final ImageService imageService;
     private final RoomFurnitureService roomFurnitureService;
     private final ChatService chatService;
     private static final int PAGE_SIZE = 24;
@@ -93,5 +98,34 @@ public class RoomServiceImpl implements RoomService {
 
             }
         }
+    }
+
+    //이미지 수정
+    @Transactional
+    @Override
+    public String uploadThumbnail(Long roomId, MultipartFile profileImage) {
+        Room room = roomRepository.findById(roomId).orElse(null);
+        if (room == null) {
+            throw new NoSuchElementException("Room not found");
+        }
+
+        try {
+            // 기존 썸네일이 있으면 삭제
+            if (room.getThumbnailUrl() != null) {
+                imageService.deleteImage(room.getThumbnailUrl());
+            }
+
+            // 새로운 썸네일 이미지 업로드
+            String newImageUrl = imageService.uploadImage(profileImage);
+
+            // 룸 썸네일 URL 업데이트
+            room.updateThumbnail(newImageUrl);
+            return newImageUrl;
+            //return roomRepository.save(room);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to process image file", e);
+        }
+
     }
 }

@@ -1,15 +1,22 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useFurnitureEditorStore } from "./furnitureEditorStore";
 import LeftSidebar from "./LeftSidebar.vue";
 import RightSidebar from "./RightSidebar.vue";
 import Chat from "../../chat/Chat.vue";
+import axiosInstance from "@/api/axiosInstance.js";
+import { Canvg } from 'canvg';
+import { captureScreen } from "./furnitureCapture.js";
 import UserShare from "../../room-users/UserShareTrigger.vue";
+import { useEditorStore } from '../editorStore';
 
 const store = useFurnitureEditorStore();
 const canvas = ref(null);
 const route = useRoute();
+const router = useRouter();
+const baseURL = import.meta.env.VITE_API_URL;
+const editorStore = useEditorStore();
 
 const onDrop = (event) => { // 가구 생성 시 이벤트 전달
   event.preventDefault();
@@ -17,7 +24,7 @@ const onDrop = (event) => { // 가구 생성 시 이벤트 전달
 };
 
 onMounted(async () => {
-  await store.initializeWebSocket(route.params.roomId); // WebSocket 연결 초기화
+  await store.initializeWebSocket(editorStore.roomId); // WebSocket 연결 초기화
   // await store.subscribeToRoom(); // 구독
   await store.initializeCanvas(canvas.value);
   await store.fetchWalls();
@@ -28,6 +35,12 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   store.unsubscribeFromRoom(); // 구독 해제 및 연결 종료
 });
+
+const handleCapture = async () => {
+  await captureScreen(canvas, route.params.roomId, baseURL);
+
+};
+
 </script>
 
 <template>
@@ -49,8 +62,18 @@ onBeforeUnmount(() => {
   </div>
     <RightSidebar />
     <chat/>
-    <UserShare/>
 
+    <router-link
+        :to="`/`"
+        class="capture"
+        @click="handleCapture"
+    >
+      홈으로
+      <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+        <path d="M9 6l6 6-6 6" transform="translate(3, 6)" />
+      </svg>
+    </router-link>
+    <UserShare/>
   </div>
 </template>
 

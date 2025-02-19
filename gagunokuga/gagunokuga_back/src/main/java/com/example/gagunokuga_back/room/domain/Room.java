@@ -28,6 +28,9 @@ public class Room extends BaseTimeEntity {
     public void updateRoomName(String roomName) {
         this.roomName = roomName;
     }
+    public void updateThumbnail(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
 
     @Builder.Default
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
