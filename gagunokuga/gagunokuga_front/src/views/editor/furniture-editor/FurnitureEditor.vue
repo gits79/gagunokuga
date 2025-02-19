@@ -5,6 +5,7 @@ import { useFurnitureEditorStore } from "./furnitureEditorStore";
 import LeftSidebar from "./LeftSidebar.vue";
 import RightSidebar from "./RightSidebar.vue";
 import Chat from "../../chat/Chat.vue";
+import UserShare from "../../room-users/UserShareTrigger.vue";
 
 const store = useFurnitureEditorStore();
 const canvas = ref(null);
@@ -48,6 +49,8 @@ onBeforeUnmount(() => {
   </div>
     <RightSidebar />
     <chat/>
+    <UserShare/>
+
   </div>
 </template>
 
