@@ -46,13 +46,13 @@ public class RoomFurniture {
     @JoinColumn(name = "furniture_id")
     private Furniture furniture;
 
-    public RoomFurniture(Room room, Furniture furniture, Integer xpos, Integer ypos) {
+    public RoomFurniture(Room room, Furniture furniture, Integer xpos, Integer ypos, Integer layer) {
         this.xpos = xpos;
         this.ypos = ypos;
         this.width = furniture.getWidth();
         this.height = furniture.getHeight();
         this.rotation = 0;
-        this.layer = 0;
+        this.layer = layer;
         this.collapse = false;
         this.room = room;
         this.furniture = furniture;

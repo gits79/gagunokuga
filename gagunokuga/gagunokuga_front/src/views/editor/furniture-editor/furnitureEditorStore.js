@@ -61,7 +61,13 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     draw.on('zoom', () => {
       viewModule.viewbox.width = draw.viewbox().width;
       updateVisualElements();
-    })
+    });
+    draw.on('panStart', () => {
+      if (selectedFurniture.furnitureName) {
+        const furn = furnitureObjects.value[selectedFurniture.index];
+        furn.children()[0].children()[1].attr({ 'stroke-width': 0 });
+      }
+    });
     if (showGrid.value) {
       addGrid();
     }
@@ -623,19 +629,21 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
 
   // 선택된 가구 정보 업데이트
   const updateSelectedValues = (furnObj) => {
-    const image = furnObj.children()[0];
+    const furnSelection = furnObj.children()[0];
     selectedFurniture.xpos = furnObj.cx();
     selectedFurniture.ypos = furnObj.cy();
-    selectedFurniture.width = image.width();
-    selectedFurniture.height = image.height();
-    selectedFurniture.rotation = Math.round(image.transform('rotate'))
+    selectedFurniture.width = furnSelection.width();
+    selectedFurniture.height = furnSelection.height();
+    selectedFurniture.rotation = Math.round(furnSelection.transform('rotate'))
   }
 
   // 가구 객체 업데이트
   const updateObjectValues = (furnObj, furniture) => {
-    const image = furnObj.children()[0];
-    image.transform({ rotate: furniture.rotation });
+    const furnSelection = furnObj.children()[0];
+    const [image, rect] = furnSelection.children();
+    furnSelection.transform({ rotate: furniture.rotation });
     image.size(furniture.width, furniture.height);
+    rect.size(furniture.width - 10, furniture.height - 10);
     furnObj.center(furniture.xpos, furniture.ypos);
   }
 
@@ -657,12 +665,34 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   // HTTP 드래그 앤 드랍으로 가구 소환 시 가구 생성 요청
   const dropFurniture = (event) => {
     const furnitureId = event.dataTransfer.getData('furnitureId');
+    const selectedLayer = parseInt(event.dataTransfer.getData('selectedLayer')) || 0;
+    console.log('드롭 시작 - 데이터:', {
+      furnitureId,
+      selectedLayer,
+      rawData: event.dataTransfer.getData('selectedLayer')
+    });
+    
     const {x, y} = coordinateUtils.roundPoint(getSVGCoordinates(event));
-    createNewFurniture(furnitureId, x, y);
+    console.log('드롭 좌표:', {x, y});
+    
+    createNewFurniture(furnitureId, x, y, selectedLayer);
   };
-  const createNewFurniture = async (furnitureId, x, y) => {
+
+  const createNewFurniture = async (furnitureId, x, y, layer) => {
     try {
-      await apiClient.get(`/api/rooms/${roomId.value}/furnitures/${furnitureId}?xpos=${x}&ypos=${y}`);
+      console.log('createNewFurniture 호출:', {
+        furnitureId,
+        x,
+        y,
+        layer
+      });
+      
+      const response = await apiClient.get(`/api/rooms/${roomId.value}/furnitures/${furnitureId}?xpos=${x}&ypos=${y}&layer=${layer}`);
+      console.log('서버 응답:', response.data);
+      
+      if (response.data && response.data.event === 'CREATE') {
+        receiveFurnitureEvent(response.data);
+      }
     } catch (error) {
       console.error("가구 생성 중 오류 발생:", error);
     }
@@ -697,7 +727,14 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   // WS 가구 이벤트 구독
   const receiveFurnitureEvent = (furnitureEvent) => {
     const {event, furniture} = furnitureEvent;
+    console.log('3. receiveFurnitureEvent - 이벤트:', event);
+    console.log('4. receiveFurnitureEvent - 가구 데이터:', furniture);
+    
     if (event === 'CREATE') {
+      // 레이어 정보 유지
+      if (furniture.index !== undefined && furnitureDataList.value[furniture.index]) {
+        furniture.layer = furnitureDataList.value[furniture.index].layer;
+      }
       drawFurniture(furniture);
     } else if (event === 'UPDATE') {
       redrawFurniture(furniture);
@@ -753,21 +790,33 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     if (furniture.isDeleted === true) {
       return;
     }
+    console.log('5. drawFurniture - 가구 데이터:', furniture);
+    
     const furn = furnitureGroup.group();
-    const image = furn.image(furniture.imageUrl);
-    image.attr('preserveAspectRatio', 'none');         
+    const furnSelection = furn.group();
+    furnSelection.image(furniture.imageUrl).size(furniture.width, furniture.height).attr('preserveAspectRatio', 'none'); 
+    furnSelection.rect(furniture.width - 10, furniture.height - 10)
+    .move(5, 5)
+    .fill('none')
+    .stroke({ color: '#F00', width: 0 });      
     furn.attr('id', `furniture-${furniture.index}`);  
     furn.draggable();                                 
     updateObjectValues(furn, furniture);
     
     // 가구 데이터 저장
     furnitureDataList.value[furniture.index] = furniture;
+    console.log('6. 저장된 가구 데이터:', furnitureDataList.value[furniture.index]);
     
     // 레이어 값에 따라 z-index 설정
     updateFurnitureLayer(furn, furniture.layer);
 
-    furn.on('dragstart', (e) => {
+    furn.on('dragstart', async (e) => {
+      const currentFurn = furnitureObjects.value[selectedFurniture.index]
+      if (currentFurn) {
+        currentFurn.children()[0].children()[1].attr({'stroke-width': 0})
+      }
       furn.front();  // 드래그 중에는 최상단에 표시
+      furn.children()[0].children()[1].attr({'stroke-width': 10})
       Object.assign(selectedFurniture, furniture);
     });
     furn.on('dragmove', (e) => {

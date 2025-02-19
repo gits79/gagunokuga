@@ -64,7 +64,7 @@ const handleMyRoom = async () => {
     <nav class="center-nav">
       <ul>
         <li><router-link to="/article">커뮤니티</router-link></li>
-        <li><a @click="handleCreateRoom">방 생성</a></li>
+        <li><a @click="handleCreateRoom">홈 만들기</a></li>
         <li><a @click="handleMyRoom">마이홈</a></li>
         <li v-if="isLoggedIn && !isProvided"><router-link to="/pwdcheck">마이페이지</router-link></li>
       </ul>

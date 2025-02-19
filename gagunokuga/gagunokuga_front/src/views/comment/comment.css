@@ -1,4 +1,5 @@
 .comment-container {
+    font-family: '42dot Sans', serif;
     margin-top: 20px;
     padding: 15px;
     border-top: 1px solid #ddd;
@@ -6,6 +7,7 @@
 
 /* 댓글 입력창 */
 .comment-form {
+    font-family: '42dot Sans', serif;
     margin: 15px;
     display: flex;
     align-items: center;
@@ -16,20 +18,23 @@
 }
 
 .comment-form input {
+    font-family: '42dot Sans', serif;
     flex: 1;
     padding: 8px;
     border: none;
     background-color: transparent;
-    font-size: 12px;
+    font-size: 15px;
     outline: none;
 }
 
 .comment-form input:focus {
-    border-bottom: 2px solid #007bff;
+    border-bottom: 1px solid #ef5c4e;
+    /* border-bottom: 1px solid #007bff; */
 }
 
 /* 입력 버튼 (기본: 비활성화) */
 .comment-form button {
+    font-family: '42dot Sans', serif;
     margin-left: 10px;
     padding: 8px 12px;
     border: none;
@@ -48,11 +53,17 @@
 
 /* 입력 버튼: 활성화 상태 */
 .comment-form button.active {
-    background-color: #007bff;
+    background: #ef5c4e;
+    /* background-color: #007bff; */
+}
+
+.comment-form button.active:hover {
+    background: #ea2f1e;
 }
 
 /* 댓글 스타일 */
 .comment {
+    font-family: 'IBM Plex Sans KR', serif;
     padding: 10px;
     border-bottom: 1px solid #eee;
 }
@@ -92,7 +103,9 @@
 
 /* 삭제 버튼 스타일 */
 .delete-button {
+    font-family: 'IBM Plex Sans KR', serif;
     background: none;
+    border-radius: 7px;
     border: none;
     color: #6e6d7a;
     font-size: 12px;
@@ -103,6 +116,6 @@
 
 .delete-button:hover {
     color: #0d0c22;
-    background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 4px;
+    background-color: rgba(246, 2, 2, 0.1);
+    border-radius: 7px;
 }
