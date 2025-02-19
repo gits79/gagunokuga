@@ -4,10 +4,12 @@
   import { useFloorEditorStore } from "./floorEditorStore";
   import LeftSidebar from "./LeftSidebar.vue";
   import RightSidebar from "./RightSidebar.vue";
+  import { useEditorStore } from '../editorStore';
 
   const store = useFloorEditorStore();
   const canvas = ref(null);
   const route = useRoute();
+  const editorStore = useEditorStore();
 
   // 브라우저 기본 줌 방지
   const preventBrowserZoom = (e) => {
@@ -19,7 +21,7 @@
   };
 
   onMounted(() => {
-    store.fetchWalls(route.params.roomId);
+    store.fetchWalls(editorStore.roomId);
     store.initializeCanvas(canvas.value);
     window.addEventListener('keydown', store.handleKeyDown);
     window.addEventListener('keyup', store.handleKeyUp);

@@ -15,15 +15,16 @@
     <aside class="sidebar left" :class="{ 'open': isOpen }">
       <div class="sidebar-content">
         <!-- Back to Floor Editor Button -->
-        <router-link 
-          :to="`/floor-editor/${route.params.roomId}`" 
+        <div
+          v-if="editorStore.role === 'host'"
+          @click="editorStore.changeEditorMode('floor')" 
           class="back-button"
         >
           <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
             <path d="M15 18l-6-6 6-6" />
           </svg>
           도면 에디터로
-        </router-link>
+        </div>
 
         <!-- Layer Selection -->
         <div class="layer-selection">
@@ -73,7 +74,9 @@ import { ref, onMounted, watch } from 'vue';
 import { useLeftSidebarStore } from './leftSidebarStore';
 import { useRoute } from 'vue-router';
 import { debounce } from 'lodash';
+import { useEditorStore } from '../editorStore';
 
+const editorStore = useEditorStore();
 const store = useLeftSidebarStore();
 const route = useRoute();
 const isOpen = ref(true);
@@ -186,6 +189,7 @@ onMounted(() => {
 
 .back-button:hover {
   color: #333;
+  cursor: pointer;
 }
 
 .furniture-grid {
