@@ -8,6 +8,7 @@ import Chat from "../../chat/Chat.vue";
 import axiosInstance from "@/api/axiosInstance.js";
 import { Canvg } from 'canvg';
 import { captureScreen } from "./furnitureCapture.js";
+import UserShare from "../../room-users/UserShareTrigger.vue";
 
 const store = useFurnitureEditorStore();
 const canvas = ref(null);
@@ -57,11 +58,7 @@ const handleCapture = async () => {
         <rect width="800" height="600" fill="#f3f4f6" />
       </svg> -->
   </div>
-    <RightSidebar
-        :canvas="canvas"
-        :roomId="route.params.roomId"
-        :baseURL="baseURL"
-    />
+    <RightSidebar />
     <chat/>
 
     <router-link
@@ -74,6 +71,7 @@ const handleCapture = async () => {
         <path d="M9 6l6 6-6 6" transform="translate(3, 6)" />
       </svg>
     </router-link>
+    <UserShare/>
   </div>
 </template>
 
