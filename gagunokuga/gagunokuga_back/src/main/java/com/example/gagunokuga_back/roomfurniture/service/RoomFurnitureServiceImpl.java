@@ -79,12 +79,14 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
             );
             if (roomFurnitureDto.getIsDeleted() != null && roomFurnitureDto.getIsDeleted()) {
                 toDelete.add(roomFurniture);
+                System.out.println(roomFurnitureDto.toString());
             } else {
                 toSave.add(roomFurniture);
             }
         }
         roomFurnitureRepository.saveAll(toSave);
         roomFurnitureRepository.deleteAll(toDelete);
+        redisTemplate.delete("room:" + roomId + ":furniture");
     }
 
     @Override

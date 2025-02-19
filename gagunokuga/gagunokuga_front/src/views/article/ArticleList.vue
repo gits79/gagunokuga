@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <router-link to="/article/create" class="create-button">✒️</router-link>
+    <div class="create-button" @click="handleCreateArticle">✒️</div>
     <div class="grid-container">
       <div v-for="article in store.articleList.articles" :key="article.id" class="card">
         <router-link :to="'/article/' + article.id" class="card-link">
@@ -32,6 +32,14 @@ onMounted(() => {
   store.getArticleList();
 });
 
+const handleCreateArticle = () => {
+  const accessToken = localStorage.getItem('accessToken');
+  if (!accessToken) {
+    router.push('/login');
+  } else {
+    router.push('/article/create');
+  }
+};
 </script>
 
 <style scoped>
