@@ -13,8 +13,24 @@ const captureBackground = async (width, height) => {
     return canvasElement.toDataURL("image/png");
 };
 
+// 서버 측에서 이미지를 다운로드하여 CORS 문제 해결
+const loadImageFromServer = async (url) => {
+    const response = await axiosInstance.get(url, { responseType: 'blob' });
+    const imageBlob = response.data;
+    const imageUrl = URL.createObjectURL(imageBlob);
+    return imageUrl;
+};
+
 const captureSVG = async (svgElement, width, height) => {
     if (!svgElement) return null;
+
+    // SVG 내부 <image> 태그에 crossOrigin 설정
+    const images = svgElement.querySelectorAll('image');
+    for (const image of images) {
+        const url = image.getAttribute('href');
+        const imageUrl = await loadImageFromServer(url);
+        image.setAttribute('href', imageUrl);  // 서버에서 처리된 URL로 변경
+    }
 
     const canvasElement = document.createElement('canvas');
     const ctx = canvasElement.getContext('2d');
@@ -28,9 +44,11 @@ const captureSVG = async (svgElement, width, height) => {
 };
 
 const loadImage = (url) => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         const img = new Image();
+        img.crossOrigin = 'anonymous';  // CORS 설정
         img.onload = () => resolve(img);
+        img.onerror = (error) => reject(error);
         img.src = url;
     });
 };
