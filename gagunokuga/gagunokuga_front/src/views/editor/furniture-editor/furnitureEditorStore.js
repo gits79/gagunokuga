@@ -666,26 +666,12 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   const dropFurniture = (event) => {
     const furnitureId = event.dataTransfer.getData('furnitureId');
     const selectedLayer = parseInt(event.dataTransfer.getData('selectedLayer')) || 0;
-    console.log('드롭 시작 - 데이터:', {
-      furnitureId,
-      selectedLayer,
-      rawData: event.dataTransfer.getData('selectedLayer')
-    });
-    
     const {x, y} = coordinateUtils.roundPoint(getSVGCoordinates(event));
-    console.log('드롭 좌표:', {x, y});
-    
     createNewFurniture(furnitureId, x, y, selectedLayer);
   };
 
   const createNewFurniture = async (furnitureId, x, y, layer) => {
     try {
-      console.log('createNewFurniture 호출:', {
-        furnitureId,
-        x,
-        y,
-        layer
-      });
       
       const response = await apiClient.get(`/api/rooms/${roomId.value}/furnitures/${furnitureId}?xpos=${x}&ypos=${y}&layer=${layer}`);
       console.log('서버 응답:', response.data);
@@ -727,11 +713,8 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   // WS 가구 이벤트 구독
   const receiveFurnitureEvent = (furnitureEvent) => {
     const {event, furniture} = furnitureEvent;
-    console.log('3. receiveFurnitureEvent - 이벤트:', event);
-    console.log('4. receiveFurnitureEvent - 가구 데이터:', furniture);
     
     if (event === 'CREATE') {
-      // 레이어 정보 유지
       if (furniture.index !== undefined && furnitureDataList.value[furniture.index]) {
         furniture.layer = furnitureDataList.value[furniture.index].layer;
       }
@@ -790,11 +773,12 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     if (furniture.isDeleted === true) {
       return;
     }
-    console.log('5. drawFurniture - 가구 데이터:', furniture);
     
     const furn = furnitureGroup.group();
     const furnSelection = furn.group();
-    furnSelection.image(furniture.imageUrl).size(furniture.width, furniture.height).attr('preserveAspectRatio', 'none'); 
+    furnSelection.image(furniture.imageUrl).size(furniture.width, furniture.height)
+        .attr('preserveAspectRatio', 'none')
+        .attr('crossOrigin', 'anonymous');
     furnSelection.rect(furniture.width - 10, furniture.height - 10)
     .move(5, 5)
     .fill('none')
@@ -805,7 +789,6 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     
     // 가구 데이터 저장
     furnitureDataList.value[furniture.index] = furniture;
-    console.log('6. 저장된 가구 데이터:', furnitureDataList.value[furniture.index]);
     
     // 레이어 값에 따라 z-index 설정
     updateFurnitureLayer(furn, furniture.layer);
@@ -862,41 +845,38 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
       updateFurniture();
     }
   }
-// ------------------------------
-// 위치 조정 함수
-const adjustPosition = (axis, delta) => {
-  if (selectedFurniture.index === null) return;
-  
-  if (axis === 'x') {
-    selectedFurniture.xpos += delta;
-  } else if (axis === 'y') {
-    selectedFurniture.ypos += delta;
-  }
-  updateFurniture();
-};
+  // ------------------------------
+  // 위치 조정 함수
+  const adjustPosition = (axis, delta) => {
+    if (selectedFurniture.index === null) return;
+    
+    if (axis === 'x') {
+      selectedFurniture.xpos += delta;
+    } else if (axis === 'y') {
+      selectedFurniture.ypos += delta;
+    }
+    updateFurniture();
+  };
 
-// 크기 조정 함수
-const adjustSize = (dimension, delta) => {
-  if (selectedFurniture.index === null) return;
-  
-  if (dimension === 'width') {
-    selectedFurniture.width = Math.max(10, selectedFurniture.width + delta);
-  } else if (dimension === 'height') {
-    selectedFurniture.height = Math.max(10, selectedFurniture.height + delta);
-  }
-  updateFurniture();
-};
+  // 크기 조정 함수
+  const adjustSize = (dimension, delta) => {
+    if (selectedFurniture.index === null) return;
+    
+    if (dimension === 'width') {
+      selectedFurniture.width = Math.max(10, selectedFurniture.width + delta);
+    } else if (dimension === 'height') {
+      selectedFurniture.height = Math.max(10, selectedFurniture.height + delta);
+    }
+    updateFurniture();
+  };
 
-// 회전 조정 함수
-const adjustRotation = (delta) => {
-  if (selectedFurniture.index === null) return;
-  
-  selectedFurniture.rotation = (selectedFurniture.rotation + delta + 360) % 360;
-  updateFurniture();
-};
-
-
-  
+  // 회전 조정 함수
+  const adjustRotation = (delta) => {
+    if (selectedFurniture.index === null) return;
+    
+    selectedFurniture.rotation = (selectedFurniture.rotation + delta + 360) % 360;
+    updateFurniture();
+  };
 
   // 레이어 조정 함수 수정
   const adjustLayer = (delta) => {
@@ -948,5 +928,4 @@ const adjustRotation = (delta) => {
     adjustSize,
     adjustRotation,
   };
-    
 });

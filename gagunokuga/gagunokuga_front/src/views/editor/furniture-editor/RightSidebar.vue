@@ -163,13 +163,15 @@
 }
 
 .panel-title {
-  font-size: 16px;
+  /* font-size: 16px; */
   font-weight: 600;
   color: #333;
   margin-bottom: 1.5rem;
+  font-family: '42dot Sans', serif;
 }
 
 .property-group {
+  font-family: '42dot Sans', serif;
   display: flex;
   flex-direction: column;
   gap: 1.8rem;
@@ -260,6 +262,7 @@
 }
 
 .delete-button {
+  font-family: '42dot Sans', serif;
   padding: 0.75rem;
   background: #ef4444;
   color: white;

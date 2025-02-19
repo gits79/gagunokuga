@@ -10,6 +10,7 @@
   
   /* 가구에디터 스타일과 동일하게 적용 */
 .back-button {
+  font-family: '42dot Sans', serif;
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
@@ -18,7 +19,6 @@
   background: none;
   border: none;
   color: #666;
-  font-size: 14px;
   text-decoration: none;
   margin-bottom: 1rem;
   margin-left: auto; 
@@ -34,6 +34,7 @@
 }
   
 .save-button {
+  font-family: '42dot Sans', serif;
   padding: 0.75rem;
   background: #4f46e5;
   color: white;
@@ -80,6 +81,7 @@
   }
   
 .input-group input {
+    font-family: '42dot Sans', serif; 
     flex: 1;
     padding: 0.5rem;
     border: 1px solid #ddd;
@@ -100,6 +102,7 @@
   }
   
 .delete-button {
+    font-family: '42dot Sans', serif;
     padding: 0.75rem;
     background: #ef4444;
     color: white;
@@ -110,6 +113,7 @@
   }
   
 .no-selection {
+    font-family: '42dot Sans', serif;
     color: #666;
     font-size: 14px;
     text-align: center;
@@ -117,12 +121,14 @@
   }
 
   .settings-panel {
+    font-family: '42dot Sans', serif;
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid #eee;
   }
   
 .properties-panel {
+    font-family: '42dot Sans', serif;
     flex: 1;
     overflow-y: auto;
     min-height: 0;
@@ -131,6 +137,7 @@
   }
  
 .coordinates-panel {
+    font-family: '42dot Sans', serif;
     /* margin-bottom: 1rem; */
     padding: 1rem;
     background: #f8f9fa;
@@ -138,6 +145,7 @@
   }
   
 .coordinates-content {
+    font-family: '42dot Sans', serif;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -151,6 +159,7 @@
   }
   
 .unit-button {
+  font-family: '42dot Sans', serif;
     width: 100%;
     margin-top: 0.5rem;
     padding: 0.5rem;

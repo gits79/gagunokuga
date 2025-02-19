@@ -1,5 +1,6 @@
 /* 모달 전체 스타일 */
 .modal-overlay {
+  font-family: '42dot Sans', serif;
   position: fixed;
   top: 0;
   left: 0;
@@ -54,6 +55,7 @@
 }
 
 .search-input {
+  font-family: '42dot Sans', serif;
   width: 90%;
   padding: 12px 16px;
   border: 1px solid #E5E5E5;
@@ -113,20 +115,23 @@
 }
 
 .selected-users h3 {
+  font-family: '42dot Sans', serif;
   font-size: 15px;
   color: #333;
   margin-bottom: 12px;
 }
 
 .selected-user {
+  font-family: '42dot Sans', serif;
+  font-size: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
+  padding: 5px 12px;
   margin-bottom: 8px;
-  background-color: #E8F5E9;
+  /* background-color: rgba(128, 128, 128, 0.312); */
   border-radius: 6px;
-  border: 1px solid #C8E6C9;
+  border: 1px solid rgba(128, 128, 128, 0.291);
   transition: background-color 0.2s;
 }
 
@@ -146,7 +151,8 @@
 
 /* 초대 버튼 스타일 */
 .invite-btn {
-  background: #2196F3;
+  font-family: '42dot Sans', serif;
+  background: #2D3748;
   color: white;
   padding: 12px;
   border: none;
@@ -159,7 +165,7 @@
 }
 
 .invite-btn:hover {
-  background: #1976D2;
+  background: #1f2531;
 }
 
 .invite-btn:disabled {
@@ -169,6 +175,7 @@
 
 /* 프로젝트 내 사용자 목록 */
 .user-list-container {
+  font-family: '42dot Sans', serif;
   margin-top: 20px;
 }
 
@@ -192,6 +199,7 @@
 }
 
 .kick-btn {
+  font-family: '42dot Sans', serif;
   background-color: #f44336;
   color: white;
   border: none;
