@@ -20,7 +20,7 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    padding: 0 10%;
+    padding: 80px 10% 0; /* 헤더 높이만큼 상단 패딩 추가 */
     text-align: left;
   }
   
@@ -39,12 +39,30 @@
 
   /* 1번째 페이지 전용 중앙 정렬 */
 .center-text .content {
-  max-width: 900px;
-  left: 11%;
-  /* transform: translate(-50%, -50%); */
-  transform: translateY(20px);
-  transition: all 0.8s ease-out;
+  max-width: 800px;
+  margin: 0 auto;
   text-align: center;
+  transform: translateY(20px);
+}
+
+.page:not(:first-child) {
+  align-items: flex-start;
+  padding-top: 200px; /* 상단에서 떨어뜨릴 거리 */
+}
+
+
+
+/* 2,3,4 섹션의 컨텐츠 수직 정렬 */
+.page:not(:first-child) .content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 40px; /* 헤더 높이만큼 상단 패딩 추가 */
+}
+
+/* 2,3,4 섹션의 타이틀과 서브타이틀 간격 조정 */
+.page:not(:first-child) .content .title {
+  margin-bottom: 0;
 }
 
   
@@ -71,6 +89,7 @@
   .content.fade-in {
     opacity: 1;
     transform: translateY(0);
+  
   }
   
   /* 텍스트를 화면 오른쪽에 위치 */
@@ -140,11 +159,12 @@
   .main-image {
     position: absolute;
     right: 10%;
-    top: 20%;
+    top: 55%;
     width: 40%;
     height: auto;
     border-radius: 10%;
     animation: bounce-in 1.5s ease-out;
+    transform: translateY(-50%); /* 수직 중앙 정렬을 위해 추가 */
   }
   
   .bounce-enter-active {
@@ -156,9 +176,15 @@
   }
   
   @keyframes bounce-in {
-    0% { transform: scale(0); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+    0% { 
+      transform: translateY(-50%) scale(0); /* translateY를 유지하면서 scale 적용 */
+    }
+    50% { 
+      transform: translateY(-50%) scale(1.1);
+    }
+    100% { 
+      transform: translateY(-50%) scale(1);
+    }
   }
   
   /* 미디어 쿼리 - 작은 화면에서의 스타일 */
@@ -171,3 +197,94 @@
       font-size: 1.1rem;
     }
   }
+  /* ------------ */
+  
+/* 반응형 디자인 */
+@media screen and (max-width: 1440px) {
+  .page:not(:first-child) {
+    padding-top: 150px;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+  }
+  
+  .page:not(:first-child) .content {
+    max-width: 500px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .page:not(:first-child) .title {
+    margin-bottom: 20px; /* 큰 화면에서는 25px, 중간 화면에서는 20px */
+  }
+  .page:not(:first-child) {
+    padding-top: 120px;
+  }
+  
+  .title {
+    font-size: 2.2rem;
+  }
+  
+  .page:not(:first-child) .content {
+    max-width: 450px;
+  }
+  
+  .subtitle {
+    font-size: 1.2rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  
+  .page {
+    padding: 0 5%;
+  }
+  
+  .page:not(:first-child) {
+    padding-top: 100px;
+    align-items: center;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .page:not(:first-child) .content {
+    max-width: 100%;
+    text-align: center;
+  }
+  
+  .subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .page:first-child .title {
+    padding-top: 20%;
+  }
+}
+
+@media screen and (max-height: 800px) {
+  .page:not(:first-child) {
+    padding-top: 100px;
+  }
+  
+  .page:first-child .title {
+    padding-top: 20%;
+  }
+
+  @keyframes fade-in {
+    0% { 
+      opacity: 0;
+      transform: translateY(-50%);  /* 시작 위치를 최종 위치와 동일하게 설정 */
+    }
+    100% { 
+      opacity: 1;
+      transform: translateY(-50%);  /* 끝 위치도 동일하게 유지 */
+    }
+  }
+
+  
+}
+
+  

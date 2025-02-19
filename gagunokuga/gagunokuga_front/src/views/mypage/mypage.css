@@ -1,15 +1,14 @@
 /* 마이페이지 */
 /* 전체 컨테이너 수평 배치 및 50:50 비율 */
 .content-wrapper {
-    margin-top: 0;
     display: flex;
     width: 100%;
     min-height: 100vh;
-    justify-content: flex-start; /* 왼쪽 정렬로 변경 */
-    align-items: center;
-    gap: 30px; /* 간격 줄임 */
+    gap: 2rem;
     background: #c8bdb220;
-    padding: 0 50px; /* 좌우 패딩 추가 */
+    padding: 0 3rem;
+    align-items: center;  /* 중앙 정렬로 변경 */
+    justify-content: center; /* 수평 중앙 정렬 추가 */     /* 상단 여백 추가 */
 }
 
 
@@ -20,10 +19,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
     width: 100%;
     max-width: 400px;
-    margin-left: 150px; /* 왼쪽 여백 추가하여 오른쪽으로 이동 */
+    padding: 1.25rem;
+    margin-left: 9.375rem;/* 왼쪽 여백 추가하여 오른쪽으로 이동 */
 }
 
 /* 사용자 이미지 스타일링 */
@@ -45,7 +44,7 @@
     justify-content: center;
     gap: 8px;
     padding: 12px 24px;
-    background-color: #003366;
+    background-color: #302e19ea;
     color: white;
     border: none;
     border-radius: 8px;
@@ -58,7 +57,7 @@
 }
 
 .blue-btn:hover {
-    background-color: #4338ca;
+    background-color: #302e19ea;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
 }
@@ -74,6 +73,8 @@
 .mypage-info {
     flex-direction: column;
     text-align: center;
+    align-items: flex-start;  /* 왼쪽 정렬로 변경 */
+    margin-top: 2rem;       /* 상단 여백 추가 */
 }
 
 /* 마이페이지 - 정보 */
@@ -83,10 +84,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
-    padding: 20px;
     width: 100%;
     height: 100%;
+    padding: 1.25rem;
 }
 
 /* 닉네임과 이메일의 텍스트 크기 설정 */
@@ -129,7 +129,7 @@ button {
 
 /* 남색 버튼 기본 색상 */
 .blue-btn {
-    background-color: #003366; /* 남색 */
+    background-color: #302e19ea; /* 남색 */
     color: white;
 }
 
@@ -141,7 +141,7 @@ button {
 
 /* 버튼 hover 효과 */
 .blue-btn:hover {
-    background-color: #4338ca;
+    background-color: #302e19;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
 }
@@ -160,7 +160,7 @@ button {
     margin: 1rem auto;
     padding: 2rem;
     background: white;
-    border-radius: 16px;
+    border-radius: 1rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
  }
 
@@ -225,14 +225,17 @@ button {
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
  }
 
- /* 하단 버튼 컨테이너 */
- .form-box > .blue-btn,
- .form-box > .red-btn {
-    padding: 0.6rem 1rem;
-    font-size: 0.9rem;
-    width: 100%;
-    margin-top: 0.5rem;
- }
+
+ .form-box .blue-btn {
+    margin-top: 1.5rem;
+}
+
+.form-box .red-btn {
+    margin-top: 0.75rem;
+    background-color: #f3f4f6;
+    color: #4b5563;
+}
+
 
  /* 에러 메시지 */
  .error-message {
@@ -247,19 +250,19 @@ button {
  }
 
  /* 수정/취소 버튼 간격 */
- .form-box > .blue-btn {
+ .form-box .blue-btn {
     margin-top: 1.5rem;
  }
 
- .form-box > .red-btn {
+ .form-box .red-btn {
     margin-top: 0.75rem;
     background-color: #f3f4f6;
     color: #4b5563;
- }
+}
 
- .form-box > .red-btn:hover {
+
+ .form-box .red-btn:hover {
     background-color: #e5e7eb;
     color: #1f2937;
-    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
- }
+}
