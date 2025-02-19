@@ -15,3 +15,38 @@
   background-size: 20px 20px;
   user-select: none;
 }
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* 저장버튼 */
+.capture {
+  position: absolute;
+  right: 20px;  /* 오른쪽 20px */
+  top: 10px;  /* 위쪽 20px */
+
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 14px;
+  text-decoration: none;
+  margin-bottom: 20px;
+}
