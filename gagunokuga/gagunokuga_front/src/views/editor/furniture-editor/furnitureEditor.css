@@ -39,14 +39,13 @@
   position: absolute;
   right: 20px;  /* 오른쪽 20px */
   top: 10px;  /* 위쪽 20px */
-
+  font-family: '42dot Sans', serif;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
   background: none;
   border: none;
   color: #666;
-  font-size: 14px;
   text-decoration: none;
   margin-bottom: 20px;
 }
