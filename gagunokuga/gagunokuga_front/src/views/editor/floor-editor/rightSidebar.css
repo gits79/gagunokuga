@@ -24,6 +24,10 @@
   margin-left: auto; 
 }
 
+.back-button:hover {
+  cursor: pointer;
+}
+
 .back-button svg {
   width: 24px;
   height: 24px;

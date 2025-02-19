@@ -108,6 +108,7 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router'  // 추가
 export default {
   name: 'RealtimeCollaborationSection',
   data() {

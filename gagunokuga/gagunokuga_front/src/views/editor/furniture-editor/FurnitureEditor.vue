@@ -9,12 +9,14 @@ import axiosInstance from "@/api/axiosInstance.js";
 import { Canvg } from 'canvg';
 import { captureScreen } from "./furnitureCapture.js";
 import UserShare from "../../room-users/UserShareTrigger.vue";
+import { useEditorStore } from '../editorStore';
 
 const store = useFurnitureEditorStore();
 const canvas = ref(null);
 const route = useRoute();
 const router = useRouter();
 const baseURL = import.meta.env.VITE_API_URL;
+const editorStore = useEditorStore();
 
 const onDrop = (event) => { // 가구 생성 시 이벤트 전달
   event.preventDefault();
@@ -22,7 +24,7 @@ const onDrop = (event) => { // 가구 생성 시 이벤트 전달
 };
 
 onMounted(async () => {
-  await store.initializeWebSocket(route.params.roomId); // WebSocket 연결 초기화
+  await store.initializeWebSocket(editorStore.roomId); // WebSocket 연결 초기화
   // await store.subscribeToRoom(); // 구독
   await store.initializeCanvas(canvas.value);
   await store.fetchWalls();
