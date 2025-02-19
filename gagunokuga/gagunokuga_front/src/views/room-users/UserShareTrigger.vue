@@ -45,15 +45,24 @@
       xmlns="http://www.w3.org/2000/svg"
       class="chat-icon"
     >
+      <!-- 사람 아이콘 -->
       <path 
-        d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.663 3.04094 17.0829 4.73812 18.875L2.72681 21.1705C2.44361 21.4937 2.67314 22 3.10288 22H12Z" 
+        d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" 
         fill="currentColor"
       />
-      <circle cx="7" cy="12" r="1.5" fill="white"/>
-      <circle cx="12" cy="12" r="1.5" fill="white"/>
-      <circle cx="17" cy="12" r="1.5" fill="white"/>
+      <path 
+        d="M12 13C8.13401 13 5 15.134 5 18V19C5 19.5523 5.44772 20 6 20H18C18.5523 20 19 19.5523 19 19V18C19 15.134 15.866 13 12 13Z" 
+        fill="currentColor"
+      />
+      <!-- 플러스 기호 -->
+      <circle cx="19" cy="5" r="3" fill="#E53E3E"/>
+      <path 
+        d="M19 3.5V6.5M17.5 5H20.5" 
+        stroke="white" 
+        stroke-width="1.5" 
+        stroke-linecap="round"
+      />
     </svg>
-    사용자 공유
   </div>
 
   <UserShareModal :isOpen="showModal" title="사용자 초대대" @close="showModal = false" />
@@ -69,18 +78,17 @@
 <style scoped>
 .chat-toggle {
   position: fixed;
-  bottom: 100px;
+  bottom: 80px;
   right: 20px;
   width: 50px;
   height: 50px;
-  background-color: #4a4d52;
+  background-color: #2D3748;
   border-radius: 25px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(45, 55, 72, 0.2);
-  z-index: 1000;
   transition: all 0.3s ease;
 }
 
