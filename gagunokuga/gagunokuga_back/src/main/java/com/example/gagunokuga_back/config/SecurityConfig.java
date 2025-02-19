@@ -59,7 +59,7 @@ public class SecurityConfig {
                         auth.requestMatchers(HttpMethod.GET,"/api/users").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/api/users").permitAll()
                                 .requestMatchers("/ws/**").permitAll()
-//                                .requestMatchers("/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/articles", "/api/articles/{articleId}", "/api/articles/{articleId}/comments").permitAll()
                                 .requestMatchers("/api/users/login", "/api/users/email",
                                         "/api/users/email/verify", "/api/users/nickname","api/users/pwd/reset", "/api/oauth/login/**").permitAll()
                                 .requestMatchers("/api/health").permitAll()
