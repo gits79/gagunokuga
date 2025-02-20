@@ -5,31 +5,28 @@
     <div class="article-header">
       <!-- 옵션 메뉴 (로그인한 사용자가 작성자일 경우) -->
       <div v-if="isAuthor" class="article-options">
-        <button @click="toggleMenu" class="menu-button">
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="6" r="2" fill="currentColor"/>
-      <circle cx="12" cy="12" r="2" fill="currentColor"/>
-      <circle cx="12" cy="18" r="2" fill="currentColor"/>
-    </svg>
-  </button>
+        <div @click="toggleMenu" class="menu-button">
+          <svg viewBox="0 0 15 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="6" r="5" fill="currentColor" />
+            <circle cx="12" cy="20" r="5" fill="currentColor" />
+            <circle cx="12" cy="34" r="5" fill="currentColor" />
+          </svg>
+        </div>
         <div v-if="showMenu" class="menu-dropdown">
           <button @click="editArticle" class="menu-item">수정하기</button>
           <button @click="deleteArticle" class="menu-item delete-button">삭제하기</button>
         </div>
       </div>
-
       <!-- 제목 -->
       <h1 class="article-title">{{ store.article.title }}</h1>
     </div>
 
-      <!-- 작성자 정보 및 팔로우 버튼 -->
+    <!-- 작성자 정보 및 팔로우 버튼 -->
     <div class="author-section">
       <div class="author-info">
-        <img :src="store.article.profileImageUrl" 
-             class="author-image" 
-             alt="profile_image" />
+        <img :src="store.article.profileImageUrl" class="author-image" alt="profile_image" />
         <div class="author-details">
-        <span class="author-name">{{ store.article.nickname }}</span>
+          <span class="author-name">{{ store.article.nickname }}</span>
         </div>
       </div>
       <!-- <div class="action-buttons">
@@ -40,19 +37,16 @@
 
     <!-- 이미지 리스트 -->
     <div class="image-gallery">
-      <img v-for="(image, index) in store.article.articleImages" 
-           :key="index" 
-           :src="image.imageUrl" 
-           class="article-image" 
-           alt="Article image" />
+      <img v-for="(image, index) in store.article.articleImages" :key="index" :src="image.imageUrl"
+        class="article-image" alt="Article image" />
     </div>
-    
+
     <!-- 본문 내용 -->
     <div class="article-content">{{ store.article.content }}</div>
-    
+
     <!-- 날짜 및 통계 정보 -->
     <div class="article-meta">
-        <span>{{ formattedDate }}</span>
+      <span>{{ formattedDate }}</span>
     </div>
 
     <!-- 좋아요 및 공유 버튼 -->
