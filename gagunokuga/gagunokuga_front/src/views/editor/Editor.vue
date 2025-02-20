@@ -10,25 +10,19 @@ import { useEditorStore } from './editorStore';
 const route = useRoute();
 const loginStore = useLoginStore();
 const store = useEditorStore();
-const editor = ref(FurnitureEditor);
 
 onMounted(async () => {
     await loginStore.fetchUserInfo();
     await store.initEditor(route.params.roomId);
     await store.getRole(loginStore.state.nickname);
-    if (store.changeEditorMode() === 'floor') {
-        store.editor = FloorEditor;
-    } else {
-        store.editor = FurnitureEditor;
-    }
+    store.changeEditorMode()
 });
 </script>
 
 <template>
-    <component :is="editor"/>
-    <!-- <FloorEditor v-if="store.editorMode === 'floor'"/>
+    <FloorEditor v-if="store.editorMode === 'floor'"/>
     <FurnitureEditor v-if="store.editorMode === 'furniture'"/>
-    <NoRoomAccess v-if="store.editorMode === 'none'"/> -->
+    <NoRoomAccess v-if="store.editorMode === 'none'"/>
 </template>
 
 <style scoped>

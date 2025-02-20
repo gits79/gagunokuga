@@ -1,10 +1,8 @@
 import { defineStore } from "pinia";
 import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
 import apiClient from "@/api/axiosInstance";
 
 export const useEditorStore = defineStore("editorStore", () => {
-    const router = useRouter();
     const roomId = ref(null);
     const role = ref('');
     const isExistsFurniture = ref(false);
@@ -48,7 +46,7 @@ export const useEditorStore = defineStore("editorStore", () => {
     const changeEditorMode = (mode) => {
         if (mode) {
             editorMode.value = mode;
-            return editorMode.value;
+            return;
         }
         if (role.value === 'host') {
             if (isExistsFurniture.value) {
@@ -61,7 +59,6 @@ export const useEditorStore = defineStore("editorStore", () => {
         } else {
             editorMode.value = 'none'
         }
-        return editorMode.value;
     };
 
     return {
