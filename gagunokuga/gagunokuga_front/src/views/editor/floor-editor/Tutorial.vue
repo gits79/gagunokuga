@@ -45,7 +45,7 @@
       }
     },
     {
-      text: "여기서 그리드 길이를 껐다 킬 수 있어요",
+      text: "여기서 그리드와 길이를 껐다 킬 수 있어요",
       position: "bottom-left",
       highlight: {
         bottom: "8px",
