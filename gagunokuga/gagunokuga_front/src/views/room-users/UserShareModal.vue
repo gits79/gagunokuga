@@ -9,35 +9,18 @@
       <div class="modal-body">
         <!-- 현재 사용자 및 초대 가능 인원 -->
         <div class="user-status">
-          <p>현재 사용자: {{ currentUserCount }}명 / 최대 {{maxUsers}}명</p>
+          <p>현재 사용자: {{ currentUserCount }}명 / 최대 {{ maxUsers }}명</p>
           <p>남은 초대 가능 인원: {{ remainingInvites }}명</p>
         </div>
 
         <!-- 닉네임 검색 입력 -->
         <div class="search-container">
-          <input
-            v-model="searchQuery"
-            @input="searchUsers"
-            placeholder="닉네임 검색"
-            class="search-input"
-            :disabled="!isHost"
-          />
+          <input v-model="searchQuery" @input="searchUsers" placeholder="닉네임 검색" class="search-input"
+            :disabled="!isHost" />
 
-          <ul
-            v-if="isHost && searchQuery.trim() && searchResults.length > 0"
-            class="search-results"
-          >
-            <li
-              v-for="user in searchResults"
-              :key="user.nickname"
-              @click="selectUser(user)"
-              class="search-item"
-            >
-              <img
-                :src="user.profileImageUrl || defaultProfileImage"
-                class="profile-img"
-                alt="프로필 이미지"
-              />
+          <ul v-if="isHost && searchQuery.trim() && searchResults.length > 0" class="search-results">
+            <li v-for="user in searchResults" :key="user.nickname" @click="selectUser(user)" class="search-item">
+              <img :src="user.profileImageUrl || defaultProfileImage" class="profile-img" alt="프로필 이미지" />
               <span>{{ user.nickname }}</span>
             </li>
           </ul>
@@ -59,11 +42,7 @@
 
         <!-- 초대 버튼 -->
         <div class="modal-footer">
-          <button
-            @click="validateAndInvite"
-            class="invite-btn"
-            :disabled="!isHost || selectedUsers.length === 0"
-          >
+          <button @click="validateAndInvite" class="invite-btn" :disabled="!isHost || selectedUsers.length === 0">
             초대
           </button>
         </div>
@@ -74,22 +53,14 @@
           <div class="user-list-scroll">
             <ul v-if="users.length > 0">
               <li v-for="user in users" :key="user.nickname" class="user-item">
-                <img
-                  :src="user.profileImageUrl || defaultProfileImage"
-                  alt="프로필 이미지"
-                  class="profile-img"
-                />
+                <img :src="user.profileImageUrl || defaultProfileImage" alt="프로필 이미지" class="profile-img" />
                 <div class="user-info">
                   <span class="nickname">
                     {{ user.nickname }}
                     <span v-if="user.isHost">(방장)</span>
                   </span>
                 </div>
-                <button
-                  v-if="isHost && !user.isHost"
-                  @click="kickUser(user.nickname)"
-                  class="kick-btn"
-                >
+                <button v-if="isHost && !user.isHost" @click="kickUser(user.nickname)" class="kick-btn">
                   내보내기
                 </button>
               </li>
