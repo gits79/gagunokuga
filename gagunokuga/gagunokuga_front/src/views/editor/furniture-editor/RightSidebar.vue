@@ -60,7 +60,7 @@
         <label>크기</label>
         <div class="position-group">
           <div class="position-item">
-            <span class="sub-label">너비</span>
+            <span class="sub-label">가로</span>
             <div class="control-group">
               <input 
                 type="number" 
@@ -74,7 +74,7 @@
             </div>
           </div>
           <div class="position-item">
-            <span class="sub-label">높이</span>
+            <span class="sub-label">세로</span>
             <div class="control-group">
               <input 
                 type="number" 
