@@ -20,7 +20,7 @@ public class JwtTokenProvider {
     private final Key key;
 
     private final long accessTokenValidity = 3600000; //1시간
-    private final long refreshTokenValidity = 8640000; //1일
+    private final long refreshTokenValidity = 86400000; //1일
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secret) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
