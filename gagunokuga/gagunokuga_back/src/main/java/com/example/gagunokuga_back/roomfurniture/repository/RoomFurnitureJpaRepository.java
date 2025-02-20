@@ -8,4 +8,6 @@ public interface RoomFurnitureJpaRepository extends JpaRepository<RoomFurniture,
     RoomFurniture[] findAllByRoom_Id(Long roomId);
 
     void deleteAllByRoom(Room room);
+
+    long countRoomFurnituresByRoom(Room room);
 }

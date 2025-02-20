@@ -4,6 +4,7 @@ import com.example.gagunokuga_back.furniture.repository.FurnitureRepository;
 import com.example.gagunokuga_back.room.domain.Room;
 import com.example.gagunokuga_back.room.repository.RoomRepository;
 import com.example.gagunokuga_back.roomfurniture.domain.RoomFurniture;
+import com.example.gagunokuga_back.roomfurniture.dto.RoomFurnitureCountResponse;
 import com.example.gagunokuga_back.roomfurniture.mapper.RoomFurnitureMapper;
 import com.example.gagunokuga_back.roomfurniture.repository.RoomFurnitureJpaRepository;
 import com.example.gagunokuga_back.roomfurniture.dto.RoomFurnitureDto;
@@ -123,6 +124,14 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
     @Override
     public void deleteRoomFurnitures(Room room) {
         roomFurnitureRepository.deleteAllByRoom(room);
+    }
+
+    @Override
+    public RoomFurnitureCountResponse count(Long roomId) {
+        Room room = roomRepository.getReferenceById(roomId);
+        Long count = roomFurnitureRepository.countRoomFurnituresByRoom(room);
+        return RoomFurnitureCountResponse.builder()
+                .count(count).build();
     }
 
 }

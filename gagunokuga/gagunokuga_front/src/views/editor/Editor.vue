@@ -11,7 +11,6 @@ const route = useRoute();
 const loginStore = useLoginStore();
 const store = useEditorStore();
 
-
 onMounted(async () => {
     await loginStore.fetchUserInfo();
     await store.initEditor(route.params.roomId);

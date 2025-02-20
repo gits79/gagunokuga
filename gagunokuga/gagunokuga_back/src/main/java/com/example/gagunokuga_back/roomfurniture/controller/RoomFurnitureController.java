@@ -1,5 +1,6 @@
 package com.example.gagunokuga_back.roomfurniture.controller;
 
+import com.example.gagunokuga_back.roomfurniture.dto.RoomFurnitureCountResponse;
 import com.example.gagunokuga_back.websocket.dto.FurnitureListDto;
 import com.example.gagunokuga_back.roomfurniture.service.RoomFurnitureService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,11 @@ import org.springframework.web.bind.annotation.*;
 public class RoomFurnitureController {
     private final RoomFurnitureService roomFurnitureService;
     private final SimpMessageSendingOperations template;
+
+    @GetMapping("/count")
+    public ResponseEntity<RoomFurnitureCountResponse> countRoomFurniture(@PathVariable("roomId") Long roomId) {
+        return ResponseEntity.ok().body(roomFurnitureService.count(roomId));
+    }
 
     @GetMapping("/fetch")   // 룸 입장 시 캐싱 된 가구 가져오기
     public ResponseEntity<FurnitureListDto> fetchAllRoomFurniture(@PathVariable("roomId") Long roomId) {

@@ -1,6 +1,7 @@
 package com.example.gagunokuga_back.roomfurniture.service;
 
 import com.example.gagunokuga_back.room.domain.Room;
+import com.example.gagunokuga_back.roomfurniture.dto.RoomFurnitureCountResponse;
 import com.example.gagunokuga_back.roomfurniture.dto.RoomFurnitureDto;
 import com.example.gagunokuga_back.websocket.dto.FurnitureEventDto;
 import com.example.gagunokuga_back.websocket.dto.FurnitureListDto;
@@ -16,4 +17,5 @@ public interface RoomFurnitureService {
     public void store(Long roomId, RoomFurnitureDto roomFurnitureDto);
     public void delete(Long roomId, RoomFurnitureDto roomFurnitureDto);
     public void deleteRoomFurnitures(Room room);
+    public RoomFurnitureCountResponse count(Long roomId);
 }
