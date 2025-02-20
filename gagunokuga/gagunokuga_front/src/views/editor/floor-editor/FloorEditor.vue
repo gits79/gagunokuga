@@ -21,7 +21,7 @@
   };
 
   onMounted(() => {
-    store.fetchWalls(editorStore.roomId);
+    store.fetchWalls(route.params.roomId);
     store.initializeCanvas(canvas.value);
     window.addEventListener('keydown', store.handleKeyDown);
     window.addEventListener('keyup', store.handleKeyUp);
