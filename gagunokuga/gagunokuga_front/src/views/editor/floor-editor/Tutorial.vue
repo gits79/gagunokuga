@@ -28,9 +28,9 @@
   </template>
   
   <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted  } from 'vue';
   
-  const showTutorial = ref(true);
+  const showTutorial = ref(false);
   const stepIndex = ref(0);
   
   const tutorialSteps = [
@@ -68,10 +68,19 @@
     if (!currentStep.value.highlight) return {};
     return currentStep.value.highlight;
   });
+
+  onMounted(() => {
+  const hasSeenTutorial = localStorage.getItem('hasSeenFloorEditorTutorial');
+  if (!hasSeenTutorial) {
+    showTutorial.value = true;
+  }
+});
   
   const nextStep = () => {
     if (isLastStep.value) {
       showTutorial.value = false;
+
+      localStorage.setItem('hasSeenFloorEditorTutorial', 'true');
       return;
     }
     stepIndex.value++;
