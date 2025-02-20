@@ -10,6 +10,7 @@ import { Canvg } from 'canvg';
 import { captureScreen } from "./furnitureCapture.js";
 import UserShare from "../../room-users/UserShareTrigger.vue";
 import { useEditorStore } from '../editorStore';
+import axios from "axios";
 
 const store = useFurnitureEditorStore();
 const canvas = ref(null);
@@ -38,7 +39,6 @@ onBeforeUnmount(() => {
 
 const handleCapture = async () => {
   await captureScreen(canvas, route.params.roomId, baseURL);
-
 };
 
 </script>
