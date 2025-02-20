@@ -46,7 +46,7 @@ export const useLoginStore = defineStore("loginStore", () => {
         state.token = response.data.accessToken;
         localStorage.setItem("accessToken", state.token);
         axios.defaults.headers.common["Authorization"] = `Bearer ${state.token}`;
-
+        setupAxiosInterceptors(); // interceptor 설정
         await router.push("/");
       } else {
         alert("로그인 실패: 서버에서 토큰이 반환되지 않았습니다.");
@@ -128,6 +128,7 @@ export const useLoginStore = defineStore("loginStore", () => {
       }
     } catch (error) {
       console.error("사용자 정보 불러오기 실패:", error);
+      throw error; // 에러를 상위로 전파
     }
   };
 
@@ -140,6 +141,58 @@ export const useLoginStore = defineStore("loginStore", () => {
     state.password = "";
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    delete axios.defaults.headers.common["Authorization"];
+  };
+
+  const setupAxiosInterceptors = () => {
+    console.log('Interceptor setup called'); // 인터셉터 설정 시점 로그
+    console.log('Current interceptors:', axios.interceptors.response.handlers); // 현재 등록된 인터셉터 수 확인
+  
+  // 기존 인터셉터 제거
+  axios.interceptors.response.handlers = [];
+  
+  // 응답 인터셉터 설정
+  axios.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      if (error.response?.status === 401) {
+        console.log('Token expired, logging out');
+        // 토큰이 만료되었을 때 즉시 로그아웃 처리
+        logout();
+        router.push('/login');
+        return Promise.reject(error);
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  // 요청 인터셉터 설정
+  axios.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        // 토큰 만료 확인
+        try {
+          const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+          const expirationTime = tokenPayload.exp * 1000;
+          
+          if (Date.now() >= expirationTime) {
+            console.log('Token expired during request');
+            logout();
+            router.push('/login');
+            return Promise.reject('Token expired');
+          }
+        } catch (error) {
+          console.error('Error checking token:', error);
+        }
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
   };
 
   return {
@@ -150,5 +203,6 @@ export const useLoginStore = defineStore("loginStore", () => {
     passwordReset,
     fetchUserInfo,
     logout,
+    setupAxiosInterceptors,
   };
 }, {persist: true});
