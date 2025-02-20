@@ -67,7 +67,7 @@ const sections = ref([
     contents: [
       {type: 'h2', text: '간편하고 정확한 <br> 도면설계부터 가구배치'},
       {type: 'p', text: '제공되는 기본 레이아웃으로 쉽게 시작하고,<br>직관적인 도구로 정확하게 공간을 설계하세요.<br>간단한 드래그로 가구를 배치하고 조정할 수 있습니다.'},
-      {type: 'img', src: "/main.gif"}
+      {type: 'img', src: "/main1.gif"}
     ],
   },
   {
