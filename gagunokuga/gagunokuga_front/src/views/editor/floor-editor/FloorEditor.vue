@@ -5,6 +5,7 @@
   import LeftSidebar from "./LeftSidebar.vue";
   import RightSidebar from "./RightSidebar.vue";
   import { useEditorStore } from '../editorStore';
+  import Tutorial from "./Tutorial.vue";
 
   const store = useFloorEditorStore();
   const canvas = ref(null);
@@ -42,6 +43,7 @@
 <template>
   <div class="editor">
     <LeftSidebar />
+    <Tutorial/>
     
     <div
       class="canvas"
