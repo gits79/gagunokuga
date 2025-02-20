@@ -62,7 +62,7 @@ onMounted(() => {
   padding: 24px;
   border-radius: 12px;
   text-align: center;
-  width: 500px;
+  width: 350px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   position: relative;
 }
