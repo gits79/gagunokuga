@@ -1,12 +1,14 @@
 <script setup>
 import { useRoomListStore } from "../../views/room/roomStore";
 import { useLoginStore } from "@/views/login/login";  // 로그인 상태를 가져옵니다
-import { computed, watchEffect } from "vue";
+import { computed, watchEffect, ref } from "vue";
 import { useRouter } from "vue-router";
+import CreateRoomModal from "../../views/room/CreateRoomModal.vue";
 
 const loginStore = useLoginStore();  // 로그인 상태 초기화
 const roomStore = useRoomListStore();
 const router = useRouter();
+const isModalOpen = ref(false); 
 
 // 로그인 상태에 따라 메뉴 항목을 동적으로 처리
 const isLoggedIn = computed(() => !!loginStore.state.token);  // 로그인 상태 판단
@@ -26,29 +28,31 @@ const logout = () => {
   loginStore.logout();  // loginStore의 logout 메서드 호출
 };
 
-const handleCreateRoom = async () => {
 
-  if(!isLoggedIn.value){
-    router.push({ name: 'Login'})
+const showCreateRoomModal = () => {
+  if (!isLoggedIn.value) {
+    router.push({ name: 'Login' }); 
   } else {
-    const name = prompt('새로운 방 이름을 입력하세요:')
-    if (name?.trim()) {
-      await roomStore.createRoom(name.trim());
-      await roomStore.fetchRooms();
-      const roomId = roomStore.rooms.at(-1).roomId;
-      router.push({ name: 'FloorEditor', params: { roomId } })
-    }
+    isModalOpen.value = true; 
   }
-}
+};
+
+const createRoom = async (roomName) => {
+  const roomData = await roomStore.createRoom(roomName);
+  if (roomData && roomData.roomId) {
+    isModalOpen.value = false;
+    router.push({ name: 'Editor', params: { roomId: roomData.roomId } });
+  }
+};
+
 
 const handleMyRoom = async () => {
-  if (!isLoggedIn.value){
-    router.push({ name: 'Login'})
+  if (!isLoggedIn.value) {
+    router.push({ name: 'Login' });
   } else {
-    router.push({ name: 'Room' })
+    router.push({ name: 'Room' });
   }
 }
-
 </script>
 
 <template>
@@ -64,7 +68,7 @@ const handleMyRoom = async () => {
     <nav class="center-nav">
       <ul>
         <li><router-link to="/article">커뮤니티</router-link></li>
-        <li><a @click="handleCreateRoom">홈 만들기</a></li>
+        <li><a @click="showCreateRoomModal">홈 만들기</a></li>
         <li><a @click="handleMyRoom">마이홈</a></li>
         <li v-if="isLoggedIn && !isProvided"><router-link to="/pwdcheck">마이페이지</router-link></li>
       </ul>
@@ -84,11 +88,12 @@ const handleMyRoom = async () => {
         <li v-if="isLoggedIn" @click="logout" class="logout"><router-link to="/login">로그아웃</router-link></li>
       </ul>
     </nav>
+
+    <!-- 방 생성 모달 -->
+    <CreateRoomModal v-if="isModalOpen" @close="isModalOpen = false" @create="createRoom" />
   </header>
 </template>
 
-
 <style scoped>
 @import "./theHeader.css";
-
 </style>
