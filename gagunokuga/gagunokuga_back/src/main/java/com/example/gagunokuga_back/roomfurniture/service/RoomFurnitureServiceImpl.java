@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
@@ -87,11 +88,13 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
         }
         roomFurnitureRepository.saveAll(toSave);
         roomFurnitureRepository.deleteAll(toDelete);
-        redisTemplate.delete("room:" + roomId + ":furniture");
+        redisTemplate.expire("room:" + roomId + ":furniture", 60L, TimeUnit.SECONDS);
+//        redisTemplate.delete("room:" + roomId + ":furniture");
     }
 
     @Override
     public void loadAll(Long roomId) { // DB -> Redis
+        redisTemplate.persist("room:" + roomId + ":furniture");
         redisTemplate.opsForValue().set("room:" + roomId + ":furniture:index", -1L);
         for (RoomFurniture roomFurniture : roomFurnitureRepository.findAllByRoom_Id(roomId)) {
             RoomFurnitureDto roomFurnitureDto = roomFurnitureMapper.toRoomFurnitureDto(

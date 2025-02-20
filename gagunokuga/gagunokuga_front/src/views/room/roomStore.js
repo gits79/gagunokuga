@@ -23,8 +23,9 @@ export const useRoomListStore = defineStore('roomList', () => {
       if (!roomName.trim()) {
         throw new Error('방 이름은 필수입니다.')
       }
-      await axios.post(`${baseURL}/api/rooms`, { roomName })
+      const response = await axios.post(`${baseURL}/api/rooms`, { roomName })
       await fetchRooms()
+      return response.data
     } catch (error) {
       console.error('방 생성 실패:', error)
       alert(error.response?.data?.message || '방 생성에 실패했습니다.')

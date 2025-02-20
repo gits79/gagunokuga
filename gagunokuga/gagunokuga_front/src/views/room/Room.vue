@@ -3,32 +3,50 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRoomListStore } from './roomStore'
 import defaultThumbnail from '@/assets/gagunokugaLogo.png'
+import CreateRoomModal from './CreateRoomModal.vue'
+import DeleteRoomModal from './DeleteRoomModal.vue'
 
 const store = useRoomListStore()
 const router = useRouter()
 const editingRoomId = ref(null)
 const editedRoomName = ref('')
 const originalRoomName = ref('')
+const isModalOpen = ref(false)
+const isDeleteModalOpen = ref(false)
+const roomIdToDelete = ref(null)
 
 onMounted(() => {
   store.fetchRooms()
 })
 
-// ✅ 방 생성
-const handleCreateRoom = async () => {
-  const name = prompt('새로운 방 이름을 입력하세요:')
-  if (name?.trim()) {
-    await store.createRoom(name.trim())
+// ✅ 방 생성 모달 열기
+const showCreateRoomModal = () => {
+  isModalOpen.value = true
+}
+
+//  방 삭제 모달 열기
+const openDeleteRoomModal = (roomId) => {
+  roomIdToDelete.value = roomId
+  isDeleteModalOpen.value = true
+}
+
+//  방 삭제
+const deleteRoom = async () => {
+  if (roomIdToDelete.value) {
+    await store.deleteRoom(roomIdToDelete.value)
+    isDeleteModalOpen.value = false
   }
 }
 
-// ✅ 방 삭제
-const handleDeleteRoom = async (roomId) => {
-  const confirmDelete = confirm('정말 이 방을 삭제하시겠습니까?')
-  if (confirmDelete) {
-    await store.deleteRoom(roomId)
+// ✅ 방 생성
+const createRoom = async (name) => {
+  if (name?.trim()) {
+    const roomData = await store.createRoom(name.trim());
+    isModalOpen.value = false;
+    // 방 생성 후 에디터로 이동
+    router.push({ name: 'Editor', params: { roomId: roomData.roomId } });
   }
-}
+};
 
 // ✅ 편집 모드 활성화
 const startEditing = (room) => {
@@ -76,18 +94,21 @@ const goToEditor = (roomId) => {
           </div>
           <div>
             <button @click="goToEditor(room.roomId)">에디터로 이동</button>
-            <button @click="handleDeleteRoom(room.roomId)">삭제</button>
+            <button @click="openDeleteRoomModal(room.roomId)">삭제</button>
           </div>
         </li>
       </ul>
       <div>
-        <button class="create-room" @click="handleCreateRoom">새 홈 만들기</button>
+        <button class="create-room" @click="showCreateRoomModal">새 홈 만들기</button>
       </div>
     </div>
     <div v-else class="no-room-container">
       <p class="no-room">현재 생성된 방이 없습니다. 방을 생성해 주세요.</p>
-      <button class="first-room" @click="handleCreateRoom">새 홈 만들기</button>
+      <button class="first-room" @click="showCreateRoomModal">새 홈 만들기</button>
     </div>
+
+    <CreateRoomModal v-if="isModalOpen" @close="isModalOpen = false" @create="createRoom" />
+    <DeleteRoomModal v-if="isDeleteModalOpen" @close="isDeleteModalOpen = false" @delete="deleteRoom" />
   </div>
 </template>
 

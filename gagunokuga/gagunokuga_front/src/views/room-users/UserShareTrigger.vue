@@ -30,7 +30,7 @@
     </svg>
   </div>
 
-  <UserShareModal :isOpen="showModal" title="사용자 초대대" @close="showModal = false" />
+  <UserShareModal :isOpen="showModal" title="사용자 초대" @close="showModal = false" />
   </template>
   
   <script setup>

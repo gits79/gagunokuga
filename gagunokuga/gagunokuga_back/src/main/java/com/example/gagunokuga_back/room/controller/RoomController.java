@@ -1,9 +1,6 @@
 package com.example.gagunokuga_back.room.controller;
 
-import com.example.gagunokuga_back.room.dto.CreateRoomRequest;
-import com.example.gagunokuga_back.room.dto.RoomListResponse;
-import com.example.gagunokuga_back.room.dto.RoomThumbnail;
-import com.example.gagunokuga_back.room.dto.UpdateRoomNameRequest;
+import com.example.gagunokuga_back.room.dto.*;
 import com.example.gagunokuga_back.room.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -26,9 +23,8 @@ public class RoomController {
     private final RoomService roomService;
 
     @PostMapping
-    public ResponseEntity<Void> createRoom(@RequestBody CreateRoomRequest createRoomRequest) {
-        roomService.createRoom(createRoomRequest.getRoomName(),createRoomRequest.getThumbnailUrl());
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<RoomResponse> createRoom(@RequestBody CreateRoomRequest createRoomRequest) {
+        return ResponseEntity.ok(roomService.createRoom(createRoomRequest.getRoomName(),createRoomRequest.getThumbnailUrl()));
     }
 
     @GetMapping
