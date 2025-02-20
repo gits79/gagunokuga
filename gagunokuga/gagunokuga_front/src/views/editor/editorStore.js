@@ -6,16 +6,15 @@ export const useEditorStore = defineStore("editorStore", () => {
     const roomId = ref(null);
     const role = ref('');
     const isExistsFurniture = ref(false);
-    const editorMode = ref('none');
+    const editorMode = ref('');
     // const currentNickname = computed(() => loginStore.state.nickname);
 
     const initEditor = async (id) => {
         roomId.value = id;
         try {
-            const response = await apiClient.get(`/api/rooms/${id}/furnitures/fetch`);
-            const length = response.data.furnitureList.length;
-            console.log("불러온 가구: ", response.data.furnitureList)
-            if (0 < length) {
+            const response = await apiClient.get(`/api/rooms/${id}/furnitures/count`);
+            const count = response.data.count;
+            if (0 < count) {
                 isExistsFurniture.value = true;
             } else {
                 isExistsFurniture.value = false;    
@@ -26,7 +25,6 @@ export const useEditorStore = defineStore("editorStore", () => {
     }
 
     const getRole = async (currentNickname) => {
-        console.log("내 닉네임: ", currentNickname)
         try {
             const response = await apiClient.get(`/api/rooms/${roomId.value}/users`);
             role.value = '';

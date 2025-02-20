@@ -40,7 +40,7 @@ public class RoomServiceImpl implements RoomService {
     private static final int PAGE_SIZE = 24;
 
     @Override
-    public void createRoom(String roomName, String thumbnailUrl) {
+    public RoomResponse createRoom(String roomName, String thumbnailUrl) {
         Room room = Room.builder()
                 .roomName(roomName)
                 .thumbnailUrl(thumbnailUrl)
@@ -49,6 +49,9 @@ public class RoomServiceImpl implements RoomService {
 
         User user = userService.getCurrentUser();
         roomUserService.assignHost(room, user);
+        return RoomResponse.builder()
+                .roomId(room.getId())
+                .build();
     }
 
     @Override
