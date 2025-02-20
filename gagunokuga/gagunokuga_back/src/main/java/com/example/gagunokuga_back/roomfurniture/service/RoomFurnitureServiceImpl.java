@@ -94,10 +94,7 @@ public class RoomFurnitureServiceImpl implements RoomFurnitureService {
 
     @Override
     public void loadAll(Long roomId) { // DB -> Redis
-        if (redisTemplate.hasKey("room:" + roomId + ":furniture")) {
-            redisTemplate.persist("room:" + roomId + ":furniture");
-            return;
-        }
+        redisTemplate.persist("room:" + roomId + ":furniture");
         redisTemplate.opsForValue().set("room:" + roomId + ":furniture:index", -1L);
         for (RoomFurniture roomFurniture : roomFurnitureRepository.findAllByRoom_Id(roomId)) {
             RoomFurnitureDto roomFurnitureDto = roomFurnitureMapper.toRoomFurnitureDto(
