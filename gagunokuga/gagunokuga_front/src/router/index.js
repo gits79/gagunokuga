@@ -54,9 +54,9 @@ const router = createRouter({
     
     { path: "/login", name: "Login", component: Login, meta: { showHeader: true }, },
     { path: "/room", name: "Room", component: Room, meta: { showHeader: true }, },
-    // { path: '/floor-editor/:roomId', name: 'FloorEditor', component: FloorEditor, meta: { showHeader: false }, },
-    // { path: '/furniture-editor/:roomId', name: 'FurnitureEditor', component: FurnitureEditor, meta: { showHeader: false }, },
-    { path: '/editor/:roomId', name: 'Editor', component: Editor, meta: { showHeader: false }, },
+    { path: '/floor-editor/:roomId', name: 'FloorEditor', component: FloorEditor, meta: { showHeader: false }, },
+    { path: '/furniture-editor/:roomId', name: 'FurnitureEditor', component: FurnitureEditor, meta: { showHeader: false }, },
+    // { path: '/editor/:roomId', name: 'Editor', component: Editor, meta: { showHeader: false }, },
     { path: "/signup", name: "SignUp", component: SignUp, meta: { showHeader: true }, },
     { path: "/oauth/success", name: "OAuthSuccess", component: OAuthSuccess, meta: { showHeader: false }, },
     { path: "/pwdcheck", name: "PasswordCheck", component: PwdCheck, meta: { showHeader: true }, },

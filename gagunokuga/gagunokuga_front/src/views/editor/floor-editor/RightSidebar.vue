@@ -1,15 +1,15 @@
 <template>
   <aside class="sidebar-right">
-    <div
+    <router-link 
       @mousedown="store.saveWalls" 
-      @click="editorStore.changeEditorMode('furniture')"
+      :to="`/furniture-editor/${route.params.roomId}`" 
       class="back-button"
     >
       가구 에디터로
       <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
         <path d="M9 6l6 6-6 6" />
       </svg>
-    </div>
+    </router-link>
 
  <!-- Default Settings -->
  <div class="settings-panel">

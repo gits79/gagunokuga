@@ -15,16 +15,15 @@
     <aside class="sidebar left" :class="{ 'open': isOpen }">
       <div class="sidebar-content">
         <!-- Back to Floor Editor Button -->
-        <div
-          v-if="editorStore.role === 'host'"
-          @click="editorStore.changeEditorMode('floor')" 
+        <router-link 
+          :to="`/floor-editor/${route.params.roomId}`" 
           class="back-button"
         >
           <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
             <path d="M15 18l-6-6 6-6" />
           </svg>
           도면 에디터로
-        </div>
+        </router-link>
 
         <!-- Layer Selection -->
         <div class="layer-selection">
