@@ -99,7 +99,7 @@ const {
 const closeModal = () => emit("close");
 
 // 최대 초대 가능 인원 설정 (8명)
-const maxUsers = 9;
+const maxUsers = 10;
 
 // 현재 사용자 수 계산
 const currentUserCount = computed(() => users.value.length);
