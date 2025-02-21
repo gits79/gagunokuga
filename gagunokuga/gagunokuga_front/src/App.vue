@@ -22,7 +22,6 @@ const checkTokenExpiration = () => {
       const expirationTime = tokenPayload.exp * 1000;
       
       if (Date.now() >= expirationTime) {
-        console.log('Token expired, logging out');
         loginStore.logout();
         router.push('/login');
       }
@@ -45,7 +44,6 @@ onMounted(() => {
       const expirationTime = tokenPayload.exp * 1000;
 
       if (Date.now() >= expirationTime) {
-        console.log('Token expired, logging out');
         loginStore.logout();
         router.push('/login');
       } else {

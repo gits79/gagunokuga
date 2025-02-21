@@ -112,8 +112,6 @@ window.addEventListener('load', () => {
   if (fullPath.includes('/oauth/callback')) {
     const url = new URL(fullPath);
 
-    console.log("Original URL:", fullPath);
-    console.log("Search params:", url.search);
     window.location.href = `/oauth/success${url.search}`;
     
   }

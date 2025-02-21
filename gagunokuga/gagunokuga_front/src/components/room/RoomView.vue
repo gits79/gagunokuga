@@ -85,7 +85,6 @@ export default {
       }
 
       try {
-        console.log("입력 방이름: ", this.roomName);
         const response = await axios.post('http://localhost:8080/room', {
           roomName: this.roomName,
         }, {

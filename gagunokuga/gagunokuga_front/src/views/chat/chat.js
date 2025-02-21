@@ -12,7 +12,6 @@ export const useChatStore = defineStore('chatStore', () => {
     try {
       const response = await apiClient.get(`/api/rooms/${roomId.value}/chats`);
       
-      console.log(" 채팅 기록 응답:", response.data);
       return response.data; //  채팅 목록이 포함된 전체 응답 반환
     } catch (error) {
       console.error(" 채팅 기록 불러오기 실패:", error);
@@ -21,10 +20,6 @@ export const useChatStore = defineStore('chatStore', () => {
   };
   const initializeWebSocket = async (id) => {
     roomId.value = id;
-    // if (!stompClient.connected) {
-    //   console.log(stompClient.connected)
-    //   stompClient.activate();
-    // }
   };
 
   const subscribeToChat = async (callback) => {

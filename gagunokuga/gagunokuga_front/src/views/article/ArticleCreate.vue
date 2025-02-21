@@ -147,7 +147,6 @@
       const reader = new FileReader();
       reader.onload = (e) => {
         images.value.push({ file, url: e.target.result });
-        console.log(images.value);
       };
       reader.readAsDataURL(file);
     });
@@ -183,7 +182,6 @@
       
       if(originalImage){
         deleteList.value.push(originalImage.id);
-        console.log(deleteList.value);
       }
     }
 

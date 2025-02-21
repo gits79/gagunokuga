@@ -23,8 +23,6 @@ export default {
     };
   },
   created() {
-    console.log("룸 ID:", this.roomId);
-    console.log("룸 이름:", this.roomName);
     this.fetchRoomData();
   },
   methods: {

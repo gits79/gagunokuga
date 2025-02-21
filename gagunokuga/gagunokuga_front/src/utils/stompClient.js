@@ -24,17 +24,14 @@ export const subscribe = (roomId, callback1, callback2) => {
       subscriptions[path1] = stompClient.subscribe(path1, (message) => {
         callback1(JSON.parse(message.body));
       }, { id: path1 });
-      console.log(`Subscribed to ${path1}`);
     }
 
     if (!subscriptions[path2]) { // 이미 구독이 되어 있지 않다면
       subscriptions[path2] = stompClient.subscribe(path2, (message) => {
         callback2(JSON.parse(message.body));
       }, { id: path2 });
-      console.log(`Subscribed to ${path2}`);
     }
-    
-    console.log('WebSocket Connected');
+
   };
 
   // 연결 실패 시 에러 핸들러
@@ -54,13 +51,11 @@ export const unsubscribe = (roomId) => {
   if (subscriptions[path1]) {
     subscriptions[path1].unsubscribe();
     delete subscriptions[path1]; // 구독 해제 후 관리 객체에서 제거
-    console.log(`Unsubscribed from ${path1}`);
   }
 
   if (subscriptions[path2]) {
     subscriptions[path2].unsubscribe();
     delete subscriptions[path2];
-    console.log(`Unsubscribed from ${path2}`);
   }
 
   stompClient.deactivate();
@@ -73,7 +68,6 @@ export const publish = (pubPath, data) => {
       destination: pubPath,
       body: JSON.stringify(data),
     });
-    console.log(`Published to ${pubPath}`);
   }
 };
 
