@@ -104,7 +104,7 @@
 |FullStack|FullStack|FullStack|FullStack|FullStack|FullStack|
 |:---:|:---:|:---:|:---:|:---:|:---:|
 | ![김예훈](https://github.com/user-attachments/assets/a3735474-3043-4f18-98b9-f97e77589522)| ![김민섭](https://github.com/user-attachments/assets/912a808c-b6e2-4f22-b0bd-124722e4b4d6)| ![김윤지](https://github.com/user-attachments/assets/583ab5ef-07a9-4ed6-88cc-e2fd716b4a08)| ![김지환](https://github.com/user-attachments/assets/0a4f1ed8-13fc-4769-9660-5a6bac571fb1)| ![송정호](https://github.com/user-attachments/assets/3bc00b58-28f6-427d-b3a1-e349d1a0a631)| ![장다은](https://github.com/user-attachments/assets/038d3b84-0757-48ba-935e-85bbec9573f6) |
-|[김예훈](https://github.com/yhkimox)|[김민섭](https://github.com/TrexVsTank)|[김윤지](https://github.com/ximvamom)|[김지환](https://github.com/gits79)|[송정호](https://github.com/yhkimox)|[장다은](https://github.com/boriaegi)|
+|[김예훈](https://github.com/yhkimox)|[김민섭](https://github.com/TrexVsTank)|[김윤지](https://github.com/ximvamom)|[김지환](https://github.com/gits79)|[송정호](https://github.com/dynamite885)|[장다은](https://github.com/boriaegi)|
 |**팀장**|팀원|팀원|팀원|팀원|팀원|
 
 </div><br/>
