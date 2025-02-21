@@ -68,6 +68,12 @@ const captureSVG = async (svgElement, width, height) => {
 // 서버 측에서 이미지를 다운로드하여 CORS 문제 해결 못함.
 const loadImageFromServer = async (url) => {
     try {
+        // CORS 문제를 해결하지 못하는 경우 빈 이미지 반환
+        return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAgAB/ej/fh8AAAAASUVORK5CYII=";
+    } catch (error) {
+        return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAgAB/ej/fh8AAAAASUVORK5CYII=";
+    }
+    /*try {
         const response = await axiosInstance.get(`/api/rooms/proxy`); // url의 이미지 데이터를 대용량 binary로 수령
         if (response.status === 200) {
             return URL.createObjectURL(response.data);
@@ -76,7 +82,7 @@ const loadImageFromServer = async (url) => {
         }
     } catch (error) {
         return null;
-    }
+    }*/
 };
 
 const combineImages = async (backgroundImageURL, svgImageURL, width, height) => {
