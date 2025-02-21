@@ -73,12 +73,9 @@ const isLoggedIn = computed(() => !!loginStore.state.token);
 const submitComment = async () => {
   if (!newComment.value.trim()) return;
   try {
-    console.log(" 댓글 작성 요청 시작...");
     await commentStore.createComment(props.articleId, newComment.value);
     newComment.value = ""; // 작성 후 입력창 초기화
-    console.log(" 댓글 작성 완료");
   } catch (error) {
-    console.error(" 댓글 작성 실패:", error);
     alert("댓글 작성에 실패했습니다.");
   }
 };

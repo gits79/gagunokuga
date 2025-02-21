@@ -40,7 +40,6 @@ export const useLoginStore = defineStore("loginStore", () => {
         password: state.password,
       });
 
-      console.log("로그인 응답 데이터:", response.data);
 
       if (response.data && response.data.accessToken) {
         state.token = response.data.accessToken;
@@ -77,7 +76,6 @@ export const useLoginStore = defineStore("loginStore", () => {
 
   // 카카오로그인 연동 - 토큰 확인
   const handleLoginSuccess = async (tokenData) => {
-    console.log('Handling login success with tokens:', tokenData);
 
     if (tokenData?.accessToken && tokenData?.refreshToken) {
       try {
@@ -86,10 +84,6 @@ export const useLoginStore = defineStore("loginStore", () => {
         localStorage.setItem("refreshToken", tokenData.refreshToken);
         axios.defaults.headers.common["Authorization"] = `Bearer ${tokenData.accessToken}`;
 
-        console.log('Tokens stored successfully:', {
-          access: localStorage.getItem('accessToken'),
-          refresh: localStorage.getItem('refreshToken')
-        });
         return true;
       } catch (error) {
         console.error('Error storing tokens:', error);
@@ -105,10 +99,8 @@ export const useLoginStore = defineStore("loginStore", () => {
   const passwordReset = async (resetEmail) => {
     try {
       const response = await axios.post(`${baseURL}/api/users/reset-password`, { email: resetEmail });
-      console.log('비밀번호 재설정 이메일 전송 성공', response.data);
       alert("비밀번호 재설정 이메일이 전송되었습니다.");
     } catch (error) {
-      console.error('비밀번호 재설정 이메일 전송 실패', error);
       alert("비밀번호 재설정 요청 중 오류가 발생했습니다.");
     }
   };
@@ -145,9 +137,7 @@ export const useLoginStore = defineStore("loginStore", () => {
   };
 
   const setupAxiosInterceptors = () => {
-    console.log('Interceptor setup called'); // 인터셉터 설정 시점 로그
-    console.log('Current interceptors:', axios.interceptors.response.handlers); // 현재 등록된 인터셉터 수 확인
-  
+
   // 기존 인터셉터 제거
   axios.interceptors.response.handlers = [];
   
@@ -156,7 +146,6 @@ export const useLoginStore = defineStore("loginStore", () => {
     (response) => response,
     async (error) => {
       if (error.response?.status === 401) {
-        console.log('Token expired, logging out');
         // 토큰이 만료되었을 때 즉시 로그아웃 처리
         logout();
         router.push('/login');
@@ -177,7 +166,6 @@ export const useLoginStore = defineStore("loginStore", () => {
           const expirationTime = tokenPayload.exp * 1000;
           
           if (Date.now() >= expirationTime) {
-            console.log('Token expired during request');
             logout();
             router.push('/login');
             return Promise.reject('Token expired');

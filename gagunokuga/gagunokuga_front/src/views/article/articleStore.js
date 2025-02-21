@@ -24,7 +24,6 @@ export const useArticleStore = defineStore('articleStore', () => {
     const getArticle = async (articleId) => {
         try {
             const response = await axios.get(`${baseURL}/api/articles/${articleId}`);
-            console.log(response.data);
             article.value = response.data;
             return article.value;
         } catch (error) {

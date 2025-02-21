@@ -85,7 +85,6 @@ const searchKeyword = ref('');
 const isComposing = ref(false);  // IME 조합 중인지 확인하는 플래그
 
 const onDragStart = (event, furniture) => {
-  console.log('드래그 시작 - 선택된 레이어:', selectedLayer.value);
   event.dataTransfer.setData('furnitureId', furniture.id);
   event.dataTransfer.setData('selectedLayer', selectedLayer.value.toString());
 };

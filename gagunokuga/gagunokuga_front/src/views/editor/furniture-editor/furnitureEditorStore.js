@@ -674,8 +674,7 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
     try {
       
       const response = await apiClient.get(`/api/rooms/${roomId.value}/furnitures/${furnitureId}?xpos=${x}&ypos=${y}&layer=${layer}`);
-      console.log('서버 응답:', response.data);
-      
+
       if (response.data && response.data.event === 'CREATE') {
         receiveFurnitureEvent(response.data);
       }
@@ -699,7 +698,6 @@ export const useFurnitureEditorStore = defineStore("furnitureEditorStore", () =>
   // WS 가구 삭제 이벤트 발행
   const deleteFurniture = () => {
     if(selectedFurniture.index === null) {
-      console.log("deletion error: 선택된 가구 없음");
       return;
     }
     selectedFurniture.isDeleted = true;
