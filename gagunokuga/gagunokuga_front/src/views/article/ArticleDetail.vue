@@ -77,7 +77,6 @@ const showMenu = ref(false);
 
 // 현재 로그인한 사용자 정보
 const currentUser = computed(() => loginStore.state.nickname);
-console.log("✅ 게시글에서 현재 로그인된 사용자 닉네임:", currentUser.value.nickname);
 
 // 현재 게시글 작성자와 로그인한 사용자가 동일한지 확인
 const isAuthor = computed(() => store.article.nickname === currentUser.value);

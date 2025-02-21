@@ -40,7 +40,6 @@ export default {
     startEditing() {
       this.editing = true;
       this.editedRoomName = this.room.roomName;
-      console.log("수정한다");
     },
 
     // 수정 취소 (input에서 포커스가 벗어났을 때)
@@ -52,7 +51,6 @@ export default {
     // 제목 수정 API 요청
     async updateRoomTitle() {
       if (!this.editedRoomName.trim()) return; // 빈 제목 방지
-      console.log("🔵 수정 요청:", this.room.id, this.editedRoomName);
 
       try {
         const response = await axios.put(`http://localhost:8080/room/${this.room.id}`,
@@ -62,7 +60,6 @@ export default {
             { headers: { "Content-Type": "application/json" } } // JSON 요청 명시
         );
 
-        console.log("🟢 수정 완료:", response.data);
         this.$emit("room-updated", response.data); // 부모에게 변경 알림
         this.editing = false;
       } catch (error) {
@@ -76,7 +73,6 @@ export default {
 
       try {
         await axios.delete(`http://localhost:8080/room/${this.room.id}`);
-        console.log("룸 삭제 완료");
         this.$emit("room-deleted", this.room.id); // 부모 컴포넌트에 알림
       } catch (error) {
         console.error("룸 삭제 실패:", error);

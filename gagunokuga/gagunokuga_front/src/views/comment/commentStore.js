@@ -11,12 +11,10 @@ export const useCommentStore = defineStore("commentStore", () => {
   const fetchComments = async (articleId) => {
     try {
       const response = await axios.get(`${baseURL}/api/articles/${articleId}/comments`);
-      console.log(" API 응답 데이터:", response.data);
 
       //  Vue의 반응성을 유지하기 위해 새로운 배열을 할당
       comments.value = [...response.data.comments];
 
-      console.log(" comments.value 업데이트됨:", comments.value);
     } catch (error) {
       console.error("❌ 댓글을 불러오는 중 오류 발생:", error);
     }
@@ -40,7 +38,6 @@ export const useCommentStore = defineStore("commentStore", () => {
         profileImageUrl: response.data.profileImageUrl
       });
 
-      console.log(" 댓글 작성 완료:", response.data);
     } catch (error) {
       console.error(" 댓글 작성 중 오류 발생:", error);
       throw error;
@@ -57,7 +54,6 @@ export const useCommentStore = defineStore("commentStore", () => {
       });
 
       comments.value = comments.value.filter(comment => comment.id !== commentId);
-      console.log(` 댓글 삭제 완료 (ID: ${commentId})`);
     } catch (error) {
       console.error(" 댓글 삭제 중 오류 발생:", error);
     }

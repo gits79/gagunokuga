@@ -75,11 +75,8 @@ const scrollToBottom = () => {
 //  기존 채팅 기록 불러오기 (API 사용)
 const loadChatLogs = async () => {
   const logs = await store.fetchChatLogs();
-  console.log("닉네임",nickname.value)
-  console.log(" 과거 채팅 기록:", logs);
 
   if (Array.isArray(logs.chats)) {
-    console.log("로그",logs.chats)
     chatLogs.value = logs.chats.map(chat => ({
       nickname: chat.nickname,
       content: chat.content,
@@ -115,8 +112,6 @@ const sendChatMessage = async () => {
     content: messageInput.value,
   };
 
-  console.log(" 전송할 메시지:", chatMessage);
-
   store.publishChatMessage(chatMessage);
   messageInput.value = "";
 
@@ -125,7 +120,6 @@ const sendChatMessage = async () => {
 
 //  WebSocket으로 메시지 수신 처리 (과거 채팅 + 실시간 채팅 모두 반영)
 const handleMessageReceived = (message) => {
-  console.log(" 실시간 메시지 수신:", message);
 
   if (!message.nickname) {
     console.error(" nickname이 없음!", message);

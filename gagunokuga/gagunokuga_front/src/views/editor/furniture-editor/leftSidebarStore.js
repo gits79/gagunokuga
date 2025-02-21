@@ -41,7 +41,6 @@ export const useLeftSidebarStore = defineStore('leftSidebarStore', () => {
                 furnitureList.value = [...furnitureList.value, ...response.data.furnitures]
             })
 
-            console.log('전체 가구 개수:', furnitureList.value.length)
         } catch (err) {
             console.error('API 오류:', err)
             error.value = '데이터를 불러오는 중 오류 발생'

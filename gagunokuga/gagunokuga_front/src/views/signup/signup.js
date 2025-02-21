@@ -43,9 +43,7 @@ export const useSignupStore = defineStore("signupStore", () => {
       });
       
       // 디버깅을 위한 콘솔 출력
-      console.log("응답 데이터:", response.data);  // 서버에서 받은 데이터 확인
-      console.log("닉네임 존재 여부:", response.data.existing);  //  값 확인
-      
+
       if (!response.data.existing) {
         state.nicknameMessage = "사용 가능한 닉네임입니다.";
         state.isNicknameValid = true;
@@ -78,7 +76,6 @@ export const useSignupStore = defineStore("signupStore", () => {
         params: { email: state.email },
       });
 
-      console.log("이메일 존재 여부:", response.data);
 
     if (!response.data.existing) {
       state.emailMessage = "사용 가능한 이메일입니다.";
@@ -108,11 +105,9 @@ export const useSignupStore = defineStore("signupStore", () => {
         email: state.email,
       });
       if (response.status === 200) {
-        console.log(" EC2에서 확인용(나중에 삭제제) :발송 성공")
         state.showVerificationInput = true; // 인증 번호 입력창을 표시
       }
     } catch (error) {
-      console.log(baseURL)
       state.emailMessage = "인증 코드 발송에 실패했습니다. 다시 시도해주세요.";
     }
   };
