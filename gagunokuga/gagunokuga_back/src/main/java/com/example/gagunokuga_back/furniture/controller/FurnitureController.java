@@ -20,4 +20,14 @@ public class FurnitureController {
             @RequestParam(defaultValue = "") String keyword) {
         return ResponseEntity.ok(furnitureService.getFurnitureList(page, keyword));
     }
+
+    @GetMapping("/{categoryId}")
+    public FurnitureListResponse getFurnitureListByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        return furnitureService.getFurnitureListByCategory(categoryId, page);
+    }
+
+
 }
